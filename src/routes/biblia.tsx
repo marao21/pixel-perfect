@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Page } from "@/components/Shell";
 import { BOOKS, downloadCompleteBibleOffline, getPlan, VERSIONS, fetchChapter, OfflineChapterUnavailableError, TOTAL_BIBLE_CHAPTERS, type Verse } from "@/lib/bible";
@@ -58,6 +58,7 @@ function Biblia() {
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
   const [downloadDialog, setDownloadDialog] = useState<DownloadDialogState | null>(null);
+  const [versionMenuOpen, setVersionMenuOpen] = useState(false);
   const downloadController = useRef<AbortController | null>(null);
   const checkingVersion = useRef(false);
   const book = BOOKS[bookIdx]!;
@@ -221,8 +222,8 @@ function Biblia() {
       )}
       <section className="mb-4 rounded-2xl border border-border bg-secondary/50 p-3">
         <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Escolha a passagem</p>
-        <div className="grid grid-cols-[minmax(0,1fr)_4.25rem_4.25rem] gap-2">
-          <label className="min-w-0">
+        <div className="grid grid-cols-2 gap-2">
+          <label className="col-span-2 min-w-0">
             <span className="mb-1 block text-xs text-muted-foreground">Livro</span>
             <select aria-label="Livro" className={`${sel} w-full`} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); setSelectedVerse(1); setShouldScrollToVerse(false); }}>
               {BOOKS.map((b, i) => <option key={b.en} value={i}>{b.pt}</option>)}
@@ -234,22 +235,30 @@ function Biblia() {
               {Array.from({ length: book.ch }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
             </select>
           </label>
-          <label>
-            <span className="mb-1 block text-xs text-muted-foreground">Versículo</span>
+          <div className="relative min-w-0">
+            <div className="mb-1 flex h-[1.25rem] items-center justify-between gap-1">
+              <span className="text-xs text-muted-foreground">Versículo</span>
+              <button type="button" aria-label={`Tradução da Bíblia: ${VERSIONS.find((item) => item.id === version)?.label}`} aria-expanded={versionMenuOpen} onClick={() => setVersionMenuOpen((open) => !open)} className="inline-flex min-h-6 items-center gap-0.5 rounded-md px-1 text-xs font-bold text-primary hover:bg-primary/10">
+                {VERSIONS.find((item) => item.id === version)?.label}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+            </div>
+            {versionMenuOpen && (
+              <div role="group" aria-label="Escolha a tradução da Bíblia" className="absolute right-0 top-7 z-30 w-40 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-xl">
+                {VERSIONS.map((item) => (
+                  <button key={item.id} type="button" aria-pressed={version === item.id} disabled={Boolean(downloadController.current)} onClick={() => { setVersionMenuOpen(false); void selectTranslation(item.id); }} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-left text-sm font-semibold disabled:opacity-50 ${version === item.id ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-secondary"}`}>
+                    <span>{item.label}</span>
+                    <span className="text-xs opacity-75">{version === item.id ? "Selecionada" : "Escolher"}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             <select aria-label="Versículo" className={`${sel} w-full`} value={selectedVerse} onChange={(e) => { setSelectedVerse(Number(e.target.value)); setShouldScrollToVerse(true); }}>
               {verses.length
                 ? verses.map((v) => <option key={v.verse} value={v.verse}>{v.verse}</option>)
                 : <option value={1}>1</option>}
             </select>
-          </label>
-        </div>
-      </section>
-      <section className="mb-4 rounded-2xl border border-border bg-secondary/50 p-3">
-        <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Tradução da Bíblia</p>
-        <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
-          {VERSIONS.map((v) => (
-            <button key={v.id} disabled={Boolean(downloadController.current)} aria-pressed={version === v.id} onClick={() => void selectTranslation(v.id)} className={`rounded-lg border px-1 py-2 text-xs font-bold tracking-wide transition-colors disabled:opacity-60 ${version === v.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-transparent bg-card/70 text-muted-foreground hover:border-border hover:text-foreground"}`}>{v.label}</button>
-          ))}
+          </div>
         </div>
       </section>
       {downloadDialog && (
