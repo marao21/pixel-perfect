@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Heart, QrCode } from "lucide-react";
+import { useState } from "react";
+import { Check, Copy, Heart } from "lucide-react";
 import { Page } from "@/components/Shell";
+
+const pixOptions = [
+  { amount: 5, code: "PIX-DEMO-OFERTA-05" },
+  { amount: 10, code: "PIX-DEMO-OFERTA-10" },
+  { amount: 20, code: "PIX-DEMO-OFERTA-20" },
+  { amount: 50, code: "PIX-DEMO-OFERTA-50" },
+];
 
 export const Route = createFileRoute("/oferta")({
   head: () => ({
@@ -17,6 +25,18 @@ export const Route = createFileRoute("/oferta")({
 });
 
 function Oferta() {
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  async function copyCode(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+      window.setTimeout(() => setCopiedCode(null), 2000);
+    } catch {
+      setCopiedCode(null);
+    }
+  }
+
   return (
     <Page kicker="Igreja Batista Belém" title="Oferta">
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -24,17 +44,35 @@ function Oferta() {
           <Heart className="mx-auto h-8 w-8 text-gold" aria-hidden="true" />
           <h2 className="mt-3 font-display text-2xl uppercase text-foreground">Ofertar é um ato de gratidão</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Aponte a câmera do seu celular para o QR Code e contribua por Pix.
+            Escolha um valor e copie o código Pix para testar a experiência.
           </p>
         </div>
         <div className="px-5 py-6">
-          <div className="mx-auto flex aspect-square w-full max-w-64 flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary bg-background p-6 text-center">
-            <QrCode className="h-28 w-28 text-primary" aria-hidden="true" />
-            <p className="mt-4 text-sm font-semibold text-foreground">QR Code Pix da igreja</p>
-            <p className="mt-1 text-xs text-muted-foreground">Em breve</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {pixOptions.map(({ amount, code }) => {
+              const isCopied = copiedCode === code;
+
+              return (
+                <div key={amount} className="rounded-xl border border-border bg-background p-4">
+                  <p className="font-display text-2xl text-foreground">R$ {amount},00</p>
+                  <p className="mt-2 break-all rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
+                    {code}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void copyCode(code)}
+                    className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+                    aria-label={`${isCopied ? "Código copiado" : "Copiar código Pix fictício"} de R$ ${amount},00`}
+                  >
+                    {isCopied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+                    {isCopied ? "Copiado" : "Copiar código Pix"}
+                  </button>
+                </div>
+              );
+            })}
           </div>
-          <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
-            Antes de confirmar, confira se o favorecido é a Igreja Batista Belém.
+          <p className="mt-5 rounded-lg border border-gold/40 bg-gold/10 p-3 text-center text-xs leading-relaxed text-muted-foreground">
+            Demonstração: estes códigos são fictícios e não fazem pagamentos Pix reais.
           </p>
         </div>
       </section>
