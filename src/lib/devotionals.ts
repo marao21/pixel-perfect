@@ -537,15 +537,16 @@ const DIAS_POR_ANO = 365;
 /** Devocional do dia (1 a 365). Cada dia do ano tem um devocional diferente. */
 export function getDevotionalForDay(day: number): DailyDevotional {
   const d = ((Math.max(1, day) - 1) % DIAS_POR_ANO);
-  const week = Math.floor(d / 7) % THEMES.length;
+  const rawWeek = Math.floor(d / 7); // 0-52, sem módulo — usado nos índices
+  const week = rawWeek % THEMES.length;
   const slot = d % 7; // 0-6: dia da semana dentro do tema
   const t = THEMES[week]!;
   // Multiplicadores diferentes por semana garantem que os 365 dias tenham
   // combinações todas distintas (evita que o 2º semestre copie o 1º).
-  const extraIndex = (week * 5 + slot) % EXTRA_PARAS.length;
-  const verseIndex = (week * 11 + slot * 3) % EXTRA_VERSES.length;
-  const practiceIndex = (week * 7 + slot) % PRACTICES.length;
-  const quoteIndex = (week * 5 + slot * 7) % QUOTES.length;
+  const extraIndex = (rawWeek * 5 + slot) % EXTRA_PARAS.length;
+  const verseIndex = (rawWeek * 11 + slot * 3) % EXTRA_VERSES.length;
+  const practiceIndex = (rawWeek * 7 + slot) % PRACTICES.length;
+  const quoteIndex = (rawWeek * 5 + slot * 7) % QUOTES.length;
 
   const [q, qa] = slot === 0 ? [t.quote, t.quoteAuthor] : QUOTES[quoteIndex]!;
   const [verse, ref] = slot === 0 ? [t.verse, t.ref] : EXTRA_VERSES[verseIndex]!;
