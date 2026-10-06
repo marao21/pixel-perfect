@@ -130,7 +130,7 @@ function Biblia() {
         {status === "ok" && (
           <div className="px-4 py-3 sm:px-5">
             {verses.map((v) => (
-              <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0 ${startVerse && v.verse >= startVerse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
+              <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0 ${startVerse === v.verse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
                 <span className="pt-1 text-sm font-bold leading-none text-primary">{v.verse}</span>
                 <span className="font-serif-read text-lg leading-8 text-foreground">{v.text}</span>
               </p>
