@@ -1,0 +1,46 @@
+import { Link } from "@tanstack/react-router";
+import { Home, CalendarDays, Trophy, MessagesSquare, BookOpen, BookMarked } from "lucide-react";
+import type { ReactNode } from "react";
+
+const TABS = [
+  { to: "/", label: "Home", icon: Home },
+  { to: "/plano", label: "Plano", icon: CalendarDays },
+  { to: "/biblia", label: "Bíblia", icon: BookMarked },
+  { to: "/ranking", label: "Ranking", icon: Trophy },
+  { to: "/mural", label: "Mural", icon: MessagesSquare },
+  { to: "/devocional", label: "Devocional", icon: BookOpen },
+] as const;
+
+export function Page({ title, kicker, children }: { title: string; kicker?: string; children: ReactNode }) {
+  return (
+    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-6">
+      <header className="mb-5">
+        {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
+        <h1 className="font-display text-3xl uppercase leading-none tracking-wide text-foreground">{title}</h1>
+      </header>
+      {children}
+    </main>
+  );
+}
+
+export function BottomNav() {
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
+      <ul className="mx-auto grid max-w-xl grid-cols-6">
+        {TABS.map(({ to, label, icon: Icon }) => (
+          <li key={to}>
+            <Link
+              to={to}
+              activeOptions={{ exact: to === "/" }}
+              className="flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium text-muted-foreground transition-colors"
+              activeProps={{ className: "text-primary" }}
+            >
+              <Icon className="h-5 w-5" />
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
