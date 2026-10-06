@@ -52,11 +52,15 @@ export function Page({ title, kicker, children }: { title: string; kicker?: stri
           className="h-16 w-16 shrink-0 object-contain"
         />
         <div className="min-w-0 flex-1">
-        {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
-        <h1 className="font-display text-3xl uppercase leading-none tracking-wide text-foreground">{title}</h1>
+          <p className="font-display text-xl uppercase leading-none tracking-wide text-foreground">Os Mamutes</p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">Desafio Bíblico</p>
         </div>
         <ThemeSwitcher />
       </header>
+      <div className="mb-5 pt-3">
+        {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
+        <h1 className="font-display text-3xl uppercase leading-tight tracking-wide text-foreground">{title}</h1>
+      </div>
       {children}
     </main>
   );
