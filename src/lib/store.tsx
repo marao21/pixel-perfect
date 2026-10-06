@@ -1,10 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
 // Mock state shaped like the future Supabase tables:
-// profiles, reading_plan, user_progress, mural_posts, devotionals.
+// profiles, reading_plan, user_progress, devotionals.
 export type Profile = { id: string; name: string; done: number; streak: number };
-export type Comment = { author: string; text: string };
-export type Post = { id: string; author: string; createdAt: string; text: string; likes: number; liked: boolean; comments: Comment[] };
 export type Devotional = { day: number; title: string; verse: string; ref: string; body: string[] };
 
 export const CURRENT_DAY = 23;
@@ -45,25 +43,14 @@ type Ctx = {
   done: Set<number>;
   toggle: (d: number) => void;
   profiles: Profile[];
-  posts: Post[];
-  addPost: (t: string) => void;
-  like: (id: string) => void;
-  comment: (id: string, t: string) => void;
 };
 
 const C = createContext<Ctx | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [done, setDone] = useState<Set<number>>(initialDone);
-  const [posts, setPosts] = useState<Post[]>([
-    { id: "p1", author: "Pr. Marcos", createdAt: "Hoje, 06:12", text: "“Esforça-te e tem bom ânimo.” Js 1:9 — Bom dia, Mamutes! Ninguém fica para trás.", likes: 9, liked: false, comments: [{ author: "João Pedro", text: "Amém, pastor! 🔥" }] },
-    { id: "p2", author: "Felipe Souza", createdAt: "Ontem, 21:40", text: "Pedido de oração: minha mãe faz cirurgia na quinta. Contem comigo nas orações.", likes: 14, liked: false, comments: [] },
-  ]);
 
   const toggle = (d: number) => setDone((s) => { const n = new Set(s); n.has(d) ? n.delete(d) : n.add(d); return n; });
-  const addPost = (text: string) => setPosts((p) => [{ id: crypto.randomUUID(), author: ME.name, createdAt: "Agora", text, likes: 0, liked: false, comments: [] }, ...p]);
-  const like = (id: string) => setPosts((p) => p.map((x) => x.id === id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x));
-  const comment = (id: string, text: string) => setPosts((p) => p.map((x) => x.id === id ? { ...x, comments: [...x.comments, { author: ME.name, text }] } : x));
 
   let streak = 0;
   for (let d = CURRENT_DAY; d > 0 && done.has(d); d--) streak++;
@@ -71,7 +58,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const profiles = [...PROFILES, { id: ME.id, name: `${ME.name} (você)`, done: done.size, streak }]
     .sort((a, b) => b.done - a.done || b.streak - a.streak);
 
-  return <C.Provider value={{ done, toggle, profiles, posts, addPost, like, comment }}>{children}</C.Provider>;
+  return <C.Provider value={{ done, toggle, profiles }}>{children}</C.Provider>;
 }
 
 export const useStore = () => {

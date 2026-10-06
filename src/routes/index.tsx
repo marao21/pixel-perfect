@@ -46,7 +46,7 @@ function Home() {
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
-      <p className="-mt-3 mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
+      <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
 
       <section className="rounded-2xl border border-border bg-hero p-5 shadow-elevated">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Dia {CURRENT_DAY} de {len} · Plano {len === 365 ? "1 ano" : `${len} dias`}</p>

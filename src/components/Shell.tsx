@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Trophy, MessageCircle } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 
@@ -35,11 +35,9 @@ const TABS = [
   { to: "/oferta", label: "Oferta", icon: HandCoins },
   { to: "/pecado", label: "Pecado", icon: ShieldCheck },
   { to: "/devocional", label: "Devocional", icon: BookOpen },
-  { to: "/ranking", label: "Ranking", icon: Trophy },
-  { to: "/mural", label: "Mural", icon: MessageCircle },
 ] as const;
 
-export function Page({ title, kicker, children }: { title: string; kicker?: string; children: ReactNode }) {
+export function Page({ children }: { title: string; kicker?: string; children: ReactNode }) {
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0">
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
@@ -57,10 +55,6 @@ export function Page({ title, kicker, children }: { title: string; kicker?: stri
         </div>
         <ThemeSwitcher />
       </header>
-      <div className="mb-5 pt-3">
-        {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
-        <h1 className="font-display text-3xl uppercase leading-tight tracking-wide text-foreground">{title}</h1>
-      </div>
       {children}
     </main>
   );

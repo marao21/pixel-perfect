@@ -15,8 +15,6 @@ import { Route as DevocionalRouteImport } from './routes/devocional'
 import { Route as OfertaRouteImport } from './routes/oferta'
 import { Route as PecadoRouteImport } from './routes/pecado'
 import { Route as PlanoRouteImport } from './routes/plano'
-import { Route as RankingRouteImport } from './routes/ranking'
-import { Route as MuralRouteImport } from './routes/mural'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,16 +46,6 @@ const PlanoRoute = PlanoRouteImport.update({
   path: '/plano',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RankingRoute = RankingRouteImport.update({
-  id: '/ranking',
-  path: '/ranking',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MuralRoute = MuralRouteImport.update({
-  id: '/mural',
-  path: '/mural',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,8 +54,6 @@ export interface FileRoutesByFullPath {
   '/oferta': typeof OfertaRoute
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
-  '/ranking': typeof RankingRoute
-  '/mural': typeof MuralRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -76,8 +62,6 @@ export interface FileRoutesByTo {
   '/oferta': typeof OfertaRoute
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
-  '/ranking': typeof RankingRoute
-  '/mural': typeof MuralRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -87,14 +71,12 @@ export interface FileRoutesById {
   '/oferta': typeof OfertaRoute
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
-  '/ranking': typeof RankingRoute
-  '/mural': typeof MuralRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/biblia' | '/devocional' | '/oferta' | '/pecado' | '/plano' | '/ranking' | '/mural'
+  fullPaths: '/' | '/biblia' | '/devocional' | '/oferta' | '/pecado' | '/plano'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/biblia' | '/devocional' | '/oferta' | '/pecado' | '/plano' | '/ranking' | '/mural'
+  to: '/' | '/biblia' | '/devocional' | '/oferta' | '/pecado' | '/plano'
   id:
     | '__root__'
     | '/'
@@ -103,8 +85,6 @@ export interface FileRouteTypes {
     | '/oferta'
     | '/pecado'
     | '/plano'
-    | '/ranking'
-    | '/mural'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -114,8 +94,6 @@ export interface RootRouteChildren {
   OfertaRoute: typeof OfertaRoute
   PecadoRoute: typeof PecadoRoute
   PlanoRoute: typeof PlanoRoute
-  RankingRoute: typeof RankingRoute
-  MuralRoute: typeof MuralRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -162,20 +140,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ranking': {
-      id: '/ranking'
-      path: '/ranking'
-      fullPath: '/ranking'
-      preLoaderRoute: typeof RankingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mural': {
-      id: '/mural'
-      path: '/mural'
-      fullPath: '/mural'
-      preLoaderRoute: typeof MuralRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -186,8 +150,6 @@ const rootRouteChildren: RootRouteChildren = {
   OfertaRoute: OfertaRoute,
   PecadoRoute: PecadoRoute,
   PlanoRoute: PlanoRoute,
-  RankingRoute: RankingRoute,
-  MuralRoute: MuralRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
