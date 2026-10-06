@@ -260,7 +260,7 @@ function Biblia() {
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{downloadDialog.message}</p>
                 <p className="mt-2 text-xs text-muted-foreground">O download pode consumir dados e espaço. Se puder, use Wi-Fi.</p>
                 <div className="mt-5 flex justify-end gap-2">
-                  <button onClick={() => setDownloadDialog(null)} className="min-h-11 rounded-lg border border-border px-4 text-sm font-semibold text-foreground">Agora não</button>
+                  <button onClick={() => { if (navigator.onLine) setVersion(downloadDialog.version); setDownloadDialog(null); }} className="min-h-11 rounded-lg border border-border px-4 text-sm font-semibold text-foreground">Agora não</button>
                   <button onClick={() => { const { version: target, completed } = downloadDialog; setVersion(target); void prepareOfflineBible(target, completed); }} className="min-h-11 rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground">Baixar tradução</button>
                 </div>
               </>
