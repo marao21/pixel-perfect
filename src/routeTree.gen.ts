@@ -10,33 +10,90 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BibliaRouteImport } from './routes/biblia'
+import { Route as DevocionalRouteImport } from './routes/devocional'
+import { Route as MuralRouteImport } from './routes/mural'
+import { Route as PlanoRouteImport } from './routes/plano'
+import { Route as RankingRouteImport } from './routes/ranking'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BibliaRoute = BibliaRouteImport.update({
+  id: '/biblia',
+  path: '/biblia',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevocionalRoute = DevocionalRouteImport.update({
+  id: '/devocional',
+  path: '/devocional',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MuralRoute = MuralRouteImport.update({
+  id: '/mural',
+  path: '/mural',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanoRoute = PlanoRouteImport.update({
+  id: '/plano',
+  path: '/plano',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/biblia': typeof BibliaRoute
+  '/devocional': typeof DevocionalRoute
+  '/mural': typeof MuralRoute
+  '/plano': typeof PlanoRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/biblia': typeof BibliaRoute
+  '/devocional': typeof DevocionalRoute
+  '/mural': typeof MuralRoute
+  '/plano': typeof PlanoRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/biblia': typeof BibliaRoute
+  '/devocional': typeof DevocionalRoute
+  '/mural': typeof MuralRoute
+  '/plano': typeof PlanoRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/biblia' | '/devocional' | '/mural' | '/plano' | '/ranking'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/biblia' | '/devocional' | '/mural' | '/plano' | '/ranking'
+  id:
+    | '__root__'
+    | '/'
+    | '/biblia'
+    | '/devocional'
+    | '/mural'
+    | '/plano'
+    | '/ranking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BibliaRoute: typeof BibliaRoute
+  DevocionalRoute: typeof DevocionalRoute
+  MuralRoute: typeof MuralRoute
+  PlanoRoute: typeof PlanoRoute
+  RankingRoute: typeof RankingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +105,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/biblia': {
+      id: '/biblia'
+      path: '/biblia'
+      fullPath: '/biblia'
+      preLoaderRoute: typeof BibliaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/devocional': {
+      id: '/devocional'
+      path: '/devocional'
+      fullPath: '/devocional'
+      preLoaderRoute: typeof DevocionalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mural': {
+      id: '/mural'
+      path: '/mural'
+      fullPath: '/mural'
+      preLoaderRoute: typeof MuralRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plano': {
+      id: '/plano'
+      path: '/plano'
+      fullPath: '/plano'
+      preLoaderRoute: typeof PlanoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BibliaRoute: BibliaRoute,
+  DevocionalRoute: DevocionalRoute,
+  MuralRoute: MuralRoute,
+  PlanoRoute: PlanoRoute,
+  RankingRoute: RankingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
