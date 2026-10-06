@@ -16,8 +16,16 @@ function useVoices() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   useEffect(() => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
-    const load = () =>
-      setVoices(window.speechSynthesis.getVoices().filter((v) => v.lang.replace("_", "-").toLowerCase() === "pt-br"));
+    const load = () => {
+      const all = window.speechSynthesis.getVoices();
+      const norm = (l: string) => l.replace("_", "-").toLowerCase();
+      all.sort((a, b) => {
+        const ap = norm(a.lang).startsWith("pt") ? 0 : 1;
+        const bp = norm(b.lang).startsWith("pt") ? 0 : 1;
+        return ap - bp || a.name.localeCompare(b.name);
+      });
+      setVoices(all);
+    };
     load();
     window.speechSynthesis.onvoiceschanged = load;
     return () => { window.speechSynthesis.cancel(); };
