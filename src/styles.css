@@ -156,6 +156,33 @@
   --blue-foreground: oklch(0.14 0.01 150);
 }
 
+.azul {
+  --background: oklch(0.14 0.03 250);
+  --foreground: oklch(0.96 0.01 250);
+  --card: oklch(0.18 0.035 250);
+  --card-foreground: oklch(0.96 0.01 250);
+  --popover: oklch(0.18 0.035 250);
+  --popover-foreground: oklch(0.96 0.01 250);
+  --primary: oklch(0.65 0.2 250);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.24 0.04 250);
+  --secondary-foreground: oklch(0.96 0.01 250);
+  --muted: oklch(0.24 0.04 250);
+  --muted-foreground: oklch(0.72 0.05 250);
+  --accent: oklch(0.24 0.04 250);
+  --accent-foreground: oklch(0.96 0.01 250);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.3 0.05 250);
+  --input: oklch(0.32 0.05 250);
+  --ring: oklch(0.65 0.2 250);
+  --gold: oklch(0.8 0.13 85);
+  --success: oklch(0.65 0.16 150);
+  --success-foreground: oklch(0.98 0 0);
+  --blue: oklch(0.65 0.2 250);
+  --blue-foreground: oklch(0.98 0 0);
+}
+
 @theme inline {
   --color-gold: var(--gold);
   --color-blue: var(--blue);

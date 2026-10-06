@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 
@@ -7,6 +7,7 @@ const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
   { id: "claro", label: "Claro", icon: Sun },
   { id: "escuro", label: "Escuro", icon: Moon },
   { id: "sepia", label: "Sépia", icon: Coffee },
+  { id: "azul", label: "Azul", icon: Palette },
 ];
 
 function ThemeSwitcher() {
