@@ -14,7 +14,7 @@ Não afirme que todas as traduções estão disponíveis offline se apenas uma f
 Prepare um procedimento simples de instalação e verificação em Android Chrome:
 1. Com internet, abra o endereço publicado e aguarde o carregamento completo.
 2. Use “Instalar app” ou “Adicionar à tela inicial” no menu do Chrome.
-3. Abra as abas Home, Plano, Bíblia, Oferta, Pecado e Devocional enquanto online. Na tela Bíblia, toque em “Baixar Bíblia para usar offline” para a tradução escolhida e aguarde os 1.189 capítulos. Se precisar de outra tradução, selecione-a e baixe também.
+3. Abra as abas Home, Plano, Bíblia, Oferta, Pecado e Devocional enquanto online. Na tela Bíblia, toque na tradução desejada e confirme o download no popup; aguarde os 1.189 capítulos. Se precisar de outra tradução, selecione-a e confirme também.
 4. Feche o app, ative o modo avião e abra o ícone instalado. Confirme que o app abre, todas as abas locais navegam, progresso e tema permanecem salvos, e os capítulos previamente abertos continuam visíveis.
 5. Confirme que qualquer livro e capítulo da tradução preparada abre sem internet. Uma tradução que ainda não foi preparada deve mostrar uma explicação clara, sem tela branca ou loading infinito.
 6. Desative o modo avião e confirme que novos capítulos voltam a carregar. Não reinicie nem interrompa uma página em uso só para atualizar o cache.
@@ -24,4 +24,4 @@ Se encontrar falha, explique qual recurso foi afetado, corrija-o sem quebrar os 
 
 ## Preparação resumida do aparelho
 
-Abra o app publicado com internet, instale-o pelo Chrome e use a opção “Baixar Bíblia para usar offline” na tela Bíblia. Aguarde a tradução selecionada terminar; para usar outras traduções sem internet, baixe cada uma também. Depois, ative o modo avião e abra o ícone instalado.
+Abra o app publicado com internet e instale-o pelo Chrome. Na tela Bíblia, toque na tradução desejada e confirme o download no popup. Aguarde terminar; para usar outras traduções sem internet, toque em cada uma e confirme também. Depois, ative o modo avião e abra o ícone instalado.
