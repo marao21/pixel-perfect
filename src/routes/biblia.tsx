@@ -26,7 +26,7 @@ export const Route = createFileRoute("/biblia")({
 const sel = "min-w-0 rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground";
 
 function Biblia() {
-  const { day, plan, b, c } = Route.useSearch();
+  const { day, plan, b, c, v: startVerse } = Route.useSearch();
   const today = day ? getPlan(plan ?? 180)[day - 1] : undefined;
   const start = today?.refs[0];
   const [bookIdx, setBookIdx] = useState(b ?? (start ? BOOKS.indexOf(start.book) : 0));

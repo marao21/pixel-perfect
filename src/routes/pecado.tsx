@@ -63,14 +63,14 @@ function Pecado() {
         <p className="mt-1 text-xs text-muted-foreground">{done.length} de 21 dias concluídos</p>
       </section>
       <ul className="space-y-2">
-        {DAYS.map(([ref, ch, tema], i) => {
+        {DAYS.map(([ref, ch, tema, v], i) => {
           const d = i + 1, ok = done.includes(d);
           return (
             <li key={d} className={`flex items-center gap-3 rounded-xl border bg-card p-3 ${ok ? "border-success" : "border-border"}`}>
               <button onClick={() => toggle(d)} aria-label={ok ? "Desmarcar dia" : "Marcar dia como feito"} className="shrink-0">
                 {ok ? <CheckCircle2 className="h-7 w-7 text-success" /> : <Circle className="h-7 w-7 text-muted-foreground" />}
               </button>
-              <Link to="/biblia" search={{ b: ROMANOS, c: ch }} className="flex min-w-0 flex-1 items-center gap-2">
+              <Link to="/biblia" search={{ b: ROMANOS, c: ch, v }} className="flex min-w-0 flex-1 items-center gap-2">
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs font-bold uppercase text-gold">Dia {d} · {ref}</span>
                   <span className="block text-sm font-medium uppercase text-foreground">{tema}</span>
