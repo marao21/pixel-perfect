@@ -6,9 +6,9 @@ import { Speaker } from "@/components/Speaker";
 import { BOOKS, getPlan, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
-  validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365; b?: number; c?: number } => {
+  validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365; b?: number; c?: number; v?: number } => {
     const p = Number(s["plan"]);
-    return { ...(s["b"] !== undefined ? { b: Number(s["b"]), c: Number(s["c"] ?? 1) } : {}), ...(s["day"] ? { day: Number(s["day"]) } : {}), ...(p === 90 || p === 365 || p === 180 ? { plan: p as 90 | 180 | 365 } : {}) };
+    return { ...(s["b"] !== undefined ? { b: Number(s["b"]), c: Number(s["c"] ?? 1) } : {}), ...(s["day"] ? { day: Number(s["day"]) } : {}), ...(s["v"] ? { v: Number(s["v"]) } : {}), ...(p === 90 || p === 365 || p === 180 ? { plan: p as 90 | 180 | 365 } : {}) };
   },
   head: () => ({
     meta: [
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/biblia")({
 const sel = "min-w-0 rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground";
 
 function Biblia() {
-  const { day, plan, b, c } = Route.useSearch();
+  const { day, plan, b, c, v: startVerse } = Route.useSearch();
   const today = day ? getPlan(plan ?? 180)[day - 1] : undefined;
   const start = today?.refs[0];
   const [bookIdx, setBookIdx] = useState(b ?? (start ? BOOKS.indexOf(start.book) : 0));
@@ -45,6 +45,12 @@ function Biblia() {
       .catch(() => alive && setStatus("error"));
     return () => { alive = false; };
   }, [bookIdx, chapter, version]);
+
+  useEffect(() => {
+    if (status !== "ok" || !startVerse) return;
+    const el = document.getElementById(`vers-${startVerse}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [status, startVerse, bookIdx, chapter]);
 
   const navigate = Route.useNavigate();
   const fullPlan = getPlan(plan ?? 180);
@@ -124,7 +130,7 @@ function Biblia() {
         {status === "ok" && (
           <div className="px-4 py-3 sm:px-5">
             {verses.map((v) => (
-              <p key={v.verse} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0">
+              <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0 ${startVerse === v.verse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
                 <span className="pt-1 text-sm font-bold leading-none text-primary">{v.verse}</span>
                 <span className="font-serif-read text-lg leading-8 text-foreground">{v.text}</span>
               </p>

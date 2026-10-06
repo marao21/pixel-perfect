@@ -18,28 +18,28 @@ export const Route = createFileRoute("/pecado")({
 });
 
 const ROMANOS = 44;
-const DAYS: [string, number, string][] = [
-  ["Romanos 1:14-17", 1, "Não me envergonho do Evangelho"],
-  ["Romanos 1:28-32", 1, "Desprezaram o conhecimento de Deus"],
-  ["Romanos 2:1-11", 2, "Em Deus não há parcialidade"],
-  ["Romanos 2:17-24", 2, "O nome de Deus é blasfemado..."],
-  ["Romanos 3:9-20", 3, "Ninguém é justo"],
-  ["Romanos 3:21-26", 3, "Todos pecaram"],
-  ["Romanos 4:1-8", 4, "Feliz quem tem pecados perdoados"],
-  ["Romanos 4:18-25", 4, "A promessa recebida pela fé"],
-  ["Romanos 5:1-11", 5, "Os frutos da paz de Deus"],
-  ["Romanos 5:12-21", 5, "Morte em Adão, vida em Cristo"],
-  ["Romanos 6:1-14", 6, "Mortos para o pecado, vivos para Deus"],
-  ["Romanos 6:15-23", 6, "O salário do pecado é a morte"],
-  ["Romanos 7:1-6", 7, "O casamento e a lei"],
-  ["Romanos 7:12-20", 7, "A luta contra o pecado"],
-  ["Romanos 8:1-17", 8, "Vida controlada pelo Espírito"],
-  ["Romanos 8:18-27", 8, "A glória futura"],
-  ["Romanos 8:28-39", 8, "Mais que vencedores"],
-  ["Romanos 9:14-21", 9, "A escolha soberana de Deus"],
-  ["Romanos 10:1-11", 10, "Quem nele confia não se envergonha"],
-  ["Romanos 11:33-36", 11, "A Ele seja a glória para sempre"],
-  ["Romanos 12:1-2 / 9-21", 12, "Vença o mal com o bem"],
+const DAYS: [string, number, string, number][] = [
+  ["Romanos 1:14-17", 1, "Não me envergonho do Evangelho", 14],
+  ["Romanos 1:28-32", 1, "Desprezaram o conhecimento de Deus", 28],
+  ["Romanos 2:1-11", 2, "Em Deus não há parcialidade", 1],
+  ["Romanos 2:17-24", 2, "O nome de Deus é blasfemado...", 17],
+  ["Romanos 3:9-20", 3, "Ninguém é justo", 9],
+  ["Romanos 3:21-26", 3, "Todos pecaram", 21],
+  ["Romanos 4:1-8", 4, "Feliz quem tem pecados perdoados", 1],
+  ["Romanos 4:18-25", 4, "A promessa recebida pela fé", 18],
+  ["Romanos 5:1-11", 5, "Os frutos da paz de Deus", 1],
+  ["Romanos 5:12-21", 5, "Morte em Adão, vida em Cristo", 12],
+  ["Romanos 6:1-14", 6, "Mortos para o pecado, vivos para Deus", 1],
+  ["Romanos 6:15-23", 6, "O salário do pecado é a morte", 15],
+  ["Romanos 7:1-6", 7, "O casamento e a lei", 1],
+  ["Romanos 7:12-20", 7, "A luta contra o pecado", 12],
+  ["Romanos 8:1-17", 8, "Vida controlada pelo Espírito", 1],
+  ["Romanos 8:18-27", 8, "A glória futura", 18],
+  ["Romanos 8:28-39", 8, "Mais que vencedores", 28],
+  ["Romanos 9:14-21", 9, "A escolha soberana de Deus", 14],
+  ["Romanos 10:1-11", 10, "Quem nele confia não se envergonha", 1],
+  ["Romanos 11:33-36", 11, "A Ele seja a glória para sempre", 33],
+  ["Romanos 12:1-2 / 9-21", 12, "Vença o mal com o bem", 1],
 ];
 const KEY = "mamutes-pecado";
 
@@ -63,14 +63,14 @@ function Pecado() {
         <p className="mt-1 text-xs text-muted-foreground">{done.length} de 21 dias concluídos</p>
       </section>
       <ul className="space-y-2">
-        {DAYS.map(([ref, ch, tema], i) => {
+        {DAYS.map(([ref, ch, tema, v], i) => {
           const d = i + 1, ok = done.includes(d);
           return (
             <li key={d} className={`flex items-center gap-3 rounded-xl border bg-card p-3 ${ok ? "border-success" : "border-border"}`}>
               <button onClick={() => toggle(d)} aria-label={ok ? "Desmarcar dia" : "Marcar dia como feito"} className="shrink-0">
                 {ok ? <CheckCircle2 className="h-7 w-7 text-success" /> : <Circle className="h-7 w-7 text-muted-foreground" />}
               </button>
-              <Link to="/biblia" search={{ b: ROMANOS, c: ch }} className="flex min-w-0 flex-1 items-center gap-2">
+              <Link to="/biblia" search={{ b: ROMANOS, c: ch, v }} className="flex min-w-0 flex-1 items-center gap-2">
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs font-bold uppercase text-gold">Dia {d} · {ref}</span>
                   <span className="block text-sm font-medium uppercase text-foreground">{tema}</span>
