@@ -18,6 +18,8 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+import { useState } from "react";
+
 function Home() {
   const { done, toggle, profiles } = useStore();
   const [len] = usePlanLength();
@@ -27,6 +29,13 @@ function Home() {
   const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
+
+  // Estado para controlar visibilidade da lista de traduções
+  const [showTranslations, setShowTranslations] = useState(false);
+  // Traduções disponíveis
+  const translations = ["ACF", "ARC", "ARA", "NAA", "NVI", "NVT", "NTLH"];
+  // Estado para tradução selecionada
+  const [selectedTranslation, setSelectedTranslation] = useState("NAA");
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
@@ -38,6 +47,42 @@ function Home() {
         <Link to="/biblia" search={{ day: CURRENT_DAY, plan: len }} className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
+
+        {/* Botão para mostrar/esconder lista de traduções */}
+        <div className="mt-4">
+          <button
+            onClick={() => setShowTranslations(!showTranslations)}
+            className="rounded-md bg-secondary px-3 py-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:bg-secondary/80 transition-colors"
+            aria-expanded={showTranslations}
+            aria-controls="translation-list"
+          >
+            Escolha a passagem
+          </button>
+
+          {/* Lista de traduções, visível quando showTranslations é true */}
+          {showTranslations && (
+            <div
+              id="translation-list"
+              className="mt-2 flex flex-wrap gap-2 rounded-lg border border-border bg-card p-3"
+              style={{ maxWidth: "100%" }}
+            >
+              {translations.map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setSelectedTranslation(t)}
+                  className={`rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-widest transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary ${
+                    selectedTranslation === t
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
+                  }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <button
           onClick={() => toggle(CURRENT_DAY)}
           className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all active:scale-[0.98] ${isDone ? "animate-pop bg-success text-success-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}
