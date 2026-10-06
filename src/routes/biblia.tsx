@@ -25,16 +25,34 @@ export const Route = createFileRoute("/biblia")({
 
 const sel = "h-11 min-w-0 rounded-xl border border-border bg-card px-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 type DownloadDialogState = { version: string; status: "confirm" | "downloading" | "ready" | "error"; completed: number; message: string };
+const BIBLE_READING_KEY = "mamutes-bible-reading";
+
+function readSavedBibleReading(): { version: string; bookIdx: number; chapter: number } | null {
+  try {
+    const value = JSON.parse(localStorage.getItem(BIBLE_READING_KEY) ?? "null") as { version?: unknown; bookIdx?: unknown; chapter?: unknown } | null;
+    if (!value || typeof value.version !== "string" || !VERSIONS.some((item) => item.id === value.version)) return null;
+    if (!Number.isInteger(value.bookIdx) || Number(value.bookIdx) < 0 || Number(value.bookIdx) >= BOOKS.length) return null;
+    const bookIdx = Number(value.bookIdx);
+    if (!Number.isInteger(value.chapter) || Number(value.chapter) < 1 || Number(value.chapter) > BOOKS[bookIdx]!.ch) return null;
+    return { version: value.version, bookIdx, chapter: Number(value.chapter) };
+  } catch {
+    return null;
+  }
+}
 
 function Biblia() {
   const { day, plan, b, c, v: startVerse } = Route.useSearch();
   const today = day ? getPlan(plan ?? 180)[day - 1] : undefined;
   const start = today?.refs[0];
-  const [bookIdx, setBookIdx] = useState(b ?? (start ? BOOKS.indexOf(start.book) : 0));
-  const [chapter, setChapter] = useState(c ?? start?.chapter ?? 1);
+  const startBookIdx = start ? BOOKS.indexOf(start.book) : undefined;
+  const startChapter = start?.chapter;
+  const savedReading = readSavedBibleReading();
+  const [bookIdx, setBookIdx] = useState(b ?? startBookIdx ?? savedReading?.bookIdx ?? 0);
+  const [chapter, setChapter] = useState(c ?? startChapter ?? savedReading?.chapter ?? 1);
   const [selectedVerse, setSelectedVerse] = useState(startVerse ?? 1);
   const [shouldScrollToVerse, setShouldScrollToVerse] = useState(Boolean(startVerse));
-  const [version, setVersion] = useState("NAA");
+  const [version, setVersion] = useState(savedReading?.version ?? "NAA");
+  const [loadedVersion, setLoadedVersion] = useState(savedReading?.version ?? "NAA");
   const [verses, setVerses] = useState<Verse[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
@@ -44,6 +62,20 @@ function Biblia() {
   const book = BOOKS[bookIdx]!;
 
   useEffect(() => () => downloadController.current?.abort(), []);
+
+  useEffect(() => {
+    try { localStorage.setItem(BIBLE_READING_KEY, JSON.stringify({ version, bookIdx, chapter })); } catch { /* Keep reading if storage is unavailable. */ }
+  }, [version, bookIdx, chapter]);
+
+  useEffect(() => {
+    const referenceBook = b ?? startBookIdx;
+    const referenceChapter = c ?? startChapter;
+    if (referenceBook === undefined || referenceChapter === undefined) return;
+    setBookIdx(referenceBook);
+    setChapter(referenceChapter);
+    setSelectedVerse(startVerse ?? 1);
+    setShouldScrollToVerse(Boolean(startVerse));
+  }, [b, c, day, plan, startBookIdx, startChapter, startVerse]);
 
   const prepareOfflineBible = async (targetVersion: string, initialCount = 0) => {
     if (downloadController.current) return;
@@ -103,9 +135,30 @@ function Biblia() {
     setStatus("loading");
     setLoadError("");
     fetchChapter(bookIdx, chapter, version)
-      .then((v) => { if (alive) { setVerses(v); setStatus("ok"); } })
+      .then((v) => { if (alive) { setVerses(v); setLoadedVersion(version); setStatus("ok"); } })
       .catch((error: unknown) => {
         if (!alive) return;
+        if (error instanceof OfflineChapterUnavailableError && typeof navigator !== "undefined" && !navigator.onLine) {
+          const fallbackVersions = [...VERSIONS].sort((a, b) => Number(b.id === version) - Number(a.id === version));
+          void (async () => {
+            for (const candidate of fallbackVersions) {
+              if (candidate.id === version) continue;
+              try {
+                const cachedVerses = await fetchChapter(bookIdx, chapter, candidate.id);
+                if (!alive) return;
+                setVerses(cachedVerses);
+                setLoadedVersion(candidate.id);
+                setStatus("ok");
+                return;
+              } catch { /* Try another locally cached translation. */ }
+            }
+            if (alive) {
+              setLoadError(error.message);
+              setStatus("error");
+            }
+          })();
+          return;
+        }
         setLoadError(error instanceof OfflineChapterUnavailableError
           ? error.message
           : "Não foi possível carregar o capítulo agora. Verifique sua conexão e tente novamente.");
@@ -240,7 +293,7 @@ function Biblia() {
             <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
               <span>{verses.length} versículos</span>
               <span aria-hidden="true">•</span>
-              <span className="rounded-md border border-gold px-2 py-0.5 font-bold text-gold">{version}</span>
+              <span className="rounded-md border border-gold px-2 py-0.5 font-bold text-gold">{loadedVersion}</span>
             </p>
           )}
         </header>
