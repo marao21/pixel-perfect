@@ -11,7 +11,7 @@ export const Route = createFileRoute("/api/tts")({
         if (!text) return new Response("texto vazio", { status: 400 });
         const voice = VOICES.includes(body?.voice ?? "") ? body!.voice! : "onyx";
         const speed = Math.min(1.6, Math.max(0.6, Number(body?.speed) || 1));
-        const apiKey = process.env.LOVABLE_API_KEY;
+        const apiKey = process.env["LOVABLE_API_KEY"];
         if (!apiKey) return new Response("LOVABLE_API_KEY ausente", { status: 500 });
         const upstream = await fetch("https://ai.gateway.lovable.dev/v1/audio/speech", {
           method: "POST",
