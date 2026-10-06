@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
 import type { ReactNode } from "react";
-import logo from "@/assets/mamutes-logo.png.asset.json";
 import { useTheme, type Theme } from "@/lib/theme";
 
 const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
@@ -42,7 +41,14 @@ export function Page({ title, kicker, children }: { title: string; kicker?: stri
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center gap-3">
-        <img src={logo.url} alt="Os Mamutes" className="h-14 w-14 shrink-0 object-contain" />
+        <img
+          src="/icon-192.png"
+          alt="Os Mamutes"
+          width={56}
+          height={56}
+          decoding="async"
+          className="h-14 w-14 shrink-0 object-contain"
+        />
         <div className="min-w-0 flex-1">
         {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
         <h1 className="font-display text-3xl uppercase leading-none tracking-wide text-foreground">{title}</h1>
