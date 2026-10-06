@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Page } from "@/components/Shell";
 import { useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/ranking")({
+export const Route = createFileRoute("/oferta")({
   head: () => ({
     meta: [
       { title: "Ranking — Os Mamutes" },
