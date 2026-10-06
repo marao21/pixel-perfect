@@ -42,7 +42,7 @@ export function Page({ title, kicker, children }: { title: string; kicker?: stri
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center gap-3">
         <img
-          src="/icon-192.png"
+          src="/mamutes-logo-transparent-256.png"
           alt="Os Mamutes"
           width={56}
           height={56}
