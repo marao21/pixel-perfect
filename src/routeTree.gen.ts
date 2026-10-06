@@ -15,7 +15,6 @@ import { Route as DevocionalRouteImport } from './routes/devocional'
 import { Route as MuralRouteImport } from './routes/mural'
 import { Route as PlanoRouteImport } from './routes/plano'
 import { Route as RankingRouteImport } from './routes/ranking'
-import { Route as ApiTtsRouteImport } from './routes/api/tts'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -47,11 +46,6 @@ const RankingRoute = RankingRouteImport.update({
   path: '/ranking',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiTtsRoute = ApiTtsRouteImport.update({
-  id: '/api/tts',
-  path: '/api/tts',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,7 +54,6 @@ export interface FileRoutesByFullPath {
   '/mural': typeof MuralRoute
   '/plano': typeof PlanoRoute
   '/ranking': typeof RankingRoute
-  '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +62,6 @@ export interface FileRoutesByTo {
   '/mural': typeof MuralRoute
   '/plano': typeof PlanoRoute
   '/ranking': typeof RankingRoute
-  '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,27 +71,12 @@ export interface FileRoutesById {
   '/mural': typeof MuralRoute
   '/plano': typeof PlanoRoute
   '/ranking': typeof RankingRoute
-  '/api/tts': typeof ApiTtsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/biblia'
-    | '/devocional'
-    | '/mural'
-    | '/plano'
-    | '/ranking'
-    | '/api/tts'
+  fullPaths: '/' | '/biblia' | '/devocional' | '/mural' | '/plano' | '/ranking'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/biblia'
-    | '/devocional'
-    | '/mural'
-    | '/plano'
-    | '/ranking'
-    | '/api/tts'
+  to: '/' | '/biblia' | '/devocional' | '/mural' | '/plano' | '/ranking'
   id:
     | '__root__'
     | '/'
@@ -108,7 +85,6 @@ export interface FileRouteTypes {
     | '/mural'
     | '/plano'
     | '/ranking'
-    | '/api/tts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,7 +94,6 @@ export interface RootRouteChildren {
   MuralRoute: typeof MuralRoute
   PlanoRoute: typeof PlanoRoute
   RankingRoute: typeof RankingRoute
-  ApiTtsRoute: typeof ApiTtsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -165,13 +140,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RankingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/tts': {
-      id: '/api/tts'
-      path: '/api/tts'
-      fullPath: '/api/tts'
-      preLoaderRoute: typeof ApiTtsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -182,7 +150,6 @@ const rootRouteChildren: RootRouteChildren = {
   MuralRoute: MuralRoute,
   PlanoRoute: PlanoRoute,
   RankingRoute: RankingRoute,
-  ApiTtsRoute: ApiTtsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
