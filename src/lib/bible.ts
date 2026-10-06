@@ -1,3 +1,4 @@
+import { PLAN_180_RAW } from "./plan-data";
 export type Book = { pt: string; en: string; ch: number };
 
 export const BOOKS: Book[] = [
@@ -40,18 +41,59 @@ export async function fetchChapter(bookIndex: number, chapter: number, version: 
 }
 
 export type PlanDay = { day: number; label: string; refs: { book: Book; chapter: number }[] };
+export type PlanLength = 90 | 180 | 365;
+export const PLAN_LENGTHS: { id: PlanLength; label: string }[] = [
+  { id: 90, label: "90 dias" },
+  { id: 180, label: "180 dias" },
+  { id: 365, label: "1 ano" },
+];
 
-export const PLAN: PlanDay[] = (() => {
-  const all = BOOKS.flatMap((b) => Array.from({ length: b.ch }, (_, i) => ({ book: b, chapter: i + 1 })));
-  const days: PlanDay[] = [];
-  for (let d = 0; d < 180; d++) {
-    const refs = all.slice(Math.round((d * all.length) / 180), Math.round(((d + 1) * all.length) / 180));
-    const first = refs[0]!, last = refs[refs.length - 1]!;
-    const label =
-      first.book === last.book
-        ? `${first.book.pt} ${first.chapter}${first.chapter !== last.chapter ? `–${last.chapter}` : ""}`
-        : `${first.book.pt} ${first.chapter} – ${last.book.pt} ${last.chapter}`;
-    days.push({ day: d + 1, label, refs });
+type Ref = { book: Book; chapter: number };
+const toRefs = (s: [number, number, number][]): Ref[] =>
+  s.flatMap(([b, a, z]) => Array.from({ length: z - a + 1 }, (_, k) => ({ book: BOOKS[b]!, chapter: a + k })));
+
+function labelOf(refs: Ref[]): string {
+  const parts: string[] = [];
+  let i = 0;
+  while (i < refs.length) {
+    const b = refs[i]!.book, a = refs[i]!.chapter;
+    let z = a;
+    while (i + 1 < refs.length && refs[i + 1]!.book === b && refs[i + 1]!.chapter === z + 1) { i++; z++; }
+    parts.push(z === a ? `${b.pt} ${a}` : `${b.pt} ${a} ao ${z}`);
+    i++;
   }
-  return days;
-})();
+  return parts.join(" / ");
+}
+
+const BASE: PlanDay[] = PLAN_180_RAW.map((d, i) => ({ day: i + 1, label: d.label, refs: toRefs(d.s) }));
+
+export function getPlan(len: PlanLength): PlanDay[] {
+  if (len === 180) return BASE;
+  if (len === 90) {
+    return Array.from({ length: 90 }, (_, i) => {
+      const refs = [...BASE[i * 2]!.refs, ...BASE[i * 2 + 1]!.refs];
+      return { day: i + 1, label: labelOf(refs), refs };
+    });
+  }
+  // 1 ano: cada dia de 180 dividido ao meio (seguindo a mesma ordem), até 365 dias
+  const out: Ref[][] = [];
+  BASE.forEach((d) => {
+    if (d.refs.length < 2) { out.push(d.refs); return; }
+    const h = Math.ceil(d.refs.length / 2);
+    out.push(d.refs.slice(0, h), d.refs.slice(h));
+  });
+  while (out.length > 365) {
+    let k = 0;
+    for (let j = 1; j < out.length - 1; j++) if (out[j]!.length + out[j + 1]!.length < out[k]!.length + out[k + 1]!.length) k = j;
+    out.splice(k, 2, [...out[k]!, ...out[k + 1]!]);
+  }
+  while (out.length < 365) {
+    let k = 0;
+    out.forEach((r, j) => { if (r.length > out[k]!.length) k = j; });
+    const r = out[k]!, h = Math.ceil(r.length / 2);
+    out.splice(k, 1, r.slice(0, h), r.slice(h));
+  }
+  return out.map((refs, i) => ({ day: i + 1, label: labelOf(refs), refs }));
+}
+
+export const PLAN: PlanDay[] = BASE;
