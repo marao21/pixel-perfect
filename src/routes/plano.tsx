@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Circle, Headphones } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 import { useState } from "react";
 import { Page } from "@/components/Shell";
 import { PLAN } from "@/lib/bible";
