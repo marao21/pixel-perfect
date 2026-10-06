@@ -77,26 +77,6 @@ export async function listPreparedOfflineChapterKeys(version: string): Promise<S
   });
 }
 
-export async function removePreparedOfflineBible(version: string): Promise<boolean> {
-  const db = await openOfflineDatabase();
-  if (!db) return false;
-
-  return new Promise((resolve) => {
-    const transaction = db.transaction(CHAPTER_STORE, "readwrite");
-    const store = transaction.objectStore(CHAPTER_STORE);
-    const cursorRequest = store.index("version").openCursor(version);
-    cursorRequest.onsuccess = () => {
-      const cursor = cursorRequest.result;
-      if (!cursor) return;
-      const record = cursor.value as CachedChapter;
-      if (record.preserveOffline) cursor.delete();
-      cursor.continue();
-    };
-    transaction.oncomplete = () => { db.close(); resolve(true); };
-    transaction.onerror = transaction.onabort = () => { db.close(); resolve(false); };
-  });
-}
-
 export async function saveOfflineBibleChapter(
   key: string,
   version: string,

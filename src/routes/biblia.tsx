@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Page } from "@/components/Shell";
 import { BOOKS, downloadCompleteBibleOffline, getPlan, VERSIONS, fetchChapter, OfflineChapterUnavailableError, TOTAL_BIBLE_CHAPTERS, type Verse } from "@/lib/bible";
-import { listPreparedOfflineChapterKeys, removePreparedOfflineBible } from "@/lib/offline-db";
+import { listPreparedOfflineChapterKeys } from "@/lib/offline-db";
 
 export const Route = createFileRoute("/biblia")({
   validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365; b?: number; c?: number; v?: number } => {
@@ -40,12 +40,15 @@ function Biblia() {
   const [loadError, setLoadError] = useState("");
   const [offlinePack, setOfflinePack] = useState<OfflinePackState>({ status: "checking", completed: 0, message: "" });
   const downloadController = useRef<AbortController | null>(null);
+  const downloadingVersion = useRef<string | null>(null);
+  const checkingVersion = useRef(false);
   const book = BOOKS[bookIdx]!;
 
   useEffect(() => () => downloadController.current?.abort(), []);
 
   useEffect(() => {
     let active = true;
+    if (downloadingVersion.current === version) return;
     setOfflinePack({ status: "checking", completed: 0, message: "" });
     listPreparedOfflineChapterKeys(version).then((keys) => {
       if (!active) return;
@@ -59,18 +62,19 @@ function Biblia() {
     return () => { active = false; };
   }, [version]);
 
-  const prepareOfflineBible = async () => {
+  const prepareOfflineBible = async (targetVersion: string, initialCount = 0) => {
     if (downloadController.current) return;
     const controller = new AbortController();
     downloadController.current = controller;
-    setOfflinePack((current) => ({ ...current, status: "downloading", message: "" }));
+    downloadingVersion.current = targetVersion;
+    setOfflinePack({ status: "downloading", completed: initialCount, message: "" });
     try {
       try {
         if (navigator.storage?.persist) await navigator.storage.persist();
       } catch {
         // Continue even if this browser does not grant persistent storage.
       }
-      await downloadCompleteBibleOffline(version, (progress) => {
+      await downloadCompleteBibleOffline(targetVersion, (progress) => {
         setOfflinePack({ status: "downloading", completed: progress.completed, message: "" });
       }, controller.signal);
       setOfflinePack({ status: "ready", completed: TOTAL_BIBLE_CHAPTERS, message: "Esta tradução está pronta para uso offline neste aparelho." });
@@ -82,7 +86,8 @@ function Biblia() {
       }));
     } finally {
       downloadController.current = null;
-      listPreparedOfflineChapterKeys(version).then((keys) => {
+      downloadingVersion.current = null;
+      listPreparedOfflineChapterKeys(targetVersion).then((keys) => {
         setOfflinePack((current) => current.status === "downloading"
           ? { ...current, completed: Math.min(keys.size, TOTAL_BIBLE_CHAPTERS) }
           : current);
@@ -90,12 +95,29 @@ function Biblia() {
     }
   };
 
-  const clearOfflineBible = async () => {
-    const label = VERSIONS.find((item) => item.id === version)?.label ?? version;
-    if (!window.confirm(`Apagar do aparelho a cópia offline da tradução ${label}?`)) return;
-    const removed = await removePreparedOfflineBible(version);
-    if (removed) setOfflinePack({ status: "idle", completed: 0, message: "Cópia offline removida deste aparelho." });
-    else setOfflinePack((current) => ({ ...current, status: "error", message: "Não foi possível apagar a cópia offline agora." }));
+  const selectTranslation = async (nextVersion: string) => {
+    if (checkingVersion.current || downloadController.current) return;
+    checkingVersion.current = true;
+    const label = VERSIONS.find((item) => item.id === nextVersion)?.label ?? nextVersion;
+    try {
+      const prepared = await listPreparedOfflineChapterKeys(nextVersion);
+      const completed = Math.min(prepared.size, TOTAL_BIBLE_CHAPTERS);
+      setVersion(nextVersion);
+      setOfflinePack({
+        status: completed === TOTAL_BIBLE_CHAPTERS ? "ready" : "idle",
+        completed,
+        message: "",
+      });
+
+      if (completed === TOTAL_BIBLE_CHAPTERS) return;
+      const missing = TOTAL_BIBLE_CHAPTERS - completed;
+      const question = completed
+        ? `A tradução ${label} está parcialmente salva (${completed} de ${TOTAL_BIBLE_CHAPTERS} capítulos). Quer baixar os ${missing} capítulos que faltam para usá-la sem internet?`
+        : `A tradução ${label} ainda não foi baixada. Quer baixar os ${TOTAL_BIBLE_CHAPTERS} capítulos para usá-la sem internet?`;
+      if (window.confirm(question)) await prepareOfflineBible(nextVersion, completed);
+    } finally {
+      checkingVersion.current = false;
+    }
   };
 
   useEffect(() => {
@@ -194,7 +216,7 @@ function Biblia() {
         <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Tradução da Bíblia</p>
         <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
           {VERSIONS.map((v) => (
-            <button key={v.id} disabled={offlinePack.status === "downloading"} aria-pressed={version === v.id} onClick={() => setVersion(v.id)} className={`rounded-lg border px-1 py-2 text-xs font-bold tracking-wide transition-colors disabled:opacity-60 ${version === v.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-transparent bg-card/70 text-muted-foreground hover:border-border hover:text-foreground"}`}>{v.label}</button>
+            <button key={v.id} disabled={offlinePack.status === "downloading"} aria-pressed={version === v.id} onClick={() => void selectTranslation(v.id)} className={`rounded-lg border px-1 py-2 text-xs font-bold tracking-wide transition-colors disabled:opacity-60 ${version === v.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-transparent bg-card/70 text-muted-foreground hover:border-border hover:text-foreground"}`}>{v.label}</button>
           ))}
         </div>
       </section>
@@ -226,9 +248,6 @@ function Biblia() {
             <button onClick={() => void prepareOfflineBible()} className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground">
               {offlinePack.completed ? "Continuar baixando" : "Baixar Bíblia para usar offline"}
             </button>
-          )}
-          {offlinePack.completed > 0 && offlinePack.status !== "downloading" && offlinePack.status !== "checking" && (
-            <button onClick={() => void clearOfflineBible()} className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground">Apagar cópia offline</button>
           )}
         </div>
         {offlinePack.message && <p role="status" className="mt-2 text-xs text-muted-foreground">{offlinePack.message}</p>}
