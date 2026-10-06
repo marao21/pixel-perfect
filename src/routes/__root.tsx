@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Os Mamutes — Desafio Bíblico 180 Dias" },
+      { title: "Os Mamutes" },
       { name: "description", content: "Desafio bíblico de 180 dias dos homens da Igreja Batista Belém." },
       { name: "theme-color", content: "#0f130f" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
