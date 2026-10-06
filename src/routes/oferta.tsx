@@ -4,10 +4,11 @@ import { Check, Copy, Heart } from "lucide-react";
 import { Page } from "@/components/Shell";
 
 const pixOptions = [
-  { amount: 5, code: "PIX-DEMO-OFERTA-05" },
-  { amount: 10, code: "PIX-DEMO-OFERTA-10" },
-  { amount: 20, code: "PIX-DEMO-OFERTA-20" },
-  { amount: 50, code: "PIX-DEMO-OFERTA-50" },
+  { label: "R$ 5,00", code: "PIX-DEMO-OFERTA-05" },
+  { label: "R$ 10,00", code: "PIX-DEMO-OFERTA-10" },
+  { label: "R$ 20,00", code: "PIX-DEMO-OFERTA-20" },
+  { label: "R$ 50,00", code: "PIX-DEMO-OFERTA-50" },
+  { label: "Oferta livre", code: "PIX-DEMO-OFERTA-LIVRE" },
 ];
 
 export const Route = createFileRoute("/oferta")({
@@ -49,12 +50,12 @@ function Oferta() {
         </div>
         <div className="px-5 py-6">
           <div className="grid gap-3 sm:grid-cols-2">
-            {pixOptions.map(({ amount, code }) => {
+            {pixOptions.map(({ label, code }) => {
               const isCopied = copiedCode === code;
 
               return (
-                <div key={amount} className="rounded-xl border border-border bg-background p-4">
-                  <p className="font-display text-2xl text-foreground">R$ {amount},00</p>
+                <div key={label} className="rounded-xl border border-border bg-background p-4">
+                  <p className="font-display text-2xl text-foreground">{label}</p>
                   <p className="mt-2 break-all rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
                     {code}
                   </p>
@@ -62,7 +63,7 @@ function Oferta() {
                     type="button"
                     onClick={() => void copyCode(code)}
                     className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
-                    aria-label={`${isCopied ? "Código copiado" : "Copiar código Pix fictício"} de R$ ${amount},00`}
+                    aria-label={`${isCopied ? "Código copiado" : "Copiar código Pix fictício"} para ${label}`}
                   >
                     {isCopied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
                     {isCopied ? "Copiado" : "Copiar código Pix"}
