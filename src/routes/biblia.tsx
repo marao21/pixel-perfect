@@ -6,7 +6,7 @@ import { Speaker } from "@/components/Speaker";
 import { BOOKS, PLAN, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
-  validateSearch: (s: Record<string, unknown>): { day?: number } => ({ day: s.day ? Number(s.day) : undefined }),
+  validateSearch: (s: Record<string, unknown>): { day?: number } => (s.day ? { day: Number(s.day) } : {}),
   head: () => ({
     meta: [
       { title: "Bíblia com Leitura em Voz Alta — Os Mamutes" },
@@ -28,7 +28,7 @@ function Biblia() {
   const [version, setVersion] = useState("almeida");
   const [verses, setVerses] = useState<Verse[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
-  const book = BOOKS[bookIdx];
+  const book = BOOKS[bookIdx]!;
   const lang = VERSIONS.find((v) => v.id === version)!.lang;
 
   useEffect(() => {
@@ -42,13 +42,13 @@ function Biblia() {
 
   const go = (delta: number) => {
     let b = bookIdx, c = chapter + delta;
-    if (c < 1) { b = Math.max(0, b - 1); c = b === bookIdx ? 1 : BOOKS[b].ch; }
-    if (c > BOOKS[b].ch) { if (b < BOOKS.length - 1) { b++; c = 1; } else c = BOOKS[b].ch; }
+    if (c < 1) { b = Math.max(0, b - 1); c = b === bookIdx ? 1 : BOOKS[b]!.ch; }
+    if (c > BOOKS[b]!.ch) { if (b < BOOKS.length - 1) { b++; c = 1; } else c = BOOKS[b]!.ch; }
     setBookIdx(b); setChapter(c); window.scrollTo({ top: 0 });
   };
 
   return (
-    <Page kicker={day ? `Leitura do dia ${day}: ${PLAN[day - 1].label}` : "Palavra de Deus"} title="Bíblia">
+    <Page kicker={day ? `Leitura do dia ${day}: ${PLAN[day - 1]!.label}` : "Palavra de Deus"} title="Bíblia">
       <div className="mb-3 grid grid-cols-[minmax(0,1fr)_5rem] gap-2">
         <select className={sel} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); }}>
           {BOOKS.map((b, i) => <option key={b.en} value={i}>{b.pt}</option>)}

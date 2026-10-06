@@ -42,7 +42,7 @@ export const PLAN: PlanDay[] = (() => {
   const days: PlanDay[] = [];
   for (let d = 0; d < 180; d++) {
     const refs = all.slice(Math.round((d * all.length) / 180), Math.round(((d + 1) * all.length) / 180));
-    const first = refs[0], last = refs[refs.length - 1];
+    const first = refs[0]!, last = refs[refs.length - 1]!;
     const label =
       first.book === last.book
         ? `${first.book.pt} ${first.chapter}${first.chapter !== last.chapter ? `–${last.chapter}` : ""}`

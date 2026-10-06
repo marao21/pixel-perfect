@@ -17,7 +17,7 @@ export const Route = createFileRoute("/devocional")({
 });
 
 function Devocional() {
-  const [day, setDay] = useState(DEVOTIONALS[0].day);
+  const [day, setDay] = useState(DEVOTIONALS[0]!.day);
   const d = DEVOTIONALS.find((x) => x.day === day)!;
   return (
     <Page kicker="Palavra diária" title="Devocional">

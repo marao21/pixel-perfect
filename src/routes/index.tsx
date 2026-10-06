@@ -18,11 +18,11 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { done, toggle, profiles } = useStore();
-  const today = PLAN[CURRENT_DAY - 1];
+  const today = PLAN[CURRENT_DAY - 1]!;
   const isDone = done.has(CURRENT_DAY);
   const pct = Math.round((done.size / 180) * 100);
   const me = profiles.find((p) => p.id === "me");
-  const dev = DEVOTIONALS[0];
+  const dev = DEVOTIONALS[0]!;
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>

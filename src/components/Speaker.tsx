@@ -21,7 +21,7 @@ export function Speaker({ text, lang }: { text: string; lang: string }) {
 
   const sorted = [...voices].sort((a, b) => Number(b.lang.startsWith(lang)) - Number(a.lang.startsWith(lang)));
   useEffect(() => {
-    if (!voiceName && sorted.length) setVoiceName(sorted[0].name);
+    if (!voiceName && sorted.length) setVoiceName(sorted[0]!.name);
   }, [sorted.length]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { window.speechSynthesis?.cancel(); setState("idle"); }, [text]);
 
