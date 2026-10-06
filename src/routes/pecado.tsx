@@ -18,8 +18,8 @@ export const Route = createFileRoute("/pecado")({
 });
 
 const ROMANOS = 44;
-const DAYS: [string, number, string][] = [
-  ["Romanos 1:14-17", 1, "Não me envergonho do Evangelho"],
+const DAYS: [string, number, string, number][] = [
+  ["Romanos 1:14-17", 1, "Não me envergonho do Evangelho", 14],
   ["Romanos 1:28-32", 1, "Desprezaram o conhecimento de Deus"],
   ["Romanos 2:1-11", 2, "Em Deus não há parcialidade"],
   ["Romanos 2:17-24", 2, "O nome de Deus é blasfemado..."],
