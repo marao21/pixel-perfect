@@ -54,7 +54,6 @@ function Biblia() {
   const [version, setVersion] = useState(savedReading?.version ?? "NAA");
   const [loadedVersion, setLoadedVersion] = useState(savedReading?.version ?? "NAA");
   const [verses, setVerses] = useState<Verse[]>([]);
-  const [openTransVerse, setOpenTransVerse] = useState<number | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
   const [downloadDialog, setDownloadDialog] = useState<DownloadDialogState | null>(null);
@@ -311,75 +310,12 @@ function Biblia() {
         {status === "error" && <p role="status" className="p-4 text-sm text-muted-foreground">{loadError}</p>}
         {status === "ok" && (
           <div className="px-4 py-3 sm:px-5">
-            {verses.map((v) => {
-              const showTransList = openTransVerse === v.verse;
-              const setShowTransList = (open: boolean) => setOpenTransVerse(open ? v.verse : null);
-              const translations = VERSIONS.map(ver => ver.id);
-              return (
-                <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)_auto] gap-2 border-b border-border/50 py-3 last:border-b-0 ${selectedVerse === v.verse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
-                  <span className="pt-1 text-sm font-bold leading-none text-primary">{v.verse}</span>
-                  <span className="font-serif-read text-xl leading-8 text-foreground">{v.text}</span>
-                  <div className="relative">
-                    <button
-                      aria-haspopup="listbox"
-                      aria-expanded={showTransList}
-                      aria-label={`Selecionar tradução para versículo ${v.verse}`}
-                      onClick={() => setShowTransList(!showTransList)}
-                      className="ml-2 rounded px-2 py-1 text-xs font-semibold uppercase tracking-widest bg-secondary text-muted-foreground hover:bg-secondary/80 transition-colors"
-                      type="button"
-                    >
-                      {version}
-                    </button>
-                    {showTransList && (
-                      <ul
-                        role="listbox"
-                        tabIndex={-1}
-                        className="absolute right-0 z-10 mt-1 max-h-40 w-24 overflow-auto rounded border border-border bg-card p-1 shadow-lg"
-                        onBlur={(e) => {
-                          // Fecha lista se foco sair do container
-                          if (!e.currentTarget.contains(e.relatedTarget)) {
-                            setShowTransList(false);
-                          }
-                        }}
-                      >
-                        {translations.map((t) => (
-                          <li
-                            key={t}
-                            role="option"
-                            aria-selected={version === t}
-                            tabIndex={0}
-                            onClick={() => {
-                              setVersion(t);
-                              setLoadedVersion(t);
-                              setShowTransList(false);
-                              setStatus("loading");
-                              fetchChapter(bookIdx, chapter, t)
-                                .then((data) => {
-                                  setVerses(data);
-                                  setStatus("ok");
-                                })
-                                .catch((err) => {
-                                  setLoadError(String(err));
-                                  setStatus("error");
-                                });
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                e.currentTarget.click();
-                              }
-                            }}
-                            className={`cursor-pointer rounded px-2 py-1 text-xs font-semibold uppercase tracking-widest transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary ${version === t ? "bg-primary text-primary-foreground" : "hover:bg-muted/80 text-muted-foreground"}`}
-                          >
-                            {t}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                </p>
-              );
-            })}
+            {verses.map((v) => (
+              <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0 ${selectedVerse === v.verse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
+                <span className="pt-1 text-sm font-bold leading-none text-primary">{v.verse}</span>
+                <span className="font-serif-read text-xl leading-8 text-foreground">{v.text}</span>
+              </p>
+            ))}
           </div>
         )}
       </article>
