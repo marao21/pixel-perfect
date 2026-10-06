@@ -98,6 +98,8 @@
   --gold: oklch(0.65 0.13 80);
   --success: oklch(0.6 0.14 150);
   --success-foreground: oklch(0.99 0 0);
+  --blue: oklch(0.58 0.22 250);
+  --blue-foreground: oklch(0.99 0 0);
 }
 
 .sepia {
@@ -123,6 +125,8 @@
   --gold: oklch(0.5 0.13 70);
   --success: oklch(0.45 0.11 145);
   --success-foreground: oklch(0.97 0.02 90);
+  --blue: oklch(0.5 0.18 250);
+  --blue-foreground: oklch(0.97 0.02 90);
 }
 
 .dark {
@@ -148,10 +152,14 @@
   --gold: oklch(0.8 0.12 85);
   --success: oklch(0.7 0.16 150);
   --success-foreground: oklch(0.14 0.01 150);
+  --blue: oklch(0.65 0.2 250);
+  --blue-foreground: oklch(0.14 0.01 150);
 }
 
 @theme inline {
   --color-gold: var(--gold);
+  --color-blue: var(--blue);
+  --color-blue-foreground: var(--blue-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --font-display: "Bebas Neue", sans-serif;
