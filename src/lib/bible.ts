@@ -1,4 +1,5 @@
 import { PLAN_180_RAW } from "./plan-data";
+import { getOfflineBibleChapter, saveOfflineBibleChapter } from "./offline-db";
 export type Book = { pt: string; en: string; ch: number };
 
 export const BOOKS: Book[] = [
@@ -30,14 +31,44 @@ export const VERSIONS = [
 
 export type Verse = { verse: number; text: string };
 
+export class OfflineChapterUnavailableError extends Error {
+  constructor() {
+    super("Este capítulo ainda não foi salvo neste aparelho. Conecte-se à internet para carregá-lo uma vez.");
+    this.name = "OfflineChapterUnavailableError";
+  }
+}
+
 const clean = (t: string) =>
   t.replace(/<sup>.*?<\/sup>/g, "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 
 export async function fetchChapter(bookIndex: number, chapter: number, version: string): Promise<Verse[]> {
-  const r = await fetch(`https://bolls.life/get-text/${version}/${bookIndex + 1}/${chapter}/`);
-  if (!r.ok) throw new Error("Não foi possível carregar o capítulo");
-  const j: { verse: number; text: string }[] = await r.json();
-  return j.map((v) => ({ verse: v.verse, text: clean(v.text) }));
+  const cacheKey = `${version}:${bookIndex + 1}:${chapter}`;
+  const cached = await getOfflineBibleChapter(cacheKey);
+  const online = typeof navigator === "undefined" || navigator.onLine;
+
+  if (!online) {
+    if (cached) return cached;
+    throw new OfflineChapterUnavailableError();
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    let response: Response;
+    try {
+      response = await fetch(`https://bolls.life/get-text/${version}/${bookIndex + 1}/${chapter}/`, { signal: controller.signal });
+    } finally {
+      clearTimeout(timeout);
+    }
+    if (!response.ok) throw new Error("Não foi possível carregar o capítulo");
+    const data: { verse: number; text: string }[] = await response.json();
+    const verses = data.map((v) => ({ verse: v.verse, text: clean(v.text) }));
+    await saveOfflineBibleChapter(cacheKey, verses);
+    return verses;
+  } catch {
+    if (cached) return cached;
+    throw new OfflineChapterUnavailableError();
+  }
 }
 
 export type PlanDay = { day: number; label: string; refs: { book: Book; chapter: number }[] };

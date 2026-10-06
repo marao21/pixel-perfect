@@ -1,6 +1,8 @@
 {
   "name": "Os Mamutes",
   "short_name": "Os Mamutes",
+  "id": "/",
+  "description": "Desafio bíblico dos homens da Igreja Batista Belém.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

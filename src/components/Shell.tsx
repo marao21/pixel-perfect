@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 
 const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
@@ -25,6 +25,30 @@ function ThemeSwitcher() {
         </button>
       ))}
     </div>
+  );
+}
+
+function NetworkStatus() {
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+
+  const label = online
+    ? "Rede do aparelho conectada; a internet ou a API ainda podem estar indisponíveis"
+    : "Sem rede — o app usa as páginas e os capítulos salvos neste aparelho";
+  return (
+    <span role="status" aria-label={label} title={label} className="grid h-6 w-3 shrink-0 place-items-center">
+      <span aria-hidden="true" className={`h-2.5 w-2.5 rounded-full ring-2 ${online ? "bg-primary ring-primary/20" : "bg-gold ring-gold/20"}`} />
+    </span>
   );
 }
 
@@ -53,7 +77,10 @@ export function Page({ children }: { title: string; kicker?: string; children: R
           <p className="font-display text-xl uppercase leading-none tracking-wide text-foreground">Os Mamutes</p>
           <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">Desafio Bíblico</p>
         </div>
-        <ThemeSwitcher />
+        <div className="flex shrink-0 items-center gap-1">
+          <NetworkStatus />
+          <ThemeSwitcher />
+        </div>
       </header>
       {children}
     </main>

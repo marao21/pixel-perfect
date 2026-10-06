@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 // Mock state shaped like the future Supabase tables:
 // profiles, reading_plan, user_progress, devotionals.
@@ -9,6 +9,7 @@ export const CURRENT_DAY = 23;
 export const ME = { id: "me", name: "Andrea" };
 
 const initialDone = new Set(Array.from({ length: 20 }, (_, i) => i + 1));
+const PROGRESS_KEY = "mamutes-reading-progress";
 
 const PROFILES: Profile[] = [
   { id: "1", name: "Pr. Marcos", done: 23, streak: 23 },
@@ -49,6 +50,31 @@ const C = createContext<Ctx | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [done, setDone] = useState<Set<number>>(initialDone);
+  const [progressRestored, setProgressRestored] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(PROGRESS_KEY);
+      if (saved) {
+        const days: unknown = JSON.parse(saved);
+        if (Array.isArray(days) && days.every((day) => Number.isInteger(day) && day >= 1 && day <= 365)) {
+          setDone(new Set(days));
+        }
+      }
+    } catch {
+      // Keep the bundled starting progress if local storage is unavailable.
+    }
+    setProgressRestored(true);
+  }, []);
+
+  useEffect(() => {
+    if (!progressRestored) return;
+    try {
+      localStorage.setItem(PROGRESS_KEY, JSON.stringify([...done]));
+    } catch {
+      // The app remains usable if the browser denies local storage.
+    }
+  }, [done, progressRestored]);
 
   const toggle = (d: number) => setDone((s) => { const n = new Set(s); n.has(d) ? n.delete(d) : n.add(d); return n; });
 

@@ -125,6 +125,13 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
+  useEffect(() => {
+    if (import.meta.env.DEV || !("serviceWorker" in navigator) || window.location.protocol !== "https:") return;
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
+      // App routes remain usable online even if the browser blocks PWA registration.
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

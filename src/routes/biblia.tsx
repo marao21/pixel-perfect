@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Page } from "@/components/Shell";
-import { BOOKS, getPlan, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
+import { BOOKS, getPlan, VERSIONS, fetchChapter, OfflineChapterUnavailableError, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
   validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365; b?: number; c?: number; v?: number } => {
@@ -31,30 +31,40 @@ function Biblia() {
   const [bookIdx, setBookIdx] = useState(b ?? (start ? BOOKS.indexOf(start.book) : 0));
   const [chapter, setChapter] = useState(c ?? start?.chapter ?? 1);
   const [selectedVerse, setSelectedVerse] = useState(startVerse ?? 1);
+  const [shouldScrollToVerse, setShouldScrollToVerse] = useState(Boolean(startVerse));
   const [version, setVersion] = useState("NAA");
   const [verses, setVerses] = useState<Verse[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
+  const [loadError, setLoadError] = useState("");
   const book = BOOKS[bookIdx]!;
 
   useEffect(() => {
     let alive = true;
     setStatus("loading");
+    setLoadError("");
     fetchChapter(bookIdx, chapter, version)
       .then((v) => { if (alive) { setVerses(v); setStatus("ok"); } })
-      .catch(() => alive && setStatus("error"));
+      .catch((error: unknown) => {
+        if (!alive) return;
+        setLoadError(error instanceof OfflineChapterUnavailableError
+          ? error.message
+          : "Não foi possível carregar o capítulo agora. Verifique sua conexão e tente novamente.");
+        setStatus("error");
+      });
     return () => { alive = false; };
   }, [bookIdx, chapter, version]);
 
   useEffect(() => {
-    if (status !== "ok") return;
+    if (status !== "ok" || !shouldScrollToVerse) return;
     const el = document.getElementById(`vers-${selectedVerse}`);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [status, selectedVerse, bookIdx, chapter]);
+    setShouldScrollToVerse(false);
+  }, [status, selectedVerse, bookIdx, chapter, shouldScrollToVerse]);
 
   const navigate = Route.useNavigate();
   const fullPlan = getPlan(plan ?? 180);
   const pos = today ? today.refs.findIndex((r) => BOOKS.indexOf(r.book) === bookIdx && r.chapter === chapter) : -1;
-  const goTo = (bi: number, c: number) => { setBookIdx(bi); setChapter(c); setSelectedVerse(1); window.scrollTo({ top: 0 }); };
+  const goTo = (bi: number, c: number) => { setBookIdx(bi); setChapter(c); setSelectedVerse(1); setShouldScrollToVerse(false); window.scrollTo({ top: 0 }); };
   const next = () => {
     if (!today || pos < 0) return go(1);
     const r = today.refs[pos + 1];
@@ -87,7 +97,7 @@ function Biblia() {
             {today.refs.map((r) => {
               const bi = BOOKS.indexOf(r.book), on = bi === bookIdx && r.chapter === chapter;
               return (
-                <button key={`${bi}-${r.chapter}`} onClick={() => { setBookIdx(bi); setChapter(r.chapter); setSelectedVerse(1); }} className={`rounded-lg border px-2.5 py-1 text-xs font-bold ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-secondary text-foreground"}`}>
+                <button key={`${bi}-${r.chapter}`} onClick={() => { setBookIdx(bi); setChapter(r.chapter); setSelectedVerse(1); setShouldScrollToVerse(false); }} className={`rounded-lg border px-2.5 py-1 text-xs font-bold ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-secondary text-foreground"}`}>
                   {r.book.pt} {r.chapter}
                 </button>
               );
@@ -100,19 +110,19 @@ function Biblia() {
         <div className="grid grid-cols-[minmax(0,1fr)_4.25rem_4.25rem] gap-2">
           <label className="min-w-0">
             <span className="mb-1 block text-[10px] text-muted-foreground">Livro</span>
-            <select aria-label="Livro" className={`${sel} w-full`} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); setSelectedVerse(1); }}>
+            <select aria-label="Livro" className={`${sel} w-full`} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); setSelectedVerse(1); setShouldScrollToVerse(false); }}>
               {BOOKS.map((b, i) => <option key={b.en} value={i}>{b.pt}</option>)}
             </select>
           </label>
           <label>
             <span className="mb-1 block text-[10px] text-muted-foreground">Capítulo</span>
-            <select aria-label="Capítulo" className={`${sel} w-full`} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)); setSelectedVerse(1); }}>
+            <select aria-label="Capítulo" className={`${sel} w-full`} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)); setSelectedVerse(1); setShouldScrollToVerse(false); }}>
               {Array.from({ length: book.ch }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
             </select>
           </label>
           <label>
             <span className="mb-1 block text-[10px] text-muted-foreground">Versículo</span>
-            <select aria-label="Versículo" className={`${sel} w-full`} value={selectedVerse} onChange={(e) => setSelectedVerse(Number(e.target.value))}>
+            <select aria-label="Versículo" className={`${sel} w-full`} value={selectedVerse} onChange={(e) => { setSelectedVerse(Number(e.target.value)); setShouldScrollToVerse(true); }}>
               {verses.length
                 ? verses.map((v) => <option key={v.verse} value={v.verse}>{v.verse}</option>)
                 : <option value={1}>1</option>}
@@ -140,7 +150,7 @@ function Biblia() {
           )}
         </header>
         {status === "loading" && <p className="text-muted-foreground">Carregando…</p>}
-        {status === "error" && <p className="text-destructive">Não foi possível carregar este capítulo. Verifique sua conexão.</p>}
+        {status === "error" && <p role="status" className="p-4 text-sm text-muted-foreground">{loadError}</p>}
         {status === "ok" && (
           <div className="px-4 py-3 sm:px-5">
             {verses.map((v) => (
