@@ -98,7 +98,7 @@ export function BottomNav() {
               activeOptions={{ exact: to === "/" }}
               aria-label={label}
               title={label}
-              className="flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-0 py-2 text-[11px] leading-none font-medium text-muted-foreground transition-colors"
+              className="flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-0 py-2 text-xs leading-none font-medium text-muted-foreground transition-colors"
               activeProps={{ className: "text-primary" }}
             >
               <Icon className="h-5 w-5 shrink-0" />

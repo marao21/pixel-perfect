@@ -187,12 +187,12 @@
 
 @layer utilities {
   .text-xs {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: clamp(0.9375rem, 3.9vw, 1rem);
+    line-height: 1.4;
   }
 
   .text-sm {
-    font-size: 1rem;
+    font-size: clamp(1rem, 4.1vw, 1.0625rem);
     line-height: 1.5rem;
   }
 }
