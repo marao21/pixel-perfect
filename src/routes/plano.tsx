@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Circle, Headphones } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 import { useState } from "react";
 import { Page } from "@/components/Shell";
 import { PLAN } from "@/lib/bible";
@@ -36,15 +36,16 @@ function Plano() {
           const ok = done.has(d.day);
           return (
             <li key={d.day} className={`flex items-center gap-3 rounded-xl border bg-card p-3 ${d.day === CURRENT_DAY ? "border-gold" : "border-border"}`}>
-              <button onClick={() => toggle(d.day)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+              <Link to="/biblia" search={{ day: d.day }} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary font-display text-lg text-foreground">{d.day}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium text-foreground">{d.label}</span>
                   <span className="text-xs text-muted-foreground">{d.day === CURRENT_DAY ? "Hoje" : `${d.refs.length} capítulos`}</span>
                 </span>
-                {ok ? <CheckCircle2 className="h-6 w-6 shrink-0 text-success" /> : <Circle className="h-6 w-6 shrink-0 text-muted-foreground" />}
+              </Link>
+              <button onClick={() => toggle(d.day)} aria-label={ok ? "Desmarcar" : "Marcar como lido"} className="shrink-0 rounded-lg p-1">
+                {ok ? <CheckCircle2 className="h-6 w-6 text-success" /> : <Circle className="h-6 w-6 text-muted-foreground" />}
               </button>
-              <Link to="/biblia" search={{ day: d.day }} aria-label="Ler" className="shrink-0 rounded-lg p-2 text-muted-foreground hover:text-primary"><Headphones className="h-5 w-5" /></Link>
             </li>
           );
         })}

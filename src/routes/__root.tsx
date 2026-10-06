@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 
 import { BottomNav } from "../components/Shell";
 import { StoreProvider } from "../lib/store";
+import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -127,10 +128,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <StoreProvider>
-        <Outlet />
-        <BottomNav />
-      </StoreProvider>
+      <ThemeProvider>
+        <StoreProvider>
+          <Outlet />
+          <BottomNav />
+        </StoreProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

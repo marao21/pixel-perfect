@@ -1,7 +1,33 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, Trophy, MessagesSquare, BookOpen, BookMarked } from "lucide-react";
+import { Home, CalendarDays, Trophy, MessagesSquare, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/mamutes-logo.png.asset.json";
+import { useTheme, type Theme } from "@/lib/theme";
+
+const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
+  { id: "claro", label: "Claro", icon: Sun },
+  { id: "escuro", label: "Escuro", icon: Moon },
+  { id: "sepia", label: "Sépia", icon: Coffee },
+];
+
+function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <div className="flex shrink-0 gap-1 rounded-full border border-border bg-card p-1">
+      {THEMES.map(({ id, label, icon: Icon }) => (
+        <button
+          key={id}
+          onClick={() => setTheme(id)}
+          aria-label={label}
+          title={label}
+          className={`rounded-full p-1.5 transition-colors ${theme === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          <Icon className="h-4 w-4" />
+        </button>
+      ))}
+    </div>
+  );
+}
 
 const TABS = [
   { to: "/", label: "Home", icon: Home },
@@ -17,10 +43,11 @@ export function Page({ title, kicker, children }: { title: string; kicker?: stri
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-6">
       <header className="mb-5 flex items-center gap-3">
         <img src={logo.url} alt="Os Mamutes" className="h-14 w-14 shrink-0 object-contain" />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
         {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
         <h1 className="font-display text-3xl uppercase leading-none tracking-wide text-foreground">{title}</h1>
         </div>
+        <ThemeSwitcher />
       </header>
       {children}
     </main>
