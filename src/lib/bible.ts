@@ -1,5 +1,5 @@
 import { PLAN_180_RAW } from "./plan-data";
-import { getOfflineBibleChapter, saveOfflineBibleChapter } from "./offline-db";
+import { getOfflineBibleChapter, listPreparedOfflineChapterKeys, saveOfflineBibleChapter } from "./offline-db";
 export type Book = { pt: string; en: string; ch: number };
 
 export const BOOKS: Book[] = [
@@ -31,6 +31,11 @@ export const VERSIONS = [
 
 export type Verse = { verse: number; text: string };
 
+export const TOTAL_BIBLE_CHAPTERS = BOOKS.reduce((sum, book) => sum + book.ch, 0);
+
+export type BibleDownloadProgress = { completed: number; total: number };
+export type FetchChapterOptions = { signal?: AbortSignal; preserveOffline?: boolean };
+
 export class OfflineChapterUnavailableError extends Error {
   constructor() {
     super("Este capítulo ainda não foi salvo neste aparelho. Conecte-se à internet para carregá-lo uma vez.");
@@ -41,9 +46,14 @@ export class OfflineChapterUnavailableError extends Error {
 const clean = (t: string) =>
   t.replace(/<sup>.*?<\/sup>/g, "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 
-export async function fetchChapter(bookIndex: number, chapter: number, version: string): Promise<Verse[]> {
+export async function fetchChapter(
+  bookIndex: number,
+  chapter: number,
+  version: string,
+  options: FetchChapterOptions = {},
+): Promise<Verse[]> {
   const cacheKey = `${version}:${bookIndex + 1}:${chapter}`;
-  const cached = await getOfflineBibleChapter(cacheKey);
+  const cached = options.preserveOffline ? null : await getOfflineBibleChapter(cacheKey);
   const online = typeof navigator === "undefined" || navigator.onLine;
 
   if (!online) {
@@ -53,22 +63,101 @@ export async function fetchChapter(bookIndex: number, chapter: number, version: 
 
   try {
     const controller = new AbortController();
+    const abortRequest = () => controller.abort();
+    if (options.signal?.aborted) controller.abort();
+    options.signal?.addEventListener("abort", abortRequest, { once: true });
     const timeout = setTimeout(() => controller.abort(), 10_000);
     let response: Response;
     try {
       response = await fetch(`https://bolls.life/get-text/${version}/${bookIndex + 1}/${chapter}/`, { signal: controller.signal });
     } finally {
       clearTimeout(timeout);
+      options.signal?.removeEventListener("abort", abortRequest);
     }
     if (!response.ok) throw new Error("Não foi possível carregar o capítulo");
     const data: { verse: number; text: string }[] = await response.json();
+    if (!Array.isArray(data) || data.length === 0) throw new Error("A API não retornou versículos para este capítulo.");
     const verses = data.map((v) => ({ verse: v.verse, text: clean(v.text) }));
-    await saveOfflineBibleChapter(cacheKey, verses);
+    const saved = await saveOfflineBibleChapter(cacheKey, version, verses, options.preserveOffline ?? false);
+    if (options.preserveOffline && !saved) throw new Error("O armazenamento deste aparelho não permitiu salvar o capítulo.");
     return verses;
-  } catch {
-    if (cached) return cached;
-    throw new OfflineChapterUnavailableError();
+  } catch (error) {
+    if (cached && !options.preserveOffline) return cached;
+    if (options.signal?.aborted) throw new Error("Download cancelado.");
+    if (typeof navigator !== "undefined" && !navigator.onLine) throw new OfflineChapterUnavailableError();
+    if (options.preserveOffline) {
+      throw new Error(`Não foi possível baixar e salvar ${BOOKS[bookIndex]!.pt} ${chapter}. Verifique a conexão e o espaço disponível no aparelho.`);
+    }
+    if (error instanceof Error) throw error;
+    throw new Error("Não foi possível carregar o capítulo.");
   }
+}
+
+export async function downloadCompleteBibleOffline(
+  version: string,
+  onProgress: (progress: BibleDownloadProgress) => void,
+  signal: AbortSignal,
+): Promise<void> {
+  if (typeof navigator !== "undefined" && !navigator.onLine) throw new OfflineChapterUnavailableError();
+
+  const prepared = await listPreparedOfflineChapterKeys(version);
+  const chapters = BOOKS.flatMap((book, bookIndex) =>
+    Array.from({ length: book.ch }, (_, index) => ({
+      bookIndex,
+      bookName: book.pt,
+      chapter: index + 1,
+      key: `${version}:${bookIndex + 1}:${index + 1}`,
+    })),
+  );
+  let completed = chapters.filter(({ key }) => prepared.has(key)).length;
+  let nextChapter = 0;
+  let stopped = false;
+  let firstFailure: Error | null = null;
+  onProgress({ completed, total: TOTAL_BIBLE_CHAPTERS });
+
+  const worker = async () => {
+    while (!stopped && nextChapter < chapters.length) {
+      if (signal.aborted) {
+        stopped = true;
+        firstFailure ??= new Error("Download pausado.");
+        break;
+      }
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        stopped = true;
+        firstFailure ??= new Error("A conexão caiu. Os capítulos salvos foram mantidos; conecte-se e continue o download.");
+        break;
+      }
+      const current = chapters[nextChapter++];
+      if (!current || prepared.has(current.key)) continue;
+
+      let saved = false;
+      let lastError: unknown;
+      for (let attempt = 0; attempt < 3 && !saved; attempt += 1) {
+        try {
+          await fetchChapter(current.bookIndex, current.chapter, version, { signal, preserveOffline: true });
+          saved = true;
+          prepared.add(current.key);
+          completed += 1;
+          onProgress({ completed, total: TOTAL_BIBLE_CHAPTERS });
+        } catch (error) {
+          lastError = error;
+          if (signal.aborted) break;
+          if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+        }
+      }
+
+      if (!saved) {
+        stopped = true;
+        firstFailure = signal.aborted
+          ? new Error("Download pausado. Os capítulos já salvos foram mantidos; toque em baixar para continuar.")
+          : new Error(`Falha ao salvar ${current.bookName} ${current.chapter}. Os capítulos salvos foram mantidos; tente continuar quando a conexão estiver estável. ${lastError instanceof Error ? lastError.message : ""}`);
+      }
+    }
+  };
+
+  await Promise.all([worker(), worker()]);
+  if (firstFailure) throw firstFailure;
+  if (completed !== TOTAL_BIBLE_CHAPTERS) throw new Error("A Bíblia ainda não foi totalmente salva neste aparelho.");
 }
 
 export type PlanDay = { day: number; label: string; refs: { book: Book; chapter: number }[] };

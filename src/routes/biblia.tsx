@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Page } from "@/components/Shell";
-import { BOOKS, getPlan, VERSIONS, fetchChapter, OfflineChapterUnavailableError, type Verse } from "@/lib/bible";
+import { BOOKS, downloadCompleteBibleOffline, getPlan, VERSIONS, fetchChapter, OfflineChapterUnavailableError, TOTAL_BIBLE_CHAPTERS, type Verse } from "@/lib/bible";
+import { listPreparedOfflineChapterKeys, removePreparedOfflineBible } from "@/lib/offline-db";
 
 export const Route = createFileRoute("/biblia")({
   validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365; b?: number; c?: number; v?: number } => {
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/biblia")({
 });
 
 const sel = "h-11 min-w-0 rounded-xl border border-border bg-card px-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
+type OfflinePackState = { status: "checking" | "idle" | "downloading" | "ready" | "error"; completed: number; message: string };
 
 function Biblia() {
   const { day, plan, b, c, v: startVerse } = Route.useSearch();
@@ -36,7 +38,65 @@ function Biblia() {
   const [verses, setVerses] = useState<Verse[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
+  const [offlinePack, setOfflinePack] = useState<OfflinePackState>({ status: "checking", completed: 0, message: "" });
+  const downloadController = useRef<AbortController | null>(null);
   const book = BOOKS[bookIdx]!;
+
+  useEffect(() => () => downloadController.current?.abort(), []);
+
+  useEffect(() => {
+    let active = true;
+    setOfflinePack({ status: "checking", completed: 0, message: "" });
+    listPreparedOfflineChapterKeys(version).then((keys) => {
+      if (!active) return;
+      const completed = Math.min(keys.size, TOTAL_BIBLE_CHAPTERS);
+      setOfflinePack({
+        status: completed === TOTAL_BIBLE_CHAPTERS ? "ready" : "idle",
+        completed,
+        message: "",
+      });
+    });
+    return () => { active = false; };
+  }, [version]);
+
+  const prepareOfflineBible = async () => {
+    if (downloadController.current) return;
+    const controller = new AbortController();
+    downloadController.current = controller;
+    setOfflinePack((current) => ({ ...current, status: "downloading", message: "" }));
+    try {
+      try {
+        if (navigator.storage?.persist) await navigator.storage.persist();
+      } catch {
+        // Continue even if this browser does not grant persistent storage.
+      }
+      await downloadCompleteBibleOffline(version, (progress) => {
+        setOfflinePack({ status: "downloading", completed: progress.completed, message: "" });
+      }, controller.signal);
+      setOfflinePack({ status: "ready", completed: TOTAL_BIBLE_CHAPTERS, message: "Esta tradução está pronta para uso offline neste aparelho." });
+    } catch (error) {
+      setOfflinePack((current) => ({
+        ...current,
+        status: "error",
+        message: error instanceof Error ? error.message : "Não foi possível preparar a Bíblia offline.",
+      }));
+    } finally {
+      downloadController.current = null;
+      listPreparedOfflineChapterKeys(version).then((keys) => {
+        setOfflinePack((current) => current.status === "downloading"
+          ? { ...current, completed: Math.min(keys.size, TOTAL_BIBLE_CHAPTERS) }
+          : current);
+      });
+    }
+  };
+
+  const clearOfflineBible = async () => {
+    const label = VERSIONS.find((item) => item.id === version)?.label ?? version;
+    if (!window.confirm(`Apagar do aparelho a cópia offline da tradução ${label}?`)) return;
+    const removed = await removePreparedOfflineBible(version);
+    if (removed) setOfflinePack({ status: "idle", completed: 0, message: "Cópia offline removida deste aparelho." });
+    else setOfflinePack((current) => ({ ...current, status: "error", message: "Não foi possível apagar a cópia offline agora." }));
+  };
 
   useEffect(() => {
     let alive = true;
@@ -134,9 +194,47 @@ function Biblia() {
         <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Tradução da Bíblia</p>
         <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
           {VERSIONS.map((v) => (
-            <button key={v.id} aria-pressed={version === v.id} onClick={() => setVersion(v.id)} className={`rounded-lg border px-1 py-2 text-xs font-bold tracking-wide transition-colors ${version === v.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-transparent bg-card/70 text-muted-foreground hover:border-border hover:text-foreground"}`}>{v.label}</button>
+            <button key={v.id} disabled={offlinePack.status === "downloading"} aria-pressed={version === v.id} onClick={() => setVersion(v.id)} className={`rounded-lg border px-1 py-2 text-xs font-bold tracking-wide transition-colors disabled:opacity-60 ${version === v.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-transparent bg-card/70 text-muted-foreground hover:border-border hover:text-foreground"}`}>{v.label}</button>
           ))}
         </div>
+      </section>
+      <section className="mb-4 rounded-2xl border border-border bg-card p-4" aria-label="Preparar Bíblia para uso offline">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="font-semibold text-foreground">Bíblia offline · {VERSIONS.find((item) => item.id === version)?.label}</h2>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+              Baixe os {TOTAL_BIBLE_CHAPTERS.toLocaleString("pt-BR")} capítulos desta tradução para abrir a Bíblia inteira sem internet. Cada tradução é baixada separadamente; o preparo pode levar alguns minutos, consumir dados e usar espaço neste aparelho. Se puder, use Wi-Fi.
+            </p>
+          </div>
+        </div>
+        {offlinePack.status !== "checking" && (
+          <p className="mt-3 text-xs text-muted-foreground" aria-live="polite">
+            {offlinePack.completed.toLocaleString("pt-BR")} de {TOTAL_BIBLE_CHAPTERS.toLocaleString("pt-BR")} capítulos salvos neste aparelho.
+          </p>
+        )}
+        {offlinePack.status === "downloading" && (
+          <progress className="mt-2 h-2 w-full accent-primary" value={offlinePack.completed} max={TOTAL_BIBLE_CHAPTERS} aria-label="Progresso do download da Bíblia" />
+        )}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {offlinePack.status === "ready" ? (
+            <p className="rounded-lg bg-primary/10 px-3 py-2 text-sm font-medium text-primary">Tradução pronta para uso offline</p>
+          ) : offlinePack.status === "checking" ? (
+            <p className="text-sm text-muted-foreground">Verificando capítulos já salvos…</p>
+          ) : offlinePack.status === "downloading" ? (
+            <button onClick={() => downloadController.current?.abort()} className="rounded-lg border border-border px-3 py-2 text-sm font-semibold text-foreground">Pausar download</button>
+          ) : (
+            <button onClick={() => void prepareOfflineBible()} className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground">
+              {offlinePack.completed ? "Continuar baixando" : "Baixar Bíblia para usar offline"}
+            </button>
+          )}
+          {offlinePack.completed > 0 && offlinePack.status !== "downloading" && offlinePack.status !== "checking" && (
+            <button onClick={() => void clearOfflineBible()} className="rounded-lg border border-border px-3 py-2 text-sm font-medium text-muted-foreground">Apagar cópia offline</button>
+          )}
+        </div>
+        {offlinePack.message && <p role="status" className="mt-2 text-xs text-muted-foreground">{offlinePack.message}</p>}
+        {offlinePack.status !== "ready" && offlinePack.status !== "checking" && (
+          <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Mantenha o app aberto e conectado até concluir. Se a conexão cair, os capítulos salvos são mantidos e o download pode ser retomado.</p>
+        )}
       </section>
       <article className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
         <header className="border-b border-border bg-hero px-5 py-5">
