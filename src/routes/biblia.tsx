@@ -46,6 +46,24 @@ function Biblia() {
     return () => { alive = false; };
   }, [bookIdx, chapter, version]);
 
+  const navigate = Route.useNavigate();
+  const fullPlan = getPlan(plan ?? 180);
+  const pos = today ? today.refs.findIndex((r) => BOOKS.indexOf(r.book) === bookIdx && r.chapter === chapter) : -1;
+  const goTo = (bi: number, c: number) => { setBookIdx(bi); setChapter(c); window.scrollTo({ top: 0 }); };
+  const next = () => {
+    if (!today || pos < 0) return go(1);
+    const r = today.refs[pos + 1];
+    if (r) return goTo(BOOKS.indexOf(r.book), r.chapter);
+    const nd = fullPlan[day!];
+    if (nd) { navigate({ search: { day: nd.day, plan: plan ?? 180 } }); goTo(BOOKS.indexOf(nd.refs[0]!.book), nd.refs[0]!.chapter); }
+  };
+  const prev = () => {
+    if (!today || pos < 0) return go(-1);
+    const r = today.refs[pos - 1];
+    if (r) return goTo(BOOKS.indexOf(r.book), r.chapter);
+    const pd = fullPlan[day! - 2];
+    if (pd) { const l = pd.refs[pd.refs.length - 1]!; navigate({ search: { day: pd.day, plan: plan ?? 180 } }); goTo(BOOKS.indexOf(l.book), l.chapter); }
+  };
   const go = (delta: number) => {
     let b = bookIdx, c = chapter + delta;
     if (c < 1) { b = Math.max(0, b - 1); c = b === bookIdx ? 1 : BOOKS[b]!.ch; }
@@ -59,6 +77,7 @@ function Biblia() {
         <div className="mb-4 rounded-xl border border-gold bg-card p-3">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-gold">Leitura de hoje</p>
           <p className="mb-2 font-medium text-foreground">{today.label}</p>
+          {pos >= 0 && <p className="mb-2 text-xs text-muted-foreground">Capítulo {pos + 1} de {today.refs.length} · toque em "Próximo" para seguir a ordem</p>}
           <div className="flex flex-wrap gap-1.5">
             {today.refs.map((r) => {
               const bi = BOOKS.indexOf(r.book), on = bi === bookIdx && r.chapter === chapter;
@@ -114,8 +133,8 @@ function Biblia() {
         )}
       </article>
       <div className="mt-4 flex justify-between">
-        <button onClick={() => go(-1)} className="flex items-center gap-1 rounded-lg bg-secondary px-4 py-2 text-sm text-foreground"><ChevronLeft className="h-4 w-4" /> Anterior</button>
-        <button onClick={() => go(1)} className="flex items-center gap-1 rounded-lg bg-secondary px-4 py-2 text-sm text-foreground">Próximo <ChevronRight className="h-4 w-4" /></button>
+        <button onClick={prev} className="flex items-center gap-1 rounded-lg bg-secondary px-4 py-2 text-sm text-foreground"><ChevronLeft className="h-4 w-4" /> Anterior</button>
+        <button onClick={next} className="flex items-center gap-1 rounded-lg bg-secondary px-4 py-2 text-sm text-foreground">Próximo <ChevronRight className="h-4 w-4" /></button>
       </div>
     </Page>
   );
