@@ -46,6 +46,12 @@ function Biblia() {
     return () => { alive = false; };
   }, [bookIdx, chapter, version]);
 
+  useEffect(() => {
+    if (status !== "ok" || !startVerse) return;
+    const el = document.getElementById(`vers-${startVerse}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [status, startVerse, bookIdx, chapter]);
+
   const navigate = Route.useNavigate();
   const fullPlan = getPlan(plan ?? 180);
   const pos = today ? today.refs.findIndex((r) => BOOKS.indexOf(r.book) === bookIdx && r.chapter === chapter) : -1;
@@ -124,7 +130,7 @@ function Biblia() {
         {status === "ok" && (
           <div className="px-4 py-3 sm:px-5">
             {verses.map((v) => (
-              <p key={v.verse} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0">
+              <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0 ${startVerse && v.verse >= startVerse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
                 <span className="pt-1 text-sm font-bold leading-none text-primary">{v.verse}</span>
                 <span className="font-serif-read text-lg leading-8 text-foreground">{v.text}</span>
               </p>
