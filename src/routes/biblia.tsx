@@ -13,6 +13,8 @@ export const Route = createFileRoute("/biblia")({
       { name: "description", content: "Leia e ouça a Bíblia em várias versões, escolhendo a voz." },
       { property: "og:title", content: "Bíblia com Leitura em Voz Alta — Os Mamutes" },
       { property: "og:description", content: "Leia e ouça a Bíblia em várias versões." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Biblia,
@@ -67,14 +69,28 @@ function Biblia() {
       </div>
       <Speaker text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
 
-      <article className="mt-5 rounded-2xl border border-border bg-card p-5">
-        <h2 className="mb-4 font-display text-3xl uppercase text-foreground">{book.pt} {chapter}</h2>
+      <article className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
+        <header className="border-b border-border bg-hero px-5 py-5">
+          <h2 className="font-display text-4xl uppercase leading-none text-primary">{book.pt} {chapter}</h2>
+          {status === "ok" && (
+            <p className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+              <span>{verses.length} versículos</span>
+              <span aria-hidden="true">•</span>
+              <span className="rounded-md border border-gold px-2 py-0.5 font-bold text-gold">{version}</span>
+            </p>
+          )}
+        </header>
         {status === "loading" && <p className="text-muted-foreground">Carregando…</p>}
         {status === "error" && <p className="text-destructive">Não foi possível carregar este capítulo. Verifique sua conexão.</p>}
         {status === "ok" && (
-          <p className="font-serif-read text-lg leading-relaxed text-foreground">
-            {verses.map((v) => <span key={v.verse}><sup className="mr-1 text-xs font-bold text-gold">{v.verse}</sup>{v.text} </span>)}
-          </p>
+          <div className="px-4 py-3 sm:px-5">
+            {verses.map((v) => (
+              <p key={v.verse} className="grid grid-cols-[1.75rem_minmax(0,1fr)] gap-2 border-b border-border/50 py-3 last:border-b-0">
+                <span className="pt-1 text-sm font-bold leading-none text-primary">{v.verse}</span>
+                <span className="font-serif-read text-lg leading-8 text-foreground">{v.text}</span>
+              </p>
+            ))}
+          </div>
         )}
       </article>
       <div className="mt-4 flex justify-between">
