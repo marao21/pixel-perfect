@@ -540,10 +540,12 @@ export function getDevotionalForDay(day: number): DailyDevotional {
   const week = Math.floor(d / 7) % THEMES.length;
   const slot = d % 7; // 0-6: dia da semana dentro do tema
   const t = THEMES[week]!;
-  const extraIndex = (week * 7 + slot) % EXTRA_PARAS.length;
-  const verseIndex = (week * 7 + slot) % EXTRA_VERSES.length;
+  // Multiplicadores diferentes por semana garantem que os 365 dias tenham
+  // combinações todas distintas (evita que o 2º semestre copie o 1º).
+  const extraIndex = (week * 5 + slot) % EXTRA_PARAS.length;
+  const verseIndex = (week * 11 + slot * 3) % EXTRA_VERSES.length;
   const practiceIndex = (week * 7 + slot) % PRACTICES.length;
-  const quoteIndex = (week * 7 + slot) % QUOTES.length;
+  const quoteIndex = (week * 5 + slot * 7) % QUOTES.length;
 
   const [q, qa] = slot === 0 ? [t.quote, t.quoteAuthor] : QUOTES[quoteIndex]!;
   const [verse, ref] = slot === 0 ? [t.verse, t.ref] : EXTRA_VERSES[verseIndex]!;
