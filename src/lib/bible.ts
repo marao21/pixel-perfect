@@ -18,21 +18,25 @@ export const BOOKS: Book[] = [
 ].map(([pt, en, ch]) => ({ pt: pt as string, en: en as string, ch: ch as number }));
 
 export const VERSIONS = [
-  { id: "almeida", label: "Almeida (PT)", lang: "pt" },
-  { id: "kjv", label: "King James (EN)", lang: "en" },
-  { id: "web", label: "World English (EN)", lang: "en" },
-  { id: "bbe", label: "Basic English (EN)", lang: "en" },
+  { id: "ACF11", label: "ACF", lang: "pt" },
+  { id: "ARC09", label: "ARC", lang: "pt" },
+  { id: "ARA", label: "ARA", lang: "pt" },
+  { id: "NAA", label: "NAA", lang: "pt" },
+  { id: "NVIPT", label: "NVI", lang: "pt" },
+  { id: "NVT", label: "NVT", lang: "pt" },
+  { id: "NTLH", label: "NTLH", lang: "pt" },
 ];
 
 export type Verse = { verse: number; text: string };
 
-export async function fetchChapter(bookEn: string, chapter: number, version: string): Promise<Verse[]> {
-  const r = await fetch(
-    `https://bible-api.com/${encodeURIComponent(`${bookEn} ${chapter}`)}?translation=${version}`,
-  );
+const clean = (t: string) =>
+  t.replace(/<sup>.*?<\/sup>/g, "").replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+
+export async function fetchChapter(bookIndex: number, chapter: number, version: string): Promise<Verse[]> {
+  const r = await fetch(`https://bolls.life/get-text/${version}/${bookIndex + 1}/${chapter}/`);
   if (!r.ok) throw new Error("Não foi possível carregar o capítulo");
-  const j = await r.json();
-  return (j.verses ?? []).map((v: { verse: number; text: string }) => ({ verse: v.verse, text: v.text.trim() }));
+  const j: { verse: number; text: string }[] = await r.json();
+  return j.map((v) => ({ verse: v.verse, text: clean(v.text) }));
 }
 
 export type PlanDay = { day: number; label: string; refs: { book: Book; chapter: number }[] };
