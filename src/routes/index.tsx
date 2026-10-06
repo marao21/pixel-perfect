@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
-import { getPlan } from "@/lib/bible";
+import { Speaker } from "@/components/Speaker";
+import { BOOKS, fetchChapter, getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
 
@@ -22,10 +24,25 @@ function Home() {
   const [len] = usePlanLength();
   const PLAN = getPlan(len);
   const today = PLAN[Math.min(CURRENT_DAY, len) - 1]!;
+  const [readingText, setReadingText] = useState("");
+  const [readingStatus, setReadingStatus] = useState<"loading" | "ready" | "error">("loading");
   const isDone = done.has(CURRENT_DAY);
   const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
+
+  useEffect(() => {
+    let active = true;
+    setReadingStatus("loading");
+    Promise.all(today.refs.map((ref) => fetchChapter(BOOKS.indexOf(ref.book), ref.chapter, "NAA")))
+      .then((chapters) => {
+        if (!active) return;
+        setReadingText(today.refs.map((ref, index) => `${ref.book.pt}, capítulo ${ref.chapter}. ${chapters[index]!.map((verse) => verse.text).join(" ")}`).join(" "));
+        setReadingStatus("ready");
+      })
+      .catch(() => active && setReadingStatus("error"));
+    return () => { active = false; };
+  }, [len, today.day]);
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
@@ -35,8 +52,13 @@ function Home() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Dia {CURRENT_DAY} de {len} · Plano {len === 365 ? "1 ano" : `${len} dias`}</p>
         <h2 className="mt-2 font-display text-2xl uppercase text-foreground">{today.label}</h2>
         <Link to="/biblia" search={{ day: CURRENT_DAY, plan: len }} className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
-          Ler ou ouvir agora <ChevronRight className="h-4 w-4" />
+          Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
+        <div className="mt-4">
+          <Speaker label="Ouvir Leitura de Hoje" text={readingStatus === "ready" ? readingText : ""} />
+          {readingStatus === "loading" && <p className="mt-2 text-xs text-muted-foreground">Carregando a leitura de hoje…</p>}
+          {readingStatus === "error" && <p className="mt-2 text-xs text-muted-foreground">Não foi possível preparar o áudio. Abra o texto da leitura e tente novamente.</p>}
+        </div>
         <button
           onClick={() => toggle(CURRENT_DAY)}
           className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all active:scale-[0.98] ${isDone ? "animate-pop bg-success text-success-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}
@@ -61,12 +83,15 @@ function Home() {
         </div>
       </section>
 
-      <Link to="/devocional" className="mt-4 block rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
+      <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold"><BookOpen className="h-4 w-4" /> Devocional do dia</p>
         <h3 className="mt-2 text-lg font-semibold text-foreground">{dev.title}</h3>
         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{dev.body[0]}</p>
-        <span className="mt-2 inline-flex items-center text-sm text-primary">Ler completo <ChevronRight className="h-4 w-4" /></span>
-      </Link>
+        <div className="mt-3">
+          <Speaker label="Ouvir Devocional" text={`${dev.title}. ${dev.verse} ${dev.ref}. ${dev.body.join(" ")}`} />
+        </div>
+        <Link to="/devocional" className="mt-3 inline-flex items-center text-sm text-primary">Ler completo <ChevronRight className="h-4 w-4" /></Link>
+      </section>
     </Page>
   );
 }

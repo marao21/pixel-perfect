@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Pause, Play, Square } from "lucide-react";
 
 function splitForSpeech(text: string, maxLength = 220) {
@@ -61,19 +61,28 @@ function useVoices() {
   return voices;
 }
 
-export function Speaker({ text }: { text: string }) {
+export function Speaker({ text, label = "Ouvir" }: { text: string; label?: string }) {
   const voices = useVoices();
   const [deviceVoice, setDeviceVoice] = useState("");
   const [rate, setRate] = useState(1);
   const [state, setState] = useState<"idle" | "playing" | "paused">("idle");
   const [error, setError] = useState("");
   const playbackId = useRef(0);
-  const supported = typeof window !== "undefined" && "speechSynthesis" in window;
+  const [clientReady, setClientReady] = useState(false);
+  const supported = clientReady && typeof window !== "undefined" && "speechSynthesis" in window;
+  const voiceOptions = useMemo(() => {
+    const portugueseVoices = voices.filter((voice) => voice.lang.replace("_", "-").toLowerCase().startsWith("pt"));
+    return portugueseVoices.length ? portugueseVoices : voices;
+  }, [voices]);
+
+  useEffect(() => setClientReady(true), []);
 
   useEffect(() => {
     if (!voices.length) return;
-    setDeviceVoice((current) => current || voices.find((voice) => voice.lang.replace("_", "-").toLowerCase() === "pt-br")?.voiceURI || voices[0]!.voiceURI);
-  }, [voices]);
+    setDeviceVoice((current) => voiceOptions.some((voice) => voice.voiceURI === current)
+      ? current
+      : voiceOptions.find((voice) => voice.lang.replace("_", "-").toLowerCase() === "pt-br")?.voiceURI ?? voiceOptions[0]!.voiceURI);
+  }, [voiceOptions]);
 
   const stop = () => {
     playbackId.current += 1;
@@ -97,10 +106,11 @@ export function Speaker({ text }: { text: string }) {
     synth.cancel();
     const currentPlayback = ++playbackId.current;
     const availableVoices = synth.getVoices();
-    const voice = availableVoices.find((item) => item.voiceURI === deviceVoice)
+    const selectedVoice = availableVoices.find((item) => item.voiceURI === deviceVoice)
       ?? voices.find((item) => item.voiceURI === deviceVoice)
       ?? availableVoices.find((item) => item.lang.replace("_", "-").toLowerCase() === "pt-br")
       ?? availableVoices.find((item) => item.lang.toLowerCase().startsWith("pt"));
+    const voice = selectedVoice?.lang.replace("_", "-").toLowerCase().startsWith("pt") ? selectedVoice : undefined;
     const chunks = splitForSpeech(text);
     let chunkIndex = 0;
 
@@ -117,7 +127,7 @@ export function Speaker({ text }: { text: string }) {
 
       const utterance = new SpeechSynthesisUtterance(chunk);
       if (voice) utterance.voice = voice;
-      utterance.lang = voice?.lang || "pt-BR";
+      utterance.lang = "pt-BR";
       utterance.rate = rate;
       utterance.onend = speakNext;
       utterance.onerror = (event) => {
@@ -141,16 +151,21 @@ export function Speaker({ text }: { text: string }) {
 
   return (
     <div className="space-y-2 rounded-xl border border-border bg-secondary p-3">
+      <div className="grid grid-cols-[1.4fr_0.8fr_0.8fr] gap-2">
+        <button onClick={play} disabled={!text || !supported || state === "playing"} className="inline-flex min-h-10 min-w-0 items-center justify-center gap-1 rounded-lg bg-primary px-2 text-[11px] font-semibold text-primary-foreground disabled:opacity-50" aria-label={state === "paused" ? "Continuar leitura" : label}>
+          <Play className="h-4 w-4 shrink-0" /> <span className="text-center leading-tight">{state === "paused" ? "Continuar" : label}</span>
+        </button>
+        <button onClick={pause} disabled={!supported || state !== "playing"} className="inline-flex min-h-10 items-center justify-center gap-1 rounded-lg border border-border px-2 text-xs font-semibold text-foreground disabled:opacity-50" aria-label="Pausar">
+          <Pause className="h-4 w-4 shrink-0" /> Pausar
+        </button>
+        <button onClick={stop} disabled={!supported} className="inline-flex min-h-10 items-center justify-center gap-1 rounded-lg border border-border px-2 text-xs font-semibold text-muted-foreground disabled:opacity-50" aria-label="Parar">
+          <Square className="h-4 w-4 shrink-0" /> Parar
+        </button>
+      </div>
       <div className="flex items-center gap-2">
-        {state === "playing" ? (
-          <button onClick={pause} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground" aria-label="Pausar"><Pause className="h-4 w-4" /></button>
-        ) : (
-          <button onClick={play} disabled={!text || !supported} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-50" aria-label="Ouvir"><Play className="h-4 w-4" /></button>
-        )}
-        <button onClick={stop} disabled={!supported} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border text-muted-foreground disabled:opacity-50" aria-label="Parar"><Square className="h-4 w-4" /></button>
-        <select value={deviceVoice} onChange={(event) => setDeviceVoice(event.target.value)} disabled={!voices.length} className="min-w-0 flex-1 rounded-lg border border-input bg-background px-2 py-2 text-sm text-foreground disabled:opacity-60" aria-label="Voz">
-          {voices.length === 0 && <option value="">{supported ? "Carregando vozes do aparelho…" : "Leitura em voz alta indisponível"}</option>}
-          {voices.map((voice) => <option key={voice.voiceURI} value={voice.voiceURI}>{voice.name.replace(/\s*\(.*\)/, "").replace(/ - Portuguese.*$/, "")} · {voice.lang}</option>)}
+        <select value={deviceVoice} onChange={(event) => setDeviceVoice(event.target.value)} disabled={!voiceOptions.length} className="min-w-0 flex-1 rounded-lg border border-input bg-background px-2 py-2 text-sm text-foreground disabled:opacity-60" aria-label="Voz em português">
+          {voices.length === 0 && <option value="">{!clientReady || supported ? "Carregando vozes do aparelho…" : "Leitura em voz alta indisponível"}</option>}
+          {voiceOptions.map((voice) => <option key={voice.voiceURI} value={voice.voiceURI}>{voice.name.replace(/\s*\(.*\)/, "").replace(/ - Portuguese.*$/, "")} · {voice.lang}</option>)}
         </select>
       </div>
       <label className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -159,7 +174,7 @@ export function Speaker({ text }: { text: string }) {
         <span className="w-8 text-foreground">{rate.toFixed(1)}x</span>
       </label>
       {error && <p role="status" className="text-xs leading-relaxed text-destructive">{error}</p>}
-      {!supported && <p role="status" className="text-xs leading-relaxed text-muted-foreground">Este navegador não oferece leitura em voz alta. Abra a página no Chrome ou Safari atualizado.</p>}
+      {clientReady && !supported && <p role="status" className="text-xs leading-relaxed text-muted-foreground">Este navegador não oferece leitura em voz alta. Abra a página no Chrome ou Safari atualizado.</p>}
     </div>
   );
 }

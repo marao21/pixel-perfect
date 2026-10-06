@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Trophy, MessageCircle } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 
@@ -35,19 +35,21 @@ const TABS = [
   { to: "/oferta", label: "Oferta", icon: HandCoins },
   { to: "/pecado", label: "Pecado", icon: ShieldCheck },
   { to: "/devocional", label: "Devocional", icon: BookOpen },
+  { to: "/ranking", label: "Ranking", icon: Trophy },
+  { to: "/mural", label: "Mural", icon: MessageCircle },
 ] as const;
 
 export function Page({ title, kicker, children }: { title: string; kicker?: string; children: ReactNode }) {
   return (
-    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-6">
-      <header className="mb-5 flex items-center gap-3">
+    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0">
+      <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
         <img
           src="/mamutes-logo-transparent-256.png"
           alt="Os Mamutes"
-          width={56}
-          height={56}
+          width={64}
+          height={64}
           decoding="async"
-          className="h-14 w-14 shrink-0 object-contain"
+          className="h-16 w-16 shrink-0 object-contain"
         />
         <div className="min-w-0 flex-1">
         {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
@@ -63,9 +65,9 @@ export function Page({ title, kicker, children }: { title: string; kicker?: stri
 export function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
-      <ul className="mx-auto grid max-w-xl grid-cols-6">
+      <ul className="mx-auto flex max-w-xl overflow-x-auto">
         {TABS.map(({ to, label, icon: Icon }) => (
-          <li key={to}>
+          <li key={to} className="min-w-[4.25rem] flex-1">
             <Link
               to={to}
               activeOptions={{ exact: to === "/" }}

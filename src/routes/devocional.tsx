@@ -73,7 +73,7 @@ function Devocional() {
         <p className="mt-2 text-right text-sm font-semibold text-gold">{d.ref}</p>
 
         <div className="mt-4">
-          <Speaker text={`${d.title}. ${d.verse} ${d.ref}. ${d.body.join(" ")}`} />
+          <Speaker label="Ouvir Devocional" text={`${d.title}. ${d.verse} ${d.ref}. ${d.body.join(" ")}`} />
         </div>
 
         <div className="mt-5 space-y-4 leading-relaxed text-foreground/90">

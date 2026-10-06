@@ -34,7 +34,7 @@ function Plano() {
           <button key={p.id} onClick={() => pick(p.id)} className={`rounded-lg py-2 text-sm font-bold transition-colors ${len === p.id ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground"}`}>{p.label}</button>
         ))}
       </div>
-      <div className="sticky top-0 z-10 -mx-4 mb-4 flex gap-2 bg-background/95 px-4 py-2 backdrop-blur">
+      <div className="sticky top-20 z-10 -mx-4 mb-4 flex gap-2 bg-background/95 px-4 py-2 backdrop-blur">
         {FILTERS.map((x) => (
           <button key={x} onClick={() => setF(x)} className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${f === x ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>{x}</button>
         ))}

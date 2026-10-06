@@ -112,7 +112,7 @@ function Biblia() {
           ))}
         </div>
       </div>
-      <Speaker text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
+      <Speaker label={today ? "Ouvir Leitura de Hoje" : "Ouvir Capítulo"} text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
 
       <article className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
         <header className="border-b border-border bg-hero px-5 py-5">
