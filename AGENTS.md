@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Keep the primary navigation limited to Home, Plano, Bíblia, Oferta, Mural, and Devocional because the group does not use rankings.
+- Keep the primary navigation limited to Home, Plano, Bíblia, Oferta, Pecado (21-day prayer checklist), and Devocional because the group does not use rankings.

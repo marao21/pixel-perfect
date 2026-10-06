@@ -6,9 +6,9 @@ import { Speaker } from "@/components/Speaker";
 import { BOOKS, getPlan, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
-  validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365 } => {
+  validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365; b?: number; c?: number } => {
     const p = Number(s["plan"]);
-    return { ...(s["day"] ? { day: Number(s["day"]) } : {}), ...(p === 90 || p === 365 || p === 180 ? { plan: p as 90 | 180 | 365 } : {}) };
+    return { ...(s["b"] !== undefined ? { b: Number(s["b"]), c: Number(s["c"] ?? 1) } : {}), ...(s["day"] ? { day: Number(s["day"]) } : {}), ...(p === 90 || p === 365 || p === 180 ? { plan: p as 90 | 180 | 365 } : {}) };
   },
   head: () => ({
     meta: [
@@ -26,11 +26,11 @@ export const Route = createFileRoute("/biblia")({
 const sel = "min-w-0 rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground";
 
 function Biblia() {
-  const { day, plan } = Route.useSearch();
+  const { day, plan, b, c } = Route.useSearch();
   const today = day ? getPlan(plan ?? 180)[day - 1] : undefined;
   const start = today?.refs[0];
-  const [bookIdx, setBookIdx] = useState(start ? BOOKS.indexOf(start.book) : 0);
-  const [chapter, setChapter] = useState(start?.chapter ?? 1);
+  const [bookIdx, setBookIdx] = useState(b ?? (start ? BOOKS.indexOf(start.book) : 0));
+  const [chapter, setChapter] = useState(c ?? start?.chapter ?? 1);
   const [version, setVersion] = useState("NAA");
   const [verses, setVerses] = useState<Verse[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
