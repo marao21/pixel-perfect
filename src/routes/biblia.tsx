@@ -54,6 +54,7 @@ function Biblia() {
   const [version, setVersion] = useState(savedReading?.version ?? "NAA");
   const [loadedVersion, setLoadedVersion] = useState(savedReading?.version ?? "NAA");
   const [verses, setVerses] = useState<Verse[]>([]);
+  const [openTransVerse, setOpenTransVerse] = useState<number | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const [loadError, setLoadError] = useState("");
   const [downloadDialog, setDownloadDialog] = useState<DownloadDialogState | null>(null);
@@ -302,7 +303,8 @@ function Biblia() {
         {status === "ok" && (
           <div className="px-4 py-3 sm:px-5">
             {verses.map((v) => {
-              const [showTransList, setShowTransList] = React.useState(false);
+              const showTransList = openTransVerse === v.verse;
+              const setShowTransList = (open: boolean) => setOpenTransVerse(open ? v.verse : null);
               const translations = VERSIONS.map(ver => ver.id);
               return (
                 <p key={v.verse} id={`vers-${v.verse}`} className={`grid grid-cols-[1.75rem_minmax(0,1fr)_auto] gap-2 border-b border-border/50 py-3 last:border-b-0 ${selectedVerse === v.verse ? "rounded-lg bg-gold/15 px-2" : ""}`}>
@@ -342,7 +344,7 @@ function Biblia() {
                               setLoadedVersion(t);
                               setShowTransList(false);
                               setStatus("loading");
-                              fetchChapter(t, bookIdx, chapter)
+                              fetchChapter(bookIdx, chapter, t)
                                 .then((data) => {
                                   setVerses(data);
                                   setStatus("ok");
