@@ -168,6 +168,11 @@
 }
 
 @layer base {
+  html,
+  body {
+    touch-action: pan-x pan-y;
+  }
+
   * {
     border-color: var(--color-border);
   }
@@ -175,5 +180,19 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+@layer utilities {
+  .text-xs {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .text-sm {
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 }

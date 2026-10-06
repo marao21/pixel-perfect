@@ -75,7 +75,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
         />
         <div className="min-w-0 flex-1">
           <p className="font-display text-xl uppercase leading-none tracking-wide text-foreground">Os Mamutes</p>
-          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-gold">Desafio Bíblico</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-gold">Desafio Bíblico</p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <NetworkStatus />
@@ -98,11 +98,11 @@ export function BottomNav() {
               activeOptions={{ exact: to === "/" }}
               aria-label={label}
               title={label}
-              className="flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-0 py-2 text-[8px] leading-none font-medium text-muted-foreground transition-colors"
+              className="flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-0 py-2 text-[11px] leading-none font-medium text-muted-foreground transition-colors"
               activeProps={{ className: "text-primary" }}
             >
               <Icon className="h-5 w-5 shrink-0" />
-              <span className="block max-w-full whitespace-nowrap tracking-[-0.03em]">{label}</span>
+              <span className="block max-w-full whitespace-nowrap tracking-[-0.03em]">{label === "Devocional" ? "Devoc." : label}</span>
             </Link>
           </li>
         ))}

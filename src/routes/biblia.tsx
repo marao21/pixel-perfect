@@ -150,7 +150,7 @@ function Biblia() {
     <Page kicker={today ? `Leitura do dia ${day} · Plano ${plan === 365 ? "1 ano" : `${plan ?? 180} dias`}` : "Palavra de Deus"} title="Bíblia">
       {today && (
         <div className="mb-4 rounded-xl border border-gold bg-card p-3">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-gold">Leitura de hoje</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold">Leitura de hoje</p>
           <p className="mb-2 font-medium text-foreground">{today.label}</p>
           {pos >= 0 && <p className="mb-2 text-xs text-muted-foreground">Capítulo {pos + 1} de {today.refs.length} · toque em "Próximo" para seguir a ordem</p>}
           <div className="flex flex-wrap gap-1.5">
@@ -166,22 +166,22 @@ function Biblia() {
         </div>
       )}
       <section className="mb-4 rounded-2xl border border-border bg-secondary/50 p-3">
-        <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Escolha a passagem</p>
+        <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Escolha a passagem</p>
         <div className="grid grid-cols-[minmax(0,1fr)_4.25rem_4.25rem] gap-2">
           <label className="min-w-0">
-            <span className="mb-1 block text-[10px] text-muted-foreground">Livro</span>
+            <span className="mb-1 block text-xs text-muted-foreground">Livro</span>
             <select aria-label="Livro" className={`${sel} w-full`} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); setSelectedVerse(1); setShouldScrollToVerse(false); }}>
               {BOOKS.map((b, i) => <option key={b.en} value={i}>{b.pt}</option>)}
             </select>
           </label>
           <label>
-            <span className="mb-1 block text-[10px] text-muted-foreground">Capítulo</span>
+            <span className="mb-1 block text-xs text-muted-foreground">Capítulo</span>
             <select aria-label="Capítulo" className={`${sel} w-full`} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)); setSelectedVerse(1); setShouldScrollToVerse(false); }}>
               {Array.from({ length: book.ch }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
             </select>
           </label>
           <label>
-            <span className="mb-1 block text-[10px] text-muted-foreground">Versículo</span>
+            <span className="mb-1 block text-xs text-muted-foreground">Versículo</span>
             <select aria-label="Versículo" className={`${sel} w-full`} value={selectedVerse} onChange={(e) => { setSelectedVerse(Number(e.target.value)); setShouldScrollToVerse(true); }}>
               {verses.length
                 ? verses.map((v) => <option key={v.verse} value={v.verse}>{v.verse}</option>)
@@ -191,7 +191,7 @@ function Biblia() {
         </div>
       </section>
       <section className="mb-4 rounded-2xl border border-border bg-secondary/50 p-3">
-        <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Tradução da Bíblia</p>
+        <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Tradução da Bíblia</p>
         <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-7">
           {VERSIONS.map((v) => (
             <button key={v.id} disabled={offlinePack.status === "downloading"} aria-pressed={version === v.id} onClick={() => setVersion(v.id)} className={`rounded-lg border px-1 py-2 text-xs font-bold tracking-wide transition-colors disabled:opacity-60 ${version === v.id ? "border-primary bg-primary text-primary-foreground shadow-sm" : "border-transparent bg-card/70 text-muted-foreground hover:border-border hover:text-foreground"}`}>{v.label}</button>
@@ -233,7 +233,7 @@ function Biblia() {
         </div>
         {offlinePack.message && <p role="status" className="mt-2 text-xs text-muted-foreground">{offlinePack.message}</p>}
         {offlinePack.status !== "ready" && offlinePack.status !== "checking" && (
-          <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">Mantenha o app aberto e conectado até concluir. Se a conexão cair, os capítulos salvos são mantidos e o download pode ser retomado.</p>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">Mantenha o app aberto e conectado até concluir. Se a conexão cair, os capítulos salvos são mantidos e o download pode ser retomado.</p>
         )}
       </section>
       <article className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">

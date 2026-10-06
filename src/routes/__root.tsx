@@ -80,7 +80,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" },
       { title: "Os Mamutes" },
       { name: "description", content: "Desafio bíblico de 180 dias dos homens da Igreja Batista Belém." },
       { name: "theme-color", content: "#0f130f" },
@@ -130,6 +130,18 @@ function RootComponent() {
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
       // App routes remain usable online even if the browser blocks PWA registration.
     });
+  }, []);
+
+  useEffect(() => {
+    const preventGestureZoom = (event: Event) => event.preventDefault();
+    window.addEventListener("gesturestart", preventGestureZoom, { passive: false });
+    window.addEventListener("gesturechange", preventGestureZoom, { passive: false });
+    window.addEventListener("gestureend", preventGestureZoom, { passive: false });
+    return () => {
+      window.removeEventListener("gesturestart", preventGestureZoom);
+      window.removeEventListener("gesturechange", preventGestureZoom);
+      window.removeEventListener("gestureend", preventGestureZoom);
+    };
   }, []);
 
   return (

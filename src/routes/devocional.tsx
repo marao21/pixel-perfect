@@ -49,7 +49,7 @@ function Devocional() {
         </button>
         <div className="rounded-lg bg-primary px-3 py-1.5 text-center leading-tight text-primary-foreground">
           <span className="block font-display text-lg leading-none">{String(data.getDate()).padStart(2, "0")}</span>
-          <span className="block text-[10px] font-semibold tracking-widest">{MESES[data.getMonth()]}</span>
+          <span className="block text-xs font-semibold tracking-widest">{MESES[data.getMonth()]}</span>
         </div>
         <button
           onClick={() => setDay((v) => Math.min(TOTAL_DAYS, v + 1))}
