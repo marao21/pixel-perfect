@@ -1,40 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Heart, QrCode } from "lucide-react";
 import { Page } from "@/components/Shell";
-import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/oferta")({
   head: () => ({
     meta: [
-      { title: "Ranking — Os Mamutes" },
-      { name: "description", content: "Quem está mais constante no desafio de 180 dias." },
-      { property: "og:title", content: "Ranking — Os Mamutes" },
-      { property: "og:description", content: "Quem está mais constante no desafio de 180 dias." },
+      { title: "Oferta — Os Mamutes" },
+      { name: "description", content: "Contribua com a Igreja Batista Belém por meio do Pix." },
+      { property: "og:title", content: "Oferta — Os Mamutes" },
+      { property: "og:description", content: "Contribua com a Igreja Batista Belém por meio do Pix." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Ranking,
+  component: Oferta,
 });
 
-const MEDALS = ["🥇", "🥈", "🥉"];
-
-function Ranking() {
-  const { profiles } = useStore();
+function Oferta() {
   return (
-    <Page kicker="Mamutes de elite 🦣" title="Ranking">
-      <ol className="space-y-2">
-        {profiles.map((p, i) => (
-          <li key={p.id} className={`grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-3 ${i < 3 ? "border-gold bg-hero" : "border-border bg-card"} ${p.id === "me" ? "ring-1 ring-primary" : ""}`}>
-            <span className="text-center font-display text-2xl text-foreground">{i < 3 ? MEDALS[i] : i + 1}</span>
-            <span className="min-w-0">
-              <span className="block truncate font-semibold text-foreground">{p.name}</span>
-              <span className="text-xs text-muted-foreground">🔥 {p.streak} dias seguidos</span>
-            </span>
-            <span className="text-right">
-              <span className="block font-display text-2xl leading-none text-foreground">{p.done}</span>
-              <span className="text-[10px] uppercase text-muted-foreground">dias</span>
-            </span>
-          </li>
-        ))}
-      </ol>
+    <Page kicker="Igreja Batista Belém" title="Oferta">
+      <section className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="bg-hero px-5 py-6 text-center">
+          <Heart className="mx-auto h-8 w-8 text-gold" aria-hidden="true" />
+          <h2 className="mt-3 font-display text-2xl uppercase text-foreground">Ofertar é um ato de gratidão</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Aponte a câmera do seu celular para o QR Code e contribua por Pix.
+          </p>
+        </div>
+        <div className="px-5 py-6">
+          <div className="mx-auto flex aspect-square w-full max-w-64 flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary bg-background p-6 text-center">
+            <QrCode className="h-28 w-28 text-primary" aria-hidden="true" />
+            <p className="mt-4 text-sm font-semibold text-foreground">QR Code Pix da igreja</p>
+            <p className="mt-1 text-xs text-muted-foreground">Em breve</p>
+          </div>
+          <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
+            Antes de confirmar, confira se o favorecido é a Igreja Batista Belém.
+          </p>
+        </div>
+      </section>
     </Page>
   );
 }

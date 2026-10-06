@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, Trophy, MessagesSquare, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
+import { Home, CalendarDays, HandCoins, MessagesSquare, BookOpen, BookMarked, Sun, Moon, Coffee } from "lucide-react";
 import type { ReactNode } from "react";
 import logo from "@/assets/mamutes-logo.png.asset.json";
 import { useTheme, type Theme } from "@/lib/theme";
@@ -33,7 +33,7 @@ const TABS = [
   { to: "/", label: "Home", icon: Home },
   { to: "/plano", label: "Plano", icon: CalendarDays },
   { to: "/biblia", label: "Bíblia", icon: BookMarked },
-  { to: "/ranking", label: "Ranking", icon: Trophy },
+  { to: "/oferta", label: "Oferta", icon: HandCoins },
   { to: "/mural", label: "Mural", icon: MessagesSquare },
   { to: "/devocional", label: "Devocional", icon: BookOpen },
 ] as const;
