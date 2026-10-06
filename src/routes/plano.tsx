@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Circle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { usePlanLength } from "@/lib/plan-choice";
 import { Page } from "@/components/Shell";
-import { PLAN_LENGTHS, getPlan, type PlanLength } from "@/lib/bible";
+import { PLAN_LENGTHS, getPlan} from "@/lib/bible";
 import { CURRENT_DAY, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/plano")({
@@ -22,9 +23,7 @@ const FILTERS = ["Todos", "Concluídos", "Pendentes"] as const;
 function Plano() {
   const { done, toggle } = useStore();
   const [f, setF] = useState<(typeof FILTERS)[number]>("Todos");
-  const [len, setLen] = useState<PlanLength>(180);
-  useEffect(() => { const v = Number(localStorage.getItem("mamutes-plan")); if (v === 90 || v === 180 || v === 365) setLen(v); }, []);
-  const pick = (v: PlanLength) => { setLen(v); localStorage.setItem("mamutes-plan", String(v)); };
+  const [len, pick] = usePlanLength();
   const PLAN = getPlan(len);
   const list = PLAN.filter((d) => f === "Todos" || (f === "Concluídos" ? done.has(d.day) : !done.has(d.day)));
 

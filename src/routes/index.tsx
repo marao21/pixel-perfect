@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
-import { PLAN } from "@/lib/bible";
+import { getPlan } from "@/lib/bible";
+import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
@@ -18,9 +19,11 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { done, toggle, profiles } = useStore();
-  const today = PLAN[CURRENT_DAY - 1]!;
+  const [len] = usePlanLength();
+  const PLAN = getPlan(len);
+  const today = PLAN[Math.min(CURRENT_DAY, len) - 1]!;
   const isDone = done.has(CURRENT_DAY);
-  const pct = Math.round((done.size / 180) * 100);
+  const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
 
@@ -29,9 +32,9 @@ function Home() {
       <p className="-mt-3 mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
 
       <section className="rounded-2xl border border-border bg-hero p-5 shadow-elevated">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Dia {CURRENT_DAY} de 180</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Dia {CURRENT_DAY} de {len} · Plano {len === 365 ? "1 ano" : `${len} dias`}</p>
         <h2 className="mt-2 font-display text-2xl uppercase text-foreground">{today.label}</h2>
-        <Link to="/biblia" search={{ day: CURRENT_DAY }} className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
+        <Link to="/biblia" search={{ day: CURRENT_DAY, plan: len }} className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
           Ler ou ouvir agora <ChevronRight className="h-4 w-4" />
         </Link>
         <button
@@ -49,7 +52,7 @@ function Home() {
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">{done.size} de 180 dias</p>
+          <p className="mt-2 text-xs text-muted-foreground">{done.size} de {len} dias</p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Ofensiva</p>
