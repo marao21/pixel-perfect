@@ -6,7 +6,7 @@ import { Speaker } from "@/components/Speaker";
 import { BOOKS, PLAN, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
-  validateSearch: (s: Record<string, unknown>): { day?: number } => (s.day ? { day: Number(s.day) } : {}),
+  validateSearch: (s: Record<string, unknown>): { day?: number } => (s["day"] ? { day: Number(s["day"]) } : {}),
   head: () => ({
     meta: [
       { title: "Bíblia com Leitura em Voz Alta — Os Mamutes" },
