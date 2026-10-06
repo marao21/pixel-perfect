@@ -3,10 +3,13 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Page } from "@/components/Shell";
 import { Speaker } from "@/components/Speaker";
-import { BOOKS, PLAN, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
+import { BOOKS, getPlan, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
-  validateSearch: (s: Record<string, unknown>): { day?: number } => (s["day"] ? { day: Number(s["day"]) } : {}),
+  validateSearch: (s: Record<string, unknown>): { day?: number; plan?: 90 | 180 | 365 } => {
+    const p = Number(s["plan"]);
+    return { ...(s["day"] ? { day: Number(s["day"]) } : {}), ...(p === 90 || p === 365 || p === 180 ? { plan: p as 90 | 180 | 365 } : {}) };
+  },
   head: () => ({
     meta: [
       { title: "Bíblia com Leitura em Voz Alta — Os Mamutes" },
@@ -23,8 +26,9 @@ export const Route = createFileRoute("/biblia")({
 const sel = "min-w-0 rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground";
 
 function Biblia() {
-  const { day } = Route.useSearch();
-  const start = day ? PLAN[day - 1]?.refs[0] : undefined;
+  const { day, plan } = Route.useSearch();
+  const today = day ? getPlan(plan ?? 180)[day - 1] : undefined;
+  const start = today?.refs[0];
   const [bookIdx, setBookIdx] = useState(start ? BOOKS.indexOf(start.book) : 0);
   const [chapter, setChapter] = useState(start?.chapter ?? 1);
   const [version, setVersion] = useState("NAA");
@@ -50,7 +54,23 @@ function Biblia() {
   };
 
   return (
-    <Page kicker={day ? `Leitura do dia ${day}: ${PLAN[day - 1]!.label}` : "Palavra de Deus"} title="Bíblia">
+    <Page kicker={today ? `Leitura do dia ${day} · Plano ${plan === 365 ? "1 ano" : `${plan ?? 180} dias`}` : "Palavra de Deus"} title="Bíblia">
+      {today && (
+        <div className="mb-4 rounded-xl border border-gold bg-card p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-gold">Leitura de hoje</p>
+          <p className="mb-2 font-medium text-foreground">{today.label}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {today.refs.map((r) => {
+              const bi = BOOKS.indexOf(r.book), on = bi === bookIdx && r.chapter === chapter;
+              return (
+                <button key={`${bi}-${r.chapter}`} onClick={() => { setBookIdx(bi); setChapter(r.chapter); }} className={`rounded-lg border px-2.5 py-1 text-xs font-bold ${on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-secondary text-foreground"}`}>
+                  {r.book.pt} {r.chapter}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
       <div className="mb-3 grid grid-cols-[minmax(0,1fr)_5rem] gap-2">
         <select className={sel} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); }}>
           {BOOKS.map((b, i) => <option key={b.en} value={i}>{b.pt}</option>)}
