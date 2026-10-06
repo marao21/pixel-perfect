@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Home, CalendarDays, Trophy, MessagesSquare, BookOpen, BookMarked } from "lucide-react";
 import type { ReactNode } from "react";
+import logo from "@/assets/mamutes-logo.png.asset.json";
 
 const TABS = [
   { to: "/", label: "Home", icon: Home },
@@ -14,9 +15,12 @@ const TABS = [
 export function Page({ title, kicker, children }: { title: string; kicker?: string; children: ReactNode }) {
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-6">
-      <header className="mb-5">
+      <header className="mb-5 flex items-center gap-3">
+        <img src={logo.url} alt="Os Mamutes" className="h-14 w-14 shrink-0 object-contain" />
+        <div className="min-w-0">
         {kicker && <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">{kicker}</p>}
         <h1 className="font-display text-3xl uppercase leading-none tracking-wide text-foreground">{title}</h1>
+        </div>
       </header>
       {children}
     </main>

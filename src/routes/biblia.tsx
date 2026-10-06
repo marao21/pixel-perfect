@@ -25,7 +25,7 @@ function Biblia() {
   const start = day ? PLAN[day - 1]?.refs[0] : undefined;
   const [bookIdx, setBookIdx] = useState(start ? BOOKS.indexOf(start.book) : 0);
   const [chapter, setChapter] = useState(start?.chapter ?? 1);
-  const [version, setVersion] = useState("almeida");
+  const [version, setVersion] = useState("NAA");
   const [verses, setVerses] = useState<Verse[]>([]);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
   const book = BOOKS[bookIdx]!;
@@ -34,11 +34,11 @@ function Biblia() {
   useEffect(() => {
     let alive = true;
     setStatus("loading");
-    fetchChapter(book.en, chapter, version)
+    fetchChapter(bookIdx, chapter, version)
       .then((v) => { if (alive) { setVerses(v); setStatus("ok"); } })
       .catch(() => alive && setStatus("error"));
     return () => { alive = false; };
-  }, [book, chapter, version]);
+  }, [bookIdx, chapter, version]);
 
   const go = (delta: number) => {
     let b = bookIdx, c = chapter + delta;
