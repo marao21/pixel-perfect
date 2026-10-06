@@ -63,17 +63,19 @@ export function Page({ children }: { title: string; kicker?: string; children: R
 export function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
-      <ul className="mx-auto flex max-w-xl overflow-x-auto">
+      <ul className="mx-auto grid w-full max-w-xl grid-cols-6">
         {TABS.map(({ to, label, icon: Icon }) => (
-          <li key={to} className="min-w-[4.25rem] flex-1">
+          <li key={to} className="min-w-0">
             <Link
               to={to}
               activeOptions={{ exact: to === "/" }}
-              className="flex flex-col items-center gap-1 py-2.5 text-[10px] font-medium text-muted-foreground transition-colors"
+              aria-label={label}
+              title={label}
+              className="flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-0 py-2 text-[8px] leading-none font-medium text-muted-foreground transition-colors"
               activeProps={{ className: "text-primary" }}
             >
-              <Icon className="h-5 w-5" />
-              {label}
+              <Icon className="h-5 w-5 shrink-0" />
+              <span className="block max-w-full whitespace-nowrap tracking-[-0.03em]">{label}</span>
             </Link>
           </li>
         ))}
