@@ -57,10 +57,13 @@ function Biblia() {
           {Array.from({ length: book.ch }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
         </select>
       </div>
-      <div className="mb-3 flex gap-2 overflow-x-auto pb-1">
-        {VERSIONS.map((v) => (
-          <button key={v.id} onClick={() => setVersion(v.id)} className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium ${version === v.id ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>{v.label}</button>
-        ))}
+      <div className="mb-3">
+        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Versão</p>
+        <div className="grid grid-cols-4 gap-1.5 rounded-xl border border-border bg-secondary p-1.5">
+          {VERSIONS.map((v) => (
+            <button key={v.id} onClick={() => setVersion(v.id)} className={`rounded-lg py-2 text-sm font-bold tracking-wide transition-colors ${version === v.id ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:bg-background"}`}>{v.label}</button>
+          ))}
+        </div>
       </div>
       <Speaker lang={lang} text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
 
