@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Page } from "@/components/Shell";
-import { Speaker } from "@/components/Speaker";
+import { AudioPlayerBar } from "@/components/AudioPlayerBar";
 import { BOOKS, getPlan, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
@@ -112,7 +112,7 @@ function Biblia() {
           ))}
         </div>
       </div>
-      <Speaker label={today ? "Ouvir Leitura de Hoje" : "Ouvir Capítulo"} text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
+      <AudioPlayerBar label={today ? "Ouvir Leitura de Hoje" : "Ouvir Capítulo"} text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
 
       <article className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
         <header className="border-b border-border bg-hero px-5 py-5">

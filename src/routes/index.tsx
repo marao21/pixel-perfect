@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
-import { Speaker } from "@/components/Speaker";
+import { AudioPlayerBar } from "@/components/AudioPlayerBar";
 import { BOOKS, fetchChapter, getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
@@ -55,7 +55,7 @@ function Home() {
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
         <div className="mt-4">
-          <Speaker label="Ouvir Leitura de Hoje" text={readingStatus === "ready" ? readingText : ""} />
+          <AudioPlayerBar label="Ouvir Leitura de Hoje" text={readingStatus === "ready" ? readingText : ""} />
           {readingStatus === "loading" && <p className="mt-2 text-xs text-muted-foreground">Carregando a leitura de hoje…</p>}
           {readingStatus === "error" && <p className="mt-2 text-xs text-muted-foreground">Não foi possível preparar o áudio. Abra o texto da leitura e tente novamente.</p>}
         </div>
@@ -88,7 +88,7 @@ function Home() {
         <h3 className="mt-2 text-lg font-semibold text-foreground">{dev.title}</h3>
         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{dev.body[0]}</p>
         <div className="mt-3">
-          <Speaker label="Ouvir Devocional" text={`${dev.title}. ${dev.verse} ${dev.ref}. ${dev.body.join(" ")}`} />
+          <AudioPlayerBar label="Ouvir Devocional" text={`${dev.title}. ${dev.verse} ${dev.ref}. ${dev.body.join(" ")}`} />
         </div>
         <Link to="/devocional" className="mt-3 inline-flex items-center text-sm text-primary">Ler completo <ChevronRight className="h-4 w-4" /></Link>
       </section>

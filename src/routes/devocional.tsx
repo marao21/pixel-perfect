@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
-import { Speaker } from "@/components/Speaker";
+import { AudioPlayerBar } from "@/components/AudioPlayerBar";
 import { getDevotionalForDay, TOTAL_DAYS } from "@/lib/devotionals";
 
 export const Route = createFileRoute("/devocional")({
@@ -73,7 +73,7 @@ function Devocional() {
         <p className="mt-2 text-right text-sm font-semibold text-gold">{d.ref}</p>
 
         <div className="mt-4">
-          <Speaker label="Ouvir Devocional" text={`${d.title}. ${d.verse} ${d.ref}. ${d.body.join(" ")}`} />
+          <AudioPlayerBar label="Ouvir Devocional" text={`${d.title}. ${d.verse} ${d.ref}. ${d.body.join(" ")}`} />
         </div>
 
         <div className="mt-5 space-y-4 leading-relaxed text-foreground/90">
