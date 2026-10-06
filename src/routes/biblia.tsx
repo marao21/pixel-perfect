@@ -65,7 +65,7 @@ function Biblia() {
           ))}
         </div>
       </div>
-      <Speaker lang={lang} text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
+      <Speaker text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
 
       <article className="mt-5 rounded-2xl border border-border bg-card p-5">
         <h2 className="mb-4 font-display text-3xl uppercase text-foreground">{book.pt} {chapter}</h2>

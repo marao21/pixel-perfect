@@ -29,7 +29,7 @@ function Devocional() {
       <article className="rounded-2xl border border-border bg-card p-5">
         <h2 className="font-display text-3xl uppercase leading-tight text-foreground">{d.title}</h2>
         <blockquote className="my-4 border-l-2 border-gold pl-4 italic text-foreground">“{d.verse}”<footer className="mt-1 text-sm not-italic text-gold">{d.ref}</footer></blockquote>
-        <Speaker lang="pt" text={`${d.title}. ${d.verse} ${d.ref}. ${d.body.join(" ")}`} />
+        <Speaker text={`${d.title}. ${d.verse} ${d.ref}. ${d.body.join(" ")}`} />
         <div className="mt-4 space-y-3 leading-relaxed text-muted-foreground">{d.body.map((p, i) => <p key={i}>{p}</p>)}</div>
       </article>
     </Page>
