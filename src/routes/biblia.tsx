@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Page } from "@/components/Shell";
-import { AudioPlayerBar } from "@/components/AudioPlayerBar";
 import { BOOKS, getPlan, VERSIONS, fetchChapter, type Verse } from "@/lib/bible";
 
 export const Route = createFileRoute("/biblia")({
@@ -12,10 +11,10 @@ export const Route = createFileRoute("/biblia")({
   },
   head: () => ({
     meta: [
-      { title: "Bíblia com Leitura em Voz Alta — Os Mamutes" },
-      { name: "description", content: "Leia e ouça a Bíblia em várias versões, escolhendo a voz." },
-      { property: "og:title", content: "Bíblia com Leitura em Voz Alta — Os Mamutes" },
-      { property: "og:description", content: "Leia e ouça a Bíblia em várias versões." },
+      { title: "Bíblia — Os Mamutes" },
+      { name: "description", content: "Leia a Bíblia em várias versões." },
+      { property: "og:title", content: "Bíblia — Os Mamutes" },
+      { property: "og:description", content: "Leia a Bíblia em várias versões." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -112,8 +111,6 @@ function Biblia() {
           ))}
         </div>
       </div>
-      <AudioPlayerBar label={today ? "Ouvir Leitura de Hoje" : "Ouvir Capítulo"} text={status === "ok" ? `${book.pt}, capítulo ${chapter}. ${verses.map((v) => v.text).join(" ")}` : ""} />
-
       <article className="mt-5 overflow-hidden rounded-2xl border border-border bg-card">
         <header className="border-b border-border bg-hero px-5 py-5">
           <h2 className="font-display text-4xl uppercase leading-none text-primary">{book.pt} {chapter}</h2>

@@ -130,10 +130,67 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <ThemeProvider>
         <StoreProvider>
+          <DailyDevotionalGreeting />
           <Outlet />
           <BottomNav />
         </StoreProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
+}
+
+function DailyDevotionalGreeting() {
+  useEffect(() => {
+    if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return;
+
+    const today = new Date();
+    const dateKey = `mamutes-devotional-greeting-${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    if (localStorage.getItem(dateKey)) return;
+
+    const synth = window.speechSynthesis;
+    let started = false;
+    let finished = false;
+    let retryAvailable = true;
+    const utterance = new SpeechSynthesisUtterance("Hoje tem seu devocional.");
+    utterance.lang = "pt-BR";
+    utterance.rate = 1;
+    utterance.onstart = () => {
+      started = true;
+      localStorage.setItem(dateKey, "1");
+    };
+    utterance.onend = () => { finished = true; };
+    utterance.onerror = (event) => {
+      if (event.error !== "not-allowed") finished = true;
+    };
+
+    const chooseVoiceAndSpeak = () => {
+      const voices = synth.getVoices();
+      utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === "pt-br")
+        ?? voices.find((voice) => voice.lang.toLowerCase().startsWith("pt"))
+        ?? null;
+      synth.cancel();
+      synth.speak(utterance);
+    };
+
+    const retryAfterGesture = () => {
+      if (retryAvailable && !started && !finished) {
+        retryAvailable = false;
+        chooseVoiceAndSpeak();
+      }
+      window.removeEventListener("pointerdown", retryAfterGesture);
+      window.removeEventListener("keydown", retryAfterGesture);
+    };
+
+    const timer = window.setTimeout(chooseVoiceAndSpeak, 500);
+    window.addEventListener("pointerdown", retryAfterGesture, { once: true });
+    window.addEventListener("keydown", retryAfterGesture, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", retryAfterGesture);
+      window.removeEventListener("keydown", retryAfterGesture);
+      if (!started) synth.cancel();
+    };
+  }, []);
+
+  return null;
 }
