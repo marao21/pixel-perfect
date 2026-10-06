@@ -1,17 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Circle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Page } from "@/components/Shell";
-import { PLAN } from "@/lib/bible";
+import { PLAN_LENGTHS, getPlan, type PlanLength } from "@/lib/bible";
 import { CURRENT_DAY, useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/plano")({
   head: () => ({
     meta: [
-      { title: "Plano de Leitura 180 Dias — Os Mamutes" },
-      { name: "description", content: "Cronograma completo para ler a Bíblia em 180 dias." },
-      { property: "og:title", content: "Plano de Leitura 180 Dias — Os Mamutes" },
-      { property: "og:description", content: "Cronograma completo para ler a Bíblia em 180 dias." },
+      { title: "Plano de Leitura 90, 180 Dias ou 1 Ano — Os Mamutes" },
+      { name: "description", content: "Cronograma completo para ler a Bíblia em 90 dias, 180 dias ou 1 ano." },
+      { property: "og:title", content: "Plano de Leitura 90, 180 Dias ou 1 Ano — Os Mamutes" },
+      { property: "og:description", content: "Cronograma completo para ler a Bíblia em 90 dias, 180 dias ou 1 ano." },
     ],
   }),
   component: Plano,
@@ -22,10 +22,19 @@ const FILTERS = ["Todos", "Concluídos", "Pendentes"] as const;
 function Plano() {
   const { done, toggle } = useStore();
   const [f, setF] = useState<(typeof FILTERS)[number]>("Todos");
+  const [len, setLen] = useState<PlanLength>(180);
+  useEffect(() => { const v = Number(localStorage.getItem("mamutes-plan")); if (v === 90 || v === 180 || v === 365) setLen(v); }, []);
+  const pick = (v: PlanLength) => { setLen(v); localStorage.setItem("mamutes-plan", String(v)); };
+  const PLAN = getPlan(len);
   const list = PLAN.filter((d) => f === "Todos" || (f === "Concluídos" ? done.has(d.day) : !done.has(d.day)));
 
   return (
-    <Page kicker={`${done.size}/180 concluídos`} title="Plano">
+    <Page kicker={`${done.size}/${len} concluídos`} title="Plano">
+      <div className="mb-3 grid grid-cols-3 gap-1.5 rounded-xl border border-border bg-secondary p-1.5">
+        {PLAN_LENGTHS.map((p) => (
+          <button key={p.id} onClick={() => pick(p.id)} className={`rounded-lg py-2 text-sm font-bold transition-colors ${len === p.id ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground"}`}>{p.label}</button>
+        ))}
+      </div>
       <div className="sticky top-0 z-10 -mx-4 mb-4 flex gap-2 bg-background/95 px-4 py-2 backdrop-blur">
         {FILTERS.map((x) => (
           <button key={x} onClick={() => setF(x)} className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${f === x ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"}`}>{x}</button>
@@ -36,10 +45,10 @@ function Plano() {
           const ok = done.has(d.day);
           return (
             <li key={d.day} className={`flex items-center gap-3 rounded-xl border bg-card p-3 ${d.day === CURRENT_DAY ? "border-gold" : "border-border"}`}>
-              <Link to="/biblia" search={{ day: d.day }} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+              <Link to="/biblia" search={{ day: d.day, plan: len }} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-secondary font-display text-lg text-foreground">{d.day}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium text-foreground">{d.label}</span>
+                  <span className="block font-medium text-foreground">{d.label}</span>
                   <span className="text-xs text-muted-foreground">{d.day === CURRENT_DAY ? "Hoje" : `${d.refs.length} capítulos`}</span>
                 </span>
               </Link>
