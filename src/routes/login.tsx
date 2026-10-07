@@ -54,12 +54,16 @@ function LoginRoute() {
           setIsSignUp(false);
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
-        navigate({ to: "/" });
+        if (data?.session) {
+          navigate({ to: "/" });
+        } else {
+          setErrorMsg("Falha ao realizar login. Verifique seu email e senha.");
+        }
       }
     } catch (err: any) {
       const rawMsg = err?.message || err?.error_description || (typeof err === 'string' ? err : JSON.stringify(err)) || "";
