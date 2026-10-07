@@ -236,7 +236,7 @@ function PaginasTab() {
         {rows.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma aba ainda. Elas aparecem no menu (☰).</p>}
         {rows.map((p) => (
           <div key={p.id}>
-            <Row title={p.title} sub={p.body?.slice(0, 80)} published={p.published}
+            <Row title={p.title} sub={p.body ? p.body.slice(0, 80) : null} published={p.published}
               onToggle={async (v) => { fail((await db.from("custom_pages").update({ published: v }).eq("id", p.id)).error); void load(); }}
               onDelete={async () => { fail((await db.from("custom_pages").delete().eq("id", p.id)).error); void load(); }} />
             <button className="-mt-1 mb-3 text-xs font-semibold text-primary" onClick={() => { setEditing(p.id); setTitle(p.title); setUrl(p.youtube_url ?? ""); setBody(p.body ?? ""); }}>Editar</button>
