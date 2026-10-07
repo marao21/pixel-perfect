@@ -261,7 +261,18 @@ function PixTab() {
                 <Switch checked={p.amount === null} onCheckedChange={(free) => upd(p.id, { amount: free ? null : 10 })} /> Valor livre (só a chave)
               </label>
               {p.amount !== null && (
-                <Input type="number" min={0} step="0.01" value={p.amount} onChange={(e) => upd(p.id, { amount: Number(e.target.value) || 0 })} placeholder="R$" />
+                <Input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={p.amount}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    // Se digitou um valor maior que zero, não é mais "valor livre"; se apagou/zerou, volta a ser livre.
+                    upd(p.id, { amount: v > 0 ? v : null });
+                  }}
+                  placeholder="R$"
+                />
               )}
             </div>
             <div>
