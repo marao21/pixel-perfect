@@ -31,8 +31,6 @@ function Home() {
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
 
-
-
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
@@ -43,8 +41,6 @@ function Home() {
         <Link to="/biblia" search={{ day: CURRENT_DAY, plan: len }} className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
-
-
 
         <button
           onClick={() => toggle(CURRENT_DAY)}
