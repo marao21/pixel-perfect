@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown, X } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,40 +24,26 @@ function MenuButton() {
   const item = "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted";
 
   useEffect(() => {
+    let active = true;
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdmin(session.user.id);
-      } else {
-        setIsAdmin(false);
-      }
+      if (active) setUser(session?.user ?? null);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdmin(session.user.id);
-      } else {
-        setIsAdmin(false);
-      }
     });
-    return () => subscription.unsubscribe();
+    return () => { active = false; subscription.unsubscribe(); };
   }, []);
 
-  async function checkAdmin(userId: string) {
-    try {
-      // Aqui você pode fazer uma chamada para sua API ou verificar diretamente no supabase se o usuário é admin
-      // Exemplo: chamada a uma função RPC ou tabela de roles
-      // Para este exemplo, vamos supor que você tem uma função RPC chamada 'is_user_admin'
-      const { data, error } = await supabase.rpc('is_user_admin', { user_id: userId });
-      if (error) {
-        setIsAdmin(false);
-        return;
-      }
-      setIsAdmin(data === true);
-    } catch {
-      setIsAdmin(false);
+  useEffect(() => {
+    let active = true;
+    setIsAdmin(false);
+    if (user) {
+      supabase.rpc("has_role", { _user_id: user.id, _role: "admin" }).then(({ data, error }) => {
+        if (active) setIsAdmin(!error && data === true);
+      });
     }
-  }
+    return () => { active = false; };
+  }, [user]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -194,13 +180,6 @@ export function Page({ children }: { title: string; kicker?: string; children: R
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <NetworkStatus />
-          <Link
-            to="/admin"
-            title="Área Admin"
-            className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ShieldAlert className="h-4 w-4" />
-          </Link>
           {user ? (
             <button
               onClick={handleLogout}
