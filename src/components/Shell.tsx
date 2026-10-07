@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,22 +18,52 @@ function MenuButton() {
   const [open, setOpen] = useState(false);
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pages = useCustomPages();
   const { theme, setTheme } = useTheme();
   const item = "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted";
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdmin(session.user.id);
+      } else {
+        setIsAdmin(false);
+      }
+    });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdmin(session.user.id);
+      } else {
+        setIsAdmin(false);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  async function checkAdmin(userId: string) {
+    try {
+      // Aqui você pode fazer uma chamada para sua API ou verificar diretamente no supabase se o usuário é admin
+      // Exemplo: chamada a uma função RPC ou tabela de roles
+      // Para este exemplo, vamos supor que você tem uma função RPC chamada 'is_user_admin'
+      const { data, error } = await supabase.rpc('is_user_admin', { user_id: userId });
+      if (error) {
+        setIsAdmin(false);
+        return;
+      }
+      setIsAdmin(data === true);
+    } catch {
+      setIsAdmin(false);
+    }
+  }
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (!error) setOpen(false);
   };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -55,6 +85,11 @@ function MenuButton() {
               <FileText className="h-5 w-5" /> {p.title}
             </Link>
           ))}
+          {isAdmin && (
+            <Link to="/admin" onClick={() => setOpen(false)} className={`${item} text-gold font-semibold`}>
+              <ShieldAlert className="h-5 w-5" /> Painel Admin
+            </Link>
+          )}
         </nav>
         <section className="mt-6 border-t border-border pt-4">
           <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Conta</h3>
@@ -192,4 +227,3 @@ export function Page({ children }: { title: string; kicker?: string; children: R
     </main>
   );
 }
-
