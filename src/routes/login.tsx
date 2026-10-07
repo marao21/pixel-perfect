@@ -30,7 +30,7 @@ function LoginRoute() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -38,8 +38,14 @@ function LoginRoute() {
           },
         });
         if (error) throw error;
-        setSuccessMsg("Conta criada com sucesso!");
-        navigate({ to: "/" });
+        
+        if (data?.session) {
+          setSuccessMsg("Conta criada e login realizado com sucesso!");
+          navigate({ to: "/" });
+        } else {
+          setSuccessMsg("Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email antes de entrar.");
+          setIsSignUp(false);
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
