@@ -85,24 +85,28 @@ function Home() {
         </div>
       </section>
 
-      {/* Seção de seleção de tema com botão único e dropdown */}
+      {/* Seção de seleção de tema com botão sanduíche */}
       <section className="relative mt-6 rounded-2xl border border-border bg-card p-4">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Aparência</p>
-        <button
-          type="button"
-          onClick={() => setShowDropdown(!showDropdown)}
-          className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-primary hover:text-primary-foreground w-full text-left"
-          aria-haspopup="listbox"
-          aria-expanded={showDropdown}
-        >
-          {themes.find(t => t.id === theme)?.label ?? "Selecionar tema"}
-        </button>
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Aparência</p>
+          <button
+            type="button"
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="flex items-center justify-center rounded-xl border border-border bg-card p-2.5 text-foreground transition hover:bg-secondary"
+            aria-label="Menu de Aparência"
+            aria-expanded={showDropdown}
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
 
         {showDropdown && (
           <ul
             role="listbox"
             tabIndex={-1}
-            className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-card p-1 shadow-lg"
+            className="absolute right-4 z-10 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-card p-1 shadow-lg"
           >
             {themes.map(({ id, label }) => (
               <li
@@ -117,7 +121,7 @@ function Home() {
                     changeTheme(id);
                   }
                 }}
-                className={`cursor-pointer rounded px-3 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-1 ${theme === id ? "bg-primary text-primary-foreground" : "hover:bg-primary hover:text-primary-foreground text-foreground"}`}
+                className={`cursor-pointer rounded-lg px-3 py-2.5 text-sm font-semibold transition focus:outline-none ${theme === id ? "bg-primary text-primary-foreground" : "hover:bg-secondary text-foreground"}`}
               >
                 {label}
               </li>
