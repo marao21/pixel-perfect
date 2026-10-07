@@ -16,9 +16,23 @@ const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
 
 function MenuButton() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const pages = useCustomPages();
   const { theme, setTheme } = useTheme();
   const item = "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted";
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) setOpen(false);
+  };
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -44,12 +58,23 @@ function MenuButton() {
         <section className="mt-6 border-t border-border pt-4">
           <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Conta</h3>
           <div className="mt-2 flex flex-col gap-1">
-            <Link to="/login" search={{ cadastro: false }} onClick={() => setOpen(false)} className={item}>
-              <LogIn className="h-5 w-5" /> Entrar
-            </Link>
-            <Link to="/login" search={{ cadastro: true }} onClick={() => setOpen(false)} className={item}>
-              <UserPlus className="h-5 w-5" /> Criar cadastro
-            </Link>
+            {user ? (
+              <>
+                <p className="truncate px-3 py-2 text-sm text-muted-foreground" title={user.email ?? "Conta conectada"}>{user.email ?? "Conta conectada"}</p>
+                <button type="button" onClick={() => void handleLogout()} className={item}>
+                  <LogOut className="h-5 w-5" /> Sair
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" search={{ cadastro: false }} onClick={() => setOpen(false)} className={item}>
+                  <LogIn className="h-5 w-5" /> Entrar
+                </Link>
+                <Link to="/login" search={{ cadastro: true }} onClick={() => setOpen(false)} className={item}>
+                  <UserPlus className="h-5 w-5" /> Criar cadastro
+                </Link>
+              </>
+            )}
           </div>
         </section>
         <section className="mt-6 border-t border-border pt-4">
