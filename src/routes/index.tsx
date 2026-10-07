@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
+import { HomeFeed } from "@/components/HomeFeed";
 import { getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
@@ -117,6 +118,7 @@ function Home() {
         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{dev.body[0]}</p>
         <Link to="/devocional" className="mt-3 inline-flex items-center text-sm text-primary">Ler completo <ChevronRight className="h-4 w-4" /></Link>
       </section>
+      <HomeFeed />
     </Page>
   );
 }

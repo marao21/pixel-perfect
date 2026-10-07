@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, Copy, Heart } from "lucide-react";
 import { Page } from "@/components/Shell";
+import { useSettings } from "@/lib/content";
 
 const pixOptions = [
   { label: "R$ 5,00", code: "PIX-DEMO-OFERTA-05" },
@@ -40,6 +41,21 @@ function Oferta() {
 
   return (
     <Page kicker="Igreja Batista Belém" title="Oferta">
+      {settings && (settings.pix_qr_url || settings.pix_key) && (
+        <section className="mb-4 rounded-2xl border border-border bg-card p-4 text-center">
+          <h2 className="font-display text-xl uppercase text-foreground">Pix da igreja</h2>
+          {settings.pix_qr_url && (
+            <img src={settings.pix_qr_url} alt="QR Code Pix" className="mx-auto mt-3 w-56 rounded-xl bg-card p-2" />
+          )}
+          {settings.pix_receiver && <p className="mt-2 text-sm text-muted-foreground">Recebedor: <strong className="text-foreground">{settings.pix_receiver}</strong></p>}
+          {settings.pix_key && (
+            <button type="button" onClick={() => void copyCode(settings.pix_key!)} className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+              {copiedCode === settings.pix_key ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              {copiedCode === settings.pix_key ? "Chave copiada" : "Copiar chave Pix"}
+            </button>
+          )}
+        </section>
+      )}
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="bg-hero px-4 py-3 text-center">
           <Heart className="mx-auto h-6 w-6 text-gold" aria-hidden="true" />
