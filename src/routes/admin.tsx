@@ -88,7 +88,7 @@ function AdminRoute() {
         </Button>
       </div>
       <Tabs defaultValue="avisos">
-        <TabsList className="grid h-auto w-full grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-6">
           <TabsTrigger value="avisos" aria-label="Avisos"><Megaphone className="h-4 w-4" /></TabsTrigger>
           <TabsTrigger value="videos" aria-label="Vídeos"><PlayCircle className="h-4 w-4" /></TabsTrigger>
           <TabsTrigger value="pix" aria-label="Oferta"><HandCoins className="h-4 w-4" /></TabsTrigger>
