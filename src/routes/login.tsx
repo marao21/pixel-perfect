@@ -67,7 +67,12 @@ function LoginRoute() {
       });
       if (error) throw error;
     } catch (err: any) {
-      setErrorMsg(err.message || "Ocorreu um erro ao entrar com o Gmail.");
+      const rawMsg = err.message || "";
+      if (rawMsg.includes("Unsupported provider") || rawMsg.includes("not enabled")) {
+        setErrorMsg("O login com o Google/Gmail não está habilitado neste projeto no momento. Por favor, utilize email e senha ou cadastre-se.");
+      } else {
+        setErrorMsg(rawMsg || "Ocorreu um erro ao entrar com o Gmail.");
+      }
       setLoading(false);
     }
   };
