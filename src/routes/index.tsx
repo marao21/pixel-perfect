@@ -6,6 +6,7 @@ import { HomeFeed } from "@/components/HomeFeed";
 import { getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
+import { useState } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,8 +20,6 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-import { useState } from "react";
-
 function Home() {
   const { done, toggle, profiles } = useStore();
   const [len] = usePlanLength();
@@ -30,6 +29,25 @@ function Home() {
   const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
+
+  // Estado para controle do tema
+  const [theme, setTheme] = useState<string>("claro");
+  const [showAllColors, setShowAllColors] = useState(false);
+
+  // Lista de temas disponíveis
+  const themes = [
+    { id: "claro", label: "Claro" },
+    { id: "escuro", label: "Escuro" },
+    { id: "sepia", label: "Sépla" },
+    { id: "azul", label: "Azul" },
+  ];
+
+  // Função para alterar tema no body
+  function changeTheme(newTheme: string) {
+    setTheme(newTheme);
+    document.body.classList.remove(...themes.map(t => t.id));
+    document.body.classList.add(newTheme);
+  }
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
@@ -63,6 +81,33 @@ function Home() {
           <p className="text-xs text-muted-foreground">Ofensiva</p>
           <p className="flex items-center gap-1 font-display text-3xl text-foreground"><Flame className="h-6 w-6 text-gold" />{me?.streak ?? 0}</p>
           <p className="mt-2 text-xs text-muted-foreground">dias seguidos</p>
+        </div>
+      </section>
+
+      {/* Seção de seleção de tema */}
+      <section className="mt-6 rounded-2xl border border-border bg-card p-4">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Aparência</p>
+        <div className="flex flex-wrap gap-2">
+          {/* Botão para mostrar todos */}
+          <button
+            type="button"
+            onClick={() => setShowAllColors(!showAllColors)}
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-primary hover:text-primary-foreground"
+          >
+            {showAllColors ? "Mostrar menos" : "Mostrar todos"}
+          </button>
+
+          {/* Mostrar botões de cor, todos ou só o selecionado */}
+          {(showAllColors ? themes : themes.filter(t => t.id === theme)).map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => changeTheme(id)}
+              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-1 ${theme === id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground"}`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </section>
 
