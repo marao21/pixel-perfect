@@ -14,6 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          published: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          published?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          published?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          id: number
+          pix_key: string | null
+          pix_qr_url: string | null
+          pix_receiver: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          pix_key?: string | null
+          pix_qr_url?: string | null
+          pix_receiver?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          pix_key?: string | null
+          pix_qr_url?: string | null
+          pix_receiver?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      devotional_overrides: {
+        Row: {
+          author: string | null
+          body: string
+          day_of_year: number
+          reference: string | null
+          title: string
+          updated_at: string
+          verse: string | null
+        }
+        Insert: {
+          author?: string | null
+          body: string
+          day_of_year: number
+          reference?: string | null
+          title: string
+          updated_at?: string
+          verse?: string | null
+        }
+        Update: {
+          author?: string | null
+          body?: string
+          day_of_year?: number
+          reference?: string | null
+          title?: string
+          updated_at?: string
+          verse?: string | null
+        }
+        Relationships: []
+      }
       membros: {
         Row: {
           criado_em: string | null
@@ -80,15 +161,77 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          position: number
+          published: boolean
+          title: string
+          updated_at: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          position?: number
+          published?: boolean
+          title: string
+          updated_at?: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          position?: number
+          published?: boolean
+          title?: string
+          updated_at?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_exists: { Args: never; Returns: boolean }
+      claim_first_admin: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -215,6 +358,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
