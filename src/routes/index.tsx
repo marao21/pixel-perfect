@@ -31,7 +31,7 @@ function Home() {
   const dev = DEVOTIONALS[0]!;
 
   return (
-    <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
+    <Page>
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
 
       <section className="rounded-2xl border border-border bg-hero p-5 shadow-elevated">
