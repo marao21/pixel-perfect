@@ -34,7 +34,11 @@ function LoginRoute() {
           email,
           password,
           options: {
-            data: { full_name: fullName },
+            data: {
+              full_name: fullName,
+              name: fullName,
+            },
+            emailRedirectTo: window.location.origin,
           },
         });
         if (error) throw error;
@@ -42,8 +46,11 @@ function LoginRoute() {
         if (data?.session) {
           setSuccessMsg("Conta criada e login realizado com sucesso!");
           navigate({ to: "/" });
+        } else if (data?.user) {
+          setSuccessMsg("Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email ou faça login caso a confirmação esteja desativada.");
+          setIsSignUp(false);
         } else {
-          setSuccessMsg("Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email antes de entrar.");
+          setSuccessMsg("Conta criada com sucesso!");
           setIsSignUp(false);
         }
       } else {
