@@ -12,6 +12,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { db, youtubeId, type Announcement, type DevOverride, type PixOption, type Settings, type Video } from "@/lib/content";
 import { getDevotionalForDay } from "@/lib/devotionals";
+import { useServerFn } from "@tanstack/react-start";
+import { createAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -333,39 +335,76 @@ function DevocionalTab() {
 }
 
 function AdminsTab() {
-  const [rows, setRows] = useState<{ user_id: string; email: string }[]>([]);
+  const [rows, setRows] = useState<{ user_id: string; email: string; full_access: boolean }[]>([]);
+  const [me, setMe] = useState<{ id: string; full: boolean } | null>(null);
   const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+  const [full, setFull] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const create = useServerFn(createAdmin);
+
   const load = useCallback(async () => {
-    const { data } = await db.from("user_roles").select("user_id").eq("role", "admin");
-    const ids = (data ?? []).map((r: { user_id: string }) => r.user_id);
-    if (!ids.length) return setRows([]);
-    const { data: p } = await supabase.from("profiles").select("id,email").in("id", ids);
-    setRows(ids.map((id: string) => ({ user_id: id, email: p?.find((x) => x.id === id)?.email ?? id })));
+    const { data: u } = await supabase.auth.getUser();
+    if (u.user) {
+      const { data: f } = await db.rpc("is_full_admin", { _user_id: u.user.id });
+      setMe({ id: u.user.id, full: !!f });
+    }
+    const { data } = await db.from("user_roles").select("user_id,full_access").eq("role", "admin");
+    const list = (data ?? []) as { user_id: string; full_access: boolean }[];
+    if (!list.length) return setRows([]);
+    const { data: p } = await supabase.from("profiles").select("id,email").in("id", list.map((r) => r.user_id));
+    setRows(list.map((r) => ({ ...r, email: p?.find((x) => x.id === r.user_id)?.email ?? r.user_id })));
   }, []);
   useEffect(() => { void load(); }, [load]);
 
+  const canManage = !!me?.full;
+
   return (
-    <Box title="Administradores">
-      <p className="mb-2 text-xs text-muted-foreground">A pessoa precisa ter criado uma conta no app antes.</p>
-      <div className="mb-3 flex gap-2">
-        <Input type="email" placeholder="email do líder" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Button disabled={!email.trim()} onClick={async () => {
-          const { data: p } = await supabase.from("profiles").select("id").ilike("email", email.trim()).maybeSingle();
-          if (!p) { toast.error("Nenhuma conta com esse email."); return; }
-          const { error } = await db.from("user_roles").insert({ user_id: p.id, role: "admin" });
-          if (fail(error)) return;
-          setEmail(""); toast.success("Administrador adicionado"); void load();
-        }}>Adicionar</Button>
-      </div>
-      {rows.map((r) => (
-        <div key={r.user_id} className="mb-2 flex items-center justify-between rounded-xl border border-border p-3">
-          <span className="truncate text-sm text-foreground">{r.email}</span>
-          <Button variant="ghost" size="icon" aria-label="Remover admin" disabled={rows.length <= 1} onClick={async () => {
-            if (!confirm("Remover este administrador?")) return;
-            fail((await db.from("user_roles").delete().eq("user_id", r.user_id).eq("role", "admin")).error); void load();
-          }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-        </div>
-      ))}
-    </Box>
+    <>
+      {canManage ? (
+        <Box title="Novo administrador">
+          <div className="space-y-2">
+            <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input type="text" placeholder="Senha (mín. 6 caracteres)" value={pw} onChange={(e) => setPw(e.target.value)} />
+            <label className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Switch checked={full} onCheckedChange={setFull} />
+              {full ? "Acesso completo (pode mexer em tudo e gerenciar administradores)" : "Acesso comum (não pode adicionar nem excluir administradores)"}
+            </label>
+            <Button className="w-full" disabled={busy || !email.trim() || pw.length < 6} onClick={async () => {
+              setBusy(true);
+              try {
+                await create({ data: { email: email.trim(), password: pw, fullAccess: full } });
+                setEmail(""); setPw(""); setFull(false); toast.success("Administrador adicionado. Ele já pode entrar com esse email e senha."); void load();
+              } catch (e) { toast.error(e instanceof Error ? e.message : "Erro ao adicionar"); }
+              setBusy(false);
+            }}><Plus className="h-4 w-4" /> Adicionar administrador</Button>
+          </div>
+        </Box>
+      ) : (
+        <Box title="Administradores">
+          <p className="text-sm text-muted-foreground">Seu acesso é comum: você pode editar o conteúdo, mas não pode adicionar nem excluir administradores.</p>
+        </Box>
+      )}
+      <Box title={`Administradores (${rows.length})`}>
+        {rows.map((r) => (
+          <div key={r.user_id} className="mb-2 rounded-xl border border-border p-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-sm text-foreground">{r.email}{r.user_id === me?.id ? " (você)" : ""}</span>
+              {canManage && r.user_id !== me?.id && (
+                <Button variant="ghost" size="icon" aria-label="Remover admin" onClick={async () => {
+                  if (!confirm("Remover este administrador?")) return;
+                  fail((await db.from("user_roles").delete().eq("user_id", r.user_id).eq("role", "admin")).error); void load();
+                }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+              )}
+            </div>
+            <label className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <Switch checked={r.full_access} disabled={!canManage || r.user_id === me?.id}
+                onCheckedChange={async (v) => { fail((await db.from("user_roles").update({ full_access: v }).eq("user_id", r.user_id).eq("role", "admin")).error); void load(); }} />
+              {r.full_access ? "Acesso completo" : "Acesso comum"}
+            </label>
+          </div>
+        ))}
+      </Box>
+    </>
   );
 }
