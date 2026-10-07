@@ -241,7 +241,11 @@ function PixTab() {
         </div>
         <Button className="w-full" onClick={async () => {
           const { error } = await db.from("app_settings").update({ pix_key: s.pix_key || null, pix_receiver: s.pix_receiver || null, pix_qr_url: s.pix_qr_url || null }).eq("id", 1);
-          if (!fail(error)) toast.success("Pix salvo — já aparece na página Oferta");
+          if (!fail(error)) {
+            toast.success("Pix salvo — já aparece na página Oferta");
+            const { data } = await db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url").eq("id", 1).maybeSingle();
+            if (data) setS(data as Settings);
+          }
         }}>Salvar</Button>
       </div>
     </Box>
