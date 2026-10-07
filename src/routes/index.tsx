@@ -32,7 +32,7 @@ function Home() {
 
   // Estado para controle do tema
   const [theme, setTheme] = useState<string>("claro");
-  const [showAllColors, setShowAllColors] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   // Lista de temas disponíveis
   const themes = [
@@ -47,6 +47,7 @@ function Home() {
     setTheme(newTheme);
     document.body.classList.remove(...themes.map(t => t.id));
     document.body.classList.add(newTheme);
+    setShowDropdown(false);
   }
 
   return (
@@ -84,31 +85,45 @@ function Home() {
         </div>
       </section>
 
-      {/* Seção de seleção de tema */}
-      <section className="mt-6 rounded-2xl border border-border bg-card p-4">
+      {/* Seção de seleção de tema com botão único e dropdown */}
+      <section className="relative mt-6 rounded-2xl border border-border bg-card p-4">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Aparência</p>
-        <div className="flex flex-wrap gap-2">
-          {/* Botão para mostrar todos */}
-          <button
-            type="button"
-            onClick={() => setShowAllColors(!showAllColors)}
-            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-primary hover:text-primary-foreground"
-          >
-            {showAllColors ? "Mostrar menos" : "Mostrar todos"}
-          </button>
+        <button
+          type="button"
+          onClick={() => setShowDropdown(!showDropdown)}
+          className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-primary hover:text-primary-foreground w-full text-left"
+          aria-haspopup="listbox"
+          aria-expanded={showDropdown}
+        >
+          {themes.find(t => t.id === theme)?.label ?? "Selecionar tema"}
+        </button>
 
-          {/* Mostrar botões de cor, todos ou só o selecionado */}
-          {(showAllColors ? themes : themes.filter(t => t.id === theme)).map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => changeTheme(id)}
-              className={`rounded-lg border px-4 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-1 ${theme === id ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:bg-primary hover:text-primary-foreground"}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        {showDropdown && (
+          <ul
+            role="listbox"
+            tabIndex={-1}
+            className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-card p-1 shadow-lg"
+          >
+            {themes.map(({ id, label }) => (
+              <li
+                key={id}
+                role="option"
+                aria-selected={theme === id}
+                tabIndex={0}
+                onClick={() => changeTheme(id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    changeTheme(id);
+                  }
+                }}
+                className={`cursor-pointer rounded px-3 py-2 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-1 ${theme === id ? "bg-primary text-primary-foreground" : "hover:bg-primary hover:text-primary-foreground text-foreground"}`}
+              >
+                {label}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
