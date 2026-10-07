@@ -238,7 +238,9 @@ function PixTab() {
   }
 
   async function save() {
-    const clean = list.filter((p) => p.key.trim() || p.qr);
+    const clean = list
+      .filter((p) => p.key.trim() || p.qr)
+      .map((p) => ({ ...p, amount: p.amount !== null && p.amount > 0 ? p.amount : null }));
     const first = clean[0];
     const { error } = await db.from("app_settings").update({
       pix_options: clean,
