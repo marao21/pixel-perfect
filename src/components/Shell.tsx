@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,6 +41,17 @@ function MenuButton() {
             </Link>
           ))}
         </nav>
+        <section className="mt-6 border-t border-border pt-4">
+          <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Conta</h3>
+          <div className="mt-2 flex flex-col gap-1">
+            <Link to="/login" search={{ cadastro: false }} onClick={() => setOpen(false)} className={item}>
+              <LogIn className="h-5 w-5" /> Entrar
+            </Link>
+            <Link to="/login" search={{ cadastro: true }} onClick={() => setOpen(false)} className={item}>
+              <UserPlus className="h-5 w-5" /> Criar cadastro
+            </Link>
+          </div>
+        </section>
         <section className="mt-6 border-t border-border pt-4">
           <h3 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Aparência</h3>
           <div className="mt-2 grid grid-cols-2 gap-2">

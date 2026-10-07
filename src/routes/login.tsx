@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Page } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ShieldCheck, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({ cadastro: search["cadastro"] === true || search["cadastro"] === "true" }),
   component: LoginRoute,
 });
 
 function LoginRoute() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const { cadastro } = Route.useSearch();
+  const [isSignUp, setIsSignUp] = useState(cadastro);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,6 +24,8 @@ function LoginRoute() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => setIsSignUp(cadastro), [cadastro]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
