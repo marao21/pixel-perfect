@@ -29,22 +29,17 @@ export function HomeFeed() {
             const id = youtubeId(v.youtube_url);
             if (!id) return null;
             return (
-              <article key={v.id} className="overflow-hidden rounded-xl border border-border bg-card">
-                <div className="aspect-video">
-                  <iframe
-                    className="h-full w-full"
-                    src={`https://www.youtube-nocookie.com/embed/${id}`}
-                    title={v.title}
-                    loading="lazy"
-                    allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                </div>
-                <div className="p-3">
-                  <p className="font-semibold text-foreground">{v.title}</p>
-                  {v.description && <p className="mt-1 text-sm text-muted-foreground">{v.description}</p>}
-                </div>
-              </article>
+              <a key={v.id} href={v.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border bg-card p-2 transition-colors hover:bg-secondary">
+                <span className="relative shrink-0">
+                  <img src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" loading="lazy" className="h-16 w-28 rounded-lg object-cover" />
+                  <PlayCircle className="absolute inset-0 m-auto h-7 w-7 text-primary-foreground drop-shadow" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-semibold text-foreground">{v.title}</span>
+                  {v.description && <span className="line-clamp-2 block text-sm text-muted-foreground">{v.description}</span>}
+                  <span className="text-xs text-gold">Abrir no YouTube</span>
+                </span>
+              </a>
             );
           })}
         </section>

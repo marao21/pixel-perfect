@@ -46,6 +46,9 @@ function LoginRoute() {
         if (data?.session) {
           setSuccessMsg("Conta criada e login realizado com sucesso!");
           navigate({ to: "/" });
+        } else if (data?.user && (data.user.identities?.length ?? 0) === 0) {
+          setErrorMsg("Este email já tem conta. Faça login ou use \"Esqueci minha senha\".");
+          setIsSignUp(false);
         } else if (data?.user) {
           setSuccessMsg("Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email ou faça login caso a confirmação esteja desativada.");
           setIsSignUp(false);
@@ -75,6 +78,10 @@ function LoginRoute() {
         setErrorMsg("Limite de envios de email excedido pelo provedor (Supabase). Por favor, aguarde alguns minutos antes de tentar cadastrar novamente ou desative a confirmação de email no painel do Supabase se estiver em ambiente de testes.");
       } else if (rawMsg.toLowerCase().includes("database error saving new user") || rawMsg.toLowerCase().includes("db error")) {
         setErrorMsg("Erro ao salvar o usuário no banco de dados. Certifique-se de que a tabela profiles e a trigger do Supabase estão configuradas corretamente.");
+      } else if (rawMsg.toLowerCase().includes("invalid login credentials")) {
+        setErrorMsg("Email ou senha incorretos. Se você já tem conta e esqueceu a senha, toque em \"Esqueci minha senha\".");
+      } else if (rawMsg.toLowerCase().includes("email not confirmed")) {
+        setErrorMsg("Seu email ainda não foi confirmado. Abra o link que enviamos para sua caixa de entrada.");
       } else {
         setErrorMsg(rawMsg || "Ocorreu um erro na autenticação.");
       }
@@ -212,7 +219,22 @@ function LoginRoute() {
                 Entrar com o Gmail
               </Button>
 
-              <div className="text-center">
+              <div className="flex flex-col items-center gap-2 text-center">
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+                    onClick={async () => {
+                      setErrorMsg(null);
+                      if (!email.trim()) { setErrorMsg("Digite seu email acima para recuperar a senha."); return; }
+                      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
+                      if (error) setErrorMsg(error.message);
+                      else setSuccessMsg("Enviamos um link para criar uma nova senha. Confira seu email.");
+                    }}
+                  >
+                    Esqueci minha senha
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
