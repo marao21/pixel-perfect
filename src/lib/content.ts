@@ -49,3 +49,17 @@ export function useDevotionalOverride(day: number, fallback: DailyDevotional): D
     author: o.author ?? fallback.author,
   };
 }
+
+export type CustomPage = { id: string; slug: string; title: string; body: string | null; youtube_url: string | null; position: number; published: boolean };
+
+export function useCustomPages() {
+  const [rows, setRows] = useState<CustomPage[]>([]);
+  useEffect(() => {
+    db.from("custom_pages").select("*").eq("published", true).order("position").order("created_at").then(({ data }: { data: CustomPage[] | null }) => setRows(data ?? []));
+  }, []);
+  return rows;
+}
+
+export function slugify(s: string) {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "pagina";
+}
