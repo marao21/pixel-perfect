@@ -27,6 +27,7 @@ export const Route = createFileRoute("/oferta")({
 });
 
 function Oferta() {
+  const settings = useSettings();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   async function copyCode(code: string) {
