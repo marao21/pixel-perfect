@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +16,7 @@ const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
 
 function MenuButton() {
   const [open, setOpen] = useState(false);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const pages = useCustomPages();
   const { theme, setTheme } = useTheme();
@@ -78,14 +79,22 @@ function MenuButton() {
           </div>
         </section>
         <section className="mt-6 border-t border-border pt-4">
-          <h3 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Aparência</h3>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {THEMES.map(({ id, label, icon: Icon }) => (
-              <button key={id} onClick={() => setTheme(id)} aria-pressed={theme === id} className={`flex min-h-11 items-center gap-2 rounded-xl border px-3 text-sm font-medium ${theme === id ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:bg-muted"}`}>
-                <Icon className="h-4 w-4" /> {label}
-              </button>
-            ))}
-          </div>
+          <button type="button" aria-expanded={appearanceOpen} onClick={() => setAppearanceOpen((value) => !value)} className={`${item} w-full justify-between`}>
+            <span className="flex items-center gap-3"><Palette className="h-5 w-5" /> Aparência</span>
+            <span className="flex items-center gap-2 text-xs font-normal text-muted-foreground">
+              {THEMES.find(({ id }) => id === theme)?.label}
+              <ChevronDown className={`h-4 w-4 transition-transform ${appearanceOpen ? "rotate-180" : ""}`} />
+            </span>
+          </button>
+          {appearanceOpen && (
+            <div className="mt-2 grid grid-cols-2 gap-2" aria-label="Escolha uma cor">
+              {THEMES.map(({ id, label, icon: Icon }) => (
+                <button key={id} onClick={() => { setTheme(id); setAppearanceOpen(false); }} aria-pressed={theme === id} className={`flex min-h-11 items-center gap-2 rounded-xl border px-3 text-sm font-medium ${theme === id ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:bg-muted"}`}>
+                  <Icon className="h-4 w-4" /> {label}
+                </button>
+              ))}
+            </div>
+          )}
         </section>
       </SheetContent>
     </Sheet>
