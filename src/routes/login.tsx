@@ -38,8 +38,8 @@ function LoginRoute() {
           },
         });
         if (error) throw error;
-        setSuccessMsg("Conta criada com sucesso! Você já pode fazer login.");
-        setIsSignUp(false);
+        setSuccessMsg("Conta criada com sucesso!");
+        navigate({ to: "/" });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email,
