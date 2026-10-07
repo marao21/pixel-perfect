@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.is_full_admin(uuid) FROM PUBLIC, anon;
