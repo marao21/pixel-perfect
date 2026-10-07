@@ -67,9 +67,13 @@ function LoginRoute() {
       });
       if (error) throw error;
     } catch (err: any) {
-      const rawMsg = err.message || "";
-      if (rawMsg.includes("Unsupported provider") || rawMsg.includes("not enabled")) {
-        setErrorMsg("O login com o Google/Gmail não está habilitado neste projeto no momento. Por favor, utilize email e senha ou cadastre-se.");
+      const rawMsg = err?.message || err?.error_description || JSON.stringify(err) || "";
+      if (
+        rawMsg.includes("Unsupported provider") ||
+        rawMsg.includes("not enabled") ||
+        rawMsg.includes("validation_failed")
+      ) {
+        setErrorMsg("O login com o Google/Gmail não está habilitado no painel do Supabase. Por favor, utilize email e senha ou cadastre-se.");
       } else {
         setErrorMsg(rawMsg || "Ocorreu um erro ao entrar com o Gmail.");
       }
