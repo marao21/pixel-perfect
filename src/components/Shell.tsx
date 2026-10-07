@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,6 +107,13 @@ export function Page({ children }: { title: string; kicker?: string; children: R
         <div className="flex shrink-0 items-center gap-1">
           <NetworkStatus />
           <ThemeSwitcher />
+          <Link
+            to="/admin"
+            title="Área Admin"
+            className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-primary transition-colors"
+          >
+            <ShieldAlert className="h-4 w-4" />
+          </Link>
           {user ? (
             <button
               onClick={handleLogout}
