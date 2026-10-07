@@ -83,11 +83,11 @@ export function Page({ children }: { title: string; kicker?: string; children: R
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0 relative overflow-x-hidden">
       {/* Watermelon / Mammoth background watermark logo */}
-      <div className="pointer-events-none fixed inset-0 flex items-center justify-center z-0 overflow-hidden opacity-[0.04] dark:opacity-[0.06]">
+      <div className="pointer-events-none fixed inset-0 flex items-center justify-center -z-10 overflow-hidden opacity-[0.14] dark:opacity-[0.20]">
         <img
           src="/mamutes-logo-transparent-256.png"
           alt=""
-          className="w-[80vw] max-w-[500px] h-auto object-contain select-none"
+          className="w-[85vw] max-w-[550px] h-auto object-contain select-none"
         />
       </div>
 
