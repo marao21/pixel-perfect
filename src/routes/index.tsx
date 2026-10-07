@@ -30,25 +30,7 @@ function Home() {
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
 
-  // Estado para controle do tema
-  const [theme, setTheme] = useState<string>("claro");
-  const [showDropdown, setShowDropdown] = useState(false);
 
-  // Lista de temas disponíveis
-  const themes = [
-    { id: "claro", label: "Claro" },
-    { id: "escuro", label: "Escuro" },
-    { id: "sepia", label: "Sépla" },
-    { id: "azul", label: "Azul" },
-  ];
-
-  // Função para alterar tema no body
-  function changeTheme(newTheme: string) {
-    setTheme(newTheme);
-    document.body.classList.remove(...themes.map(t => t.id));
-    document.body.classList.add(newTheme);
-    setShowDropdown(false);
-  }
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
@@ -85,50 +67,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Seção de seleção de tema com botão sanduíche */}
-      <section className="relative mt-6 rounded-2xl border border-border bg-card p-4">
-        <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Aparência</p>
-          <button
-            type="button"
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center justify-center rounded-xl border border-border bg-card p-2.5 text-foreground transition hover:bg-secondary"
-            aria-label="Menu de Aparência"
-            aria-expanded={showDropdown}
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
 
-        {showDropdown && (
-          <ul
-            role="listbox"
-            tabIndex={-1}
-            className="absolute right-4 z-10 mt-2 w-48 overflow-hidden rounded-xl border border-border bg-card p-1 shadow-lg"
-          >
-            {themes.map(({ id, label }) => (
-              <li
-                key={id}
-                role="option"
-                aria-selected={theme === id}
-                tabIndex={0}
-                onClick={() => changeTheme(id)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    changeTheme(id);
-                  }
-                }}
-                className={`cursor-pointer rounded-lg px-3 py-2.5 text-sm font-semibold transition focus:outline-none ${theme === id ? "bg-primary text-primary-foreground" : "hover:bg-secondary text-foreground"}`}
-              >
-                {label}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
 
       <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold"><BookOpen className="h-4 w-4" /> Devocional do dia</p>
