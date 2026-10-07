@@ -30,8 +30,6 @@ function Home() {
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
 
-
-
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
@@ -66,8 +64,6 @@ function Home() {
           <p className="mt-2 text-xs text-muted-foreground">dias seguidos</p>
         </div>
       </section>
-
-
 
       <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold"><BookOpen className="h-4 w-4" /> Devocional do dia</p>
