@@ -81,7 +81,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
   };
 
   return (
-    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0 relative overflow-x-hidden">
+    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0 md:max-w-2xl lg:max-w-3xl relative overflow-x-hidden">
       {/* Watermelon / Mammoth background watermark logo */}
       <div className="pointer-events-none fixed inset-0 flex items-center justify-center -z-10 overflow-hidden opacity-[0.14] dark:opacity-[0.20]">
         <img
@@ -91,7 +91,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
         />
       </div>
 
-      <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
+      <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 md:rounded-b-2xl items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
         <img
           src="/mamutes-logo-transparent-256.png"
           alt="Os Mamutes"
@@ -143,7 +143,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
 export function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
-      <ul className="mx-auto grid w-full max-w-xl grid-cols-6">
+      <ul className="mx-auto grid w-full max-w-xl grid-cols-6 md:max-w-2xl lg:max-w-3xl">
         {TABS.map(({ to, label, icon: Icon }) => (
           <li key={to} className="min-w-0">
             <Link
@@ -155,7 +155,7 @@ export function BottomNav() {
               activeProps={{ className: "text-primary" }}
             >
               <Icon className="h-5 w-5 shrink-0" />
-              <span className="block max-w-full whitespace-nowrap tracking-[-0.03em]">{label === "Devocional" ? "Devoc." : label}</span>
+              <span className="block max-w-full whitespace-nowrap tracking-[-0.03em] text-[11px] sm:text-xs">{label === "Devocional" ? "Devoc." : label}</span>
             </Link>
           </li>
         ))}
