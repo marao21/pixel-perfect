@@ -81,7 +81,16 @@ export function Page({ children }: { title: string; kicker?: string; children: R
   };
 
   return (
-    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0">
+    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0 relative overflow-x-hidden">
+      {/* Watermelon / Mammoth background watermark logo */}
+      <div className="pointer-events-none fixed inset-0 flex items-center justify-center z-0 overflow-hidden opacity-[0.04] dark:opacity-[0.06]">
+        <img
+          src="/mamutes-logo-transparent-256.png"
+          alt=""
+          className="w-[80vw] max-w-[500px] h-auto object-contain select-none"
+        />
+      </div>
+
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
         <img
           src="/mamutes-logo-transparent-256.png"
@@ -117,7 +126,9 @@ export function Page({ children }: { title: string; kicker?: string; children: R
           )}
         </div>
       </header>
-      {children}
+      <div className="relative z-10">
+        {children}
+      </div>
     </main>
   );
 }
