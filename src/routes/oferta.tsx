@@ -41,38 +41,40 @@ function Oferta() {
   return (
     <Page kicker="Igreja Batista Belém" title="Oferta">
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
-        <div className="bg-hero px-5 py-6 text-center">
-          <Heart className="mx-auto h-8 w-8 text-gold" aria-hidden="true" />
-          <h2 className="mt-3 font-display text-2xl uppercase text-foreground">Ofertar é um ato de gratidão</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <div className="bg-hero px-4 py-3 text-center">
+          <Heart className="mx-auto h-6 w-6 text-gold" aria-hidden="true" />
+          <h2 className="mt-1 font-display text-xl uppercase text-foreground">Ofertar é um ato de gratidão</h2>
+          <p className="text-xs leading-relaxed text-muted-foreground">
             Escolha um valor e copie o código Pix para testar a experiência.
           </p>
         </div>
-        <div className="px-5 py-6">
-          <div className="grid gap-3 sm:grid-cols-2">
+        <div className="px-4 py-3">
+          <div className="grid gap-2 sm:grid-cols-2">
             {pixOptions.map(({ label, code }) => {
               const isCopied = copiedCode === code;
 
               return (
-                <div key={label} className="rounded-xl border border-border bg-background p-4">
-                  <p className="font-display text-2xl text-foreground">{label}</p>
-                  <p className="mt-2 break-all rounded-md bg-muted px-3 py-2 font-mono text-xs text-muted-foreground">
+                <div key={label} className="rounded-xl border border-border bg-background p-2.5">
+                  <div className="flex items-center justify-between">
+                    <p className="font-display text-lg text-foreground">{label}</p>
+                    <button
+                      type="button"
+                      onClick={() => void copyCode(code)}
+                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
+                      aria-label={`${isCopied ? "Código copiado" : "Copiar código Pix fictício"} para ${label}`}
+                    >
+                      {isCopied ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
+                      {isCopied ? "Copiado" : "Copiar"}
+                    </button>
+                  </div>
+                  <p className="mt-1.5 truncate rounded bg-muted px-2 py-1 font-mono text-[11px] text-muted-foreground">
                     {code}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => void copyCode(code)}
-                    className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
-                    aria-label={`${isCopied ? "Código copiado" : "Copiar código Pix fictício"} para ${label}`}
-                  >
-                    {isCopied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
-                    {isCopied ? "Copiado" : "Copiar código Pix"}
-                  </button>
                 </div>
               );
             })}
           </div>
-          <p className="mt-5 rounded-lg border border-gold/40 bg-gold/10 p-3 text-center text-xs leading-relaxed text-muted-foreground">
+          <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-center text-[11px] leading-snug text-muted-foreground">
             Demonstração: estes códigos são fictícios e não fazem pagamentos Pix reais.
           </p>
         </div>
