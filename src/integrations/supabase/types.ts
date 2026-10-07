@@ -68,6 +68,39 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_pages: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          position: number
+          published: boolean
+          slug: string
+          title: string
+          youtube_url: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          published?: boolean
+          slug: string
+          title: string
+          youtube_url?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          position?: number
+          published?: boolean
+          slug?: string
+          title?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
       devotional_overrides: {
         Row: {
           author: string | null
