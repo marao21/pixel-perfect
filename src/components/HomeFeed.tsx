@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { Megaphone, PlayCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { usePublished, youtubeId, type Announcement, type Video } from "@/lib/content";
 
 export function HomeFeed() {
   const avisos = usePublished<Announcement>("announcements", "created_at", false);
   const videos = usePublished<Video>("videos", "position", true);
+  const [playing, setPlaying] = useState<Video | null>(null);
+  const playingId = playing ? youtubeId(playing.youtube_url) : null;
 
   return (
     <>
@@ -29,7 +33,12 @@ export function HomeFeed() {
             const id = youtubeId(v.youtube_url);
             if (!id) return null;
             return (
-              <a key={v.id} href={v.youtube_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 rounded-xl border border-border bg-card p-2 transition-colors hover:bg-secondary">
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setPlaying(v)}
+                className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-2 text-left transition-colors hover:bg-secondary"
+              >
                 <span className="relative shrink-0">
                   <img src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" loading="lazy" className="h-16 w-28 rounded-lg object-cover" />
                   <PlayCircle className="absolute inset-0 m-auto h-7 w-7 text-primary-foreground drop-shadow" />
@@ -37,13 +46,32 @@ export function HomeFeed() {
                 <span className="min-w-0">
                   <span className="block font-semibold text-foreground">{v.title}</span>
                   {v.description && <span className="line-clamp-2 block text-sm text-muted-foreground">{v.description}</span>}
-                  <span className="text-xs text-gold">Abrir no YouTube</span>
+                  <span className="text-xs text-gold">Assistir aqui</span>
                 </span>
-              </a>
+              </button>
             );
           })}
         </section>
       )}
+
+      <Dialog open={!!playing} onOpenChange={(open) => !open && setPlaying(null)}>
+        <DialogContent className="max-w-3xl border-border bg-card p-3 sm:p-4">
+          <DialogTitle className="font-display text-lg uppercase text-foreground">{playing?.title}</DialogTitle>
+          {playingId && (
+            <div className="aspect-video w-full overflow-hidden rounded-lg">
+              <iframe
+                key={playingId}
+                src={`https://www.youtube-nocookie.com/embed/${playingId}?autoplay=1&rel=0`}
+                title={playing?.title ?? "Vídeo"}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="h-full w-full"
+              />
+            </div>
+          )}
+          {playing?.description && <p className="text-sm text-muted-foreground">{playing.description}</p>}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
