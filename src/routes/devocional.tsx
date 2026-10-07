@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
 import { getDevotionalForDay, TOTAL_DAYS } from "@/lib/devotionals";
+import { useDevotionalOverride } from "@/lib/content";
 
 export const Route = createFileRoute("/devocional")({
   head: () => ({
@@ -32,7 +33,7 @@ function dataDoDia(day: number): Date {
 
 function Devocional() {
   const [day, setDay] = useState(() => Math.min(TOTAL_DAYS, Math.max(1, diaDoAno(new Date()))));
-  const d = getDevotionalForDay(day);
+  const d = useDevotionalOverride(day, getDevotionalForDay(day));
   const data = dataDoDia(day);
 
   return (

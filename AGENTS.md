@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Keep the primary navigation limited to Home, Plano, Bíblia, Oferta, Pecado (21-day prayer checklist), and Devocional because the group does not use rankings.
+- Admin-managed content (avisos, vídeos, Pix, devocionais) lives in Supabase tables guarded by RLS via has_role(); admin rights come only from user_roles, never from client storage or hardcoded credentials.

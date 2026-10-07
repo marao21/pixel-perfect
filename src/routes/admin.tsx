@@ -1,268 +1,335 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { Megaphone, PlayCircle, HandCoins, BookOpen, Users, Trash2, LogOut, Plus } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Page } from "@/components/Shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ShieldAlert, Users, BookOpen, Lock, Mail, CheckCircle2, RefreshCcw, LogOut } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { db, youtubeId, type Announcement, type DevOverride, type Settings, type Video } from "@/lib/content";
+import { getDevotionalForDay } from "@/lib/devotionals";
 
 export const Route = createFileRoute("/admin")({
+  ssr: false,
+  head: () => ({
+    meta: [
+      { title: "Painel Admin — Os Mamutes" },
+      { name: "description", content: "Área dos líderes para gerenciar avisos, vídeos, Pix e devocionais." },
+      { property: "og:title", content: "Painel Admin — Os Mamutes" },
+      { property: "og:description", content: "Gerenciamento do app Os Mamutes." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: AdminRoute,
 });
 
-function AdminRoute() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const { profiles } = useStore();
-  const navigate = useNavigate();
+type Gate = "loading" | "signed_out" | "not_admin" | "admin";
 
-  // Check if already logged in via Supabase or Admin Session storage
-  useEffect(() => {
-    checkAuth();
+function AdminRoute() {
+  const [gate, setGate] = useState<Gate>("loading");
+  const [noAdmins, setNoAdmins] = useState(false);
+
+  const check = useCallback(async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return setGate("signed_out");
+    const { data: isAdmin } = await db.rpc("has_role", { _user_id: data.user.id, _role: "admin" });
+    if (isAdmin) return setGate("admin");
+    const { data: exists } = await db.rpc("admin_exists");
+    setNoAdmins(!exists);
+    setGate("not_admin");
   }, []);
 
-  const checkAuth = async () => {
-    setLoading(true);
-    // Check local admin storage override
-    const localAdmin = sessionStorage.getItem("mamutes_admin_auth");
-    if (localAdmin === "true") {
-      setIsAuthenticated(true);
-      setLoading(false);
-      return;
-    }
+  useEffect(() => { void check(); }, [check]);
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        // You can check if user is admin here if you have user roles, or allow authenticated users
-        setIsAuthenticated(true);
-      }
-    } catch {
-      // fallback
-    }
-    setLoading(false);
-  };
+  if (gate === "loading") return <Page title="Admin"><p className="text-muted-foreground">Carregando…</p></Page>;
 
-  const handleAdminLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-    setLoading(true);
-
-    // Hardcoded emergency admin credentials for quick access / testing
-    if (
-      (email.trim().toLowerCase() === "admin@mamutes.com" && password === "Mamutes2025!") ||
-      (email.trim().toLowerCase() === "marcos@ibbelem.com" && password === "pastor123")
-    ) {
-      sessionStorage.setItem("mamutes_admin_auth", "true");
-      setIsAuthenticated(true);
-      setSuccessMsg("Login administrativo realizado com sucesso!");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
-      if (data?.session) {
-        sessionStorage.setItem("mamutes_admin_auth", "true");
-        setIsAuthenticated(true);
-        setSuccessMsg("Login administrativo realizado!");
-      } else {
-        setErrorMsg("Credenciais inválidas.");
-      }
-    } catch (err: any) {
-      setErrorMsg(err?.message || "Falha ao autenticar administrador. Use admin@mamutes.com / Mamutes2025!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("mamutes_admin_auth");
-    supabase.auth.signOut();
-    setIsAuthenticated(false);
-    setEmail("");
-    setPassword("");
-    setSuccessMsg(null);
-    setErrorMsg(null);
-  };
-
-  if (loading) {
+  if (gate === "signed_out")
     return (
-      <Page kicker="Área Restrita" title="Carregando Admin...">
-        <div className="flex justify-center py-12">
-          <RefreshCcw className="h-8 w-8 animate-spin text-primary" />
-        </div>
+      <Page title="Admin">
+        <Box title="Área dos líderes">
+          <p className="text-sm text-muted-foreground">Entre com sua conta para acessar o painel.</p>
+          <Button asChild className="mt-3 w-full"><Link to="/login">Entrar</Link></Button>
+        </Box>
       </Page>
     );
-  }
 
-  if (!isAuthenticated) {
+  if (gate === "not_admin")
     return (
-      <Page kicker="Segurança" title="Painel Administrativo">
-        <div className="mx-auto max-w-md pt-4">
-          <Card className="border-border bg-card shadow-elevated">
-            <CardHeader className="space-y-1">
-              <div className="flex items-center gap-2 text-primary">
-                <ShieldAlert className="h-6 w-6" />
-                <CardTitle className="font-display text-2xl uppercase text-foreground">
-                  Acesso Restrito
-                </CardTitle>
+      <Page title="Admin">
+        <Box title="Sem permissão">
+          {noAdmins ? (
+            <>
+              <p className="text-sm text-muted-foreground">Ainda não existe nenhum administrador. Você pode ser o primeiro.</p>
+              <Button className="mt-3 w-full" onClick={async () => { await db.rpc("claim_first_admin"); void check(); }}>
+                Tornar-me administrador
+              </Button>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sua conta não é administradora. Peça a um líder para liberar seu acesso.</p>
+          )}
+        </Box>
+      </Page>
+    );
+
+  return (
+    <Page title="Admin">
+      <div className="mb-4 flex items-center justify-between">
+        <h1 className="font-display text-2xl uppercase text-foreground">Painel do Líder</h1>
+        <Button variant="outline" size="sm" onClick={async () => { await supabase.auth.signOut(); setGate("signed_out"); }}>
+          <LogOut className="h-4 w-4" /> Sair
+        </Button>
+      </div>
+      <Tabs defaultValue="avisos">
+        <TabsList className="grid h-auto w-full grid-cols-5">
+          <TabsTrigger value="avisos" aria-label="Avisos"><Megaphone className="h-4 w-4" /></TabsTrigger>
+          <TabsTrigger value="videos" aria-label="Vídeos"><PlayCircle className="h-4 w-4" /></TabsTrigger>
+          <TabsTrigger value="pix" aria-label="Oferta"><HandCoins className="h-4 w-4" /></TabsTrigger>
+          <TabsTrigger value="devocional" aria-label="Devocional"><BookOpen className="h-4 w-4" /></TabsTrigger>
+          <TabsTrigger value="admins" aria-label="Administradores"><Users className="h-4 w-4" /></TabsTrigger>
+        </TabsList>
+        <TabsContent value="avisos"><AvisosTab /></TabsContent>
+        <TabsContent value="videos"><VideosTab /></TabsContent>
+        <TabsContent value="pix"><PixTab /></TabsContent>
+        <TabsContent value="devocional"><DevocionalTab /></TabsContent>
+        <TabsContent value="admins"><AdminsTab /></TabsContent>
+      </Tabs>
+    </Page>
+  );
+}
+
+function Box({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="mb-4 rounded-2xl border border-border bg-card p-4">
+      <h2 className="mb-3 font-display text-lg uppercase text-foreground">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function fail(error: { message: string } | null) {
+  if (error) { toast.error(error.message); return true; }
+  return false;
+}
+
+function AvisosTab() {
+  const [rows, setRows] = useState<Announcement[]>([]);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const load = useCallback(() => db.from("announcements").select("*").order("created_at", { ascending: false }).then(({ data }: { data: Announcement[] | null }) => setRows(data ?? [])), []);
+  useEffect(() => { void load(); }, [load]);
+
+  return (
+    <>
+      <Box title="Novo aviso">
+        <div className="space-y-2">
+          <Input placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Textarea placeholder="Mensagem" value={body} onChange={(e) => setBody(e.target.value)} />
+          <Button className="w-full" disabled={!title.trim()} onClick={async () => {
+            const { error } = await db.from("announcements").insert({ title: title.trim(), body: body.trim() || null });
+            if (fail(error)) return;
+            setTitle(""); setBody(""); toast.success("Aviso publicado"); void load();
+          }}><Plus className="h-4 w-4" /> Publicar aviso</Button>
+        </div>
+      </Box>
+      <Box title={`Avisos (${rows.length})`}>
+        {rows.length === 0 && <p className="text-sm text-muted-foreground">Nenhum aviso ainda.</p>}
+        {rows.map((a) => (
+          <Row key={a.id} title={a.title} sub={a.body} published={a.published}
+            onToggle={async (p) => { fail((await db.from("announcements").update({ published: p }).eq("id", a.id)).error); void load(); }}
+            onDelete={async () => { fail((await db.from("announcements").delete().eq("id", a.id)).error); void load(); }} />
+        ))}
+      </Box>
+    </>
+  );
+}
+
+function VideosTab() {
+  const [rows, setRows] = useState<Video[]>([]);
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [desc, setDesc] = useState("");
+  const load = useCallback(() => db.from("videos").select("*").order("position").order("created_at").then(({ data }: { data: Video[] | null }) => setRows(data ?? [])), []);
+  useEffect(() => { void load(); }, [load]);
+  const valid = !!youtubeId(url) && !!title.trim();
+
+  return (
+    <>
+      <Box title="Novo vídeo do YouTube">
+        <div className="space-y-2">
+          <Input placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Input placeholder="Link do YouTube" value={url} onChange={(e) => setUrl(e.target.value)} />
+          {url && !youtubeId(url) && <p className="text-xs text-destructive">Link do YouTube inválido.</p>}
+          <Textarea placeholder="Descrição (opcional)" value={desc} onChange={(e) => setDesc(e.target.value)} />
+          <Button className="w-full" disabled={!valid} onClick={async () => {
+            const { error } = await db.from("videos").insert({ title: title.trim(), youtube_url: url.trim(), description: desc.trim() || null, position: rows.length });
+            if (fail(error)) return;
+            setTitle(""); setUrl(""); setDesc(""); toast.success("Vídeo adicionado"); void load();
+          }}><Plus className="h-4 w-4" /> Adicionar vídeo</Button>
+        </div>
+      </Box>
+      <Box title={`Vídeos (${rows.length})`}>
+        {rows.length === 0 && <p className="text-sm text-muted-foreground">Nenhum vídeo ainda. Eles aparecem na tela inicial.</p>}
+        {rows.map((v) => {
+          const id = youtubeId(v.youtube_url);
+          return (
+            <div key={v.id} className="mb-2 flex gap-3 rounded-xl border border-border p-2">
+              {id && <img src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" className="h-14 w-24 shrink-0 rounded object-cover" />}
+              <div className="min-w-0 flex-1">
+                <Row title={v.title} published={v.published} bare
+                  onToggle={async (p) => { fail((await db.from("videos").update({ published: p }).eq("id", v.id)).error); void load(); }}
+                  onDelete={async () => { fail((await db.from("videos").delete().eq("id", v.id)).error); void load(); }} />
               </div>
-              <CardDescription className="text-muted-foreground">
-                Digite suas credenciais de administrador para gerenciar o desafio.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleAdminLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="admin-email">Email de Administrador</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="admin-email"
-                      type="email"
-                      placeholder="admin@mamutes.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-9"
-                      required
-                    />
-                  </div>
-                </div>
+            </div>
+          );
+        })}
+      </Box>
+    </>
+  );
+}
 
-                <div className="space-y-2">
-                  <Label htmlFor="admin-password">Senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="admin-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-9"
-                      required
-                    />
-                  </div>
-                </div>
+function Row({ title, sub, published, onToggle, onDelete, bare }: { title: string; sub?: string | null; published: boolean; onToggle: (p: boolean) => void; onDelete: () => void; bare?: boolean }) {
+  return (
+    <div className={`flex items-start gap-2 ${bare ? "" : "mb-2 rounded-xl border border-border p-3"}`}>
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-semibold text-foreground">{title}</p>
+        {sub && <p className="line-clamp-2 text-xs text-muted-foreground">{sub}</p>}
+        <label className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+          <Switch checked={published} onCheckedChange={onToggle} /> {published ? "Publicado" : "Oculto"}
+        </label>
+      </div>
+      <Button variant="ghost" size="icon" aria-label="Excluir" onClick={() => { if (confirm("Excluir?")) onDelete(); }}>
+        <Trash2 className="h-4 w-4 text-destructive" />
+      </Button>
+    </div>
+  );
+}
 
-                {errorMsg && (
-                  <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-                    {errorMsg}
-                  </div>
-                )}
+function PixTab() {
+  const [s, setS] = useState<Settings>({ pix_key: "", pix_receiver: "", pix_qr_url: "" });
+  useEffect(() => {
+    db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url").eq("id", 1).maybeSingle().then(({ data }: { data: Settings | null }) => data && setS(data));
+  }, []);
 
-                {successMsg && (
-                  <div className="rounded-lg bg-success/10 p-3 text-sm text-success">
-                    {successMsg}
-                  </div>
-                )}
-
-                <Button type="submit" className="w-full font-bold shadow-glow">
-                  Entrar na Área Admin
-                </Button>
-
-                <div className="rounded-xl bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
-                  <p className="font-semibold text-foreground">Dica de acesso rápido:</p>
-                  <p>Email: <code className="text-primary">admin@mamutes.com</code></p>
-                  <p>Senha: <code className="text-primary">Mamutes2025!</code></p>
-                </div>
-              </form>
-            </CardContent>
-          </Card> 
-        </div>
-      </Page>
-    );
+  function onFile(file: File | undefined) {
+    if (!file) return;
+    if (file.size > 1_000_000) { toast.error("Imagem muito grande (máx. 1 MB)."); return; }
+    const r = new FileReader();
+    r.onload = () => setS((v) => ({ ...v, pix_qr_url: String(r.result) }));
+    r.readAsDataURL(file);
   }
 
   return (
-    <Page kicker="Administração 🦣" title="Painel de Controle">
-      <div className="space-y-6 pt-2">
-        <div className="flex items-center justify-between rounded-2xl border border-border bg-hero p-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gold">Sessão Ativa</p>
-            <h2 className="font-display text-xl uppercase text-foreground">Painel do Líder</h2>
-          </div>
-          <Button variant="outline" size="sm" onClick={handleLogout} className="gap-2">
-            <LogOut className="h-4 w-4" /> Sair
-          </Button>
+    <Box title="Pix da oferta">
+      <div className="space-y-3">
+        <div><Label>Nome do recebedor</Label><Input value={s.pix_receiver ?? ""} onChange={(e) => setS({ ...s, pix_receiver: e.target.value })} placeholder="Igreja Batista Belém" /></div>
+        <div><Label>Chave Pix (copia e cola)</Label><Input value={s.pix_key ?? ""} onChange={(e) => setS({ ...s, pix_key: e.target.value })} /></div>
+        <div>
+          <Label>Imagem do QR Code</Label>
+          <Input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} />
+          {s.pix_qr_url && (
+            <div className="mt-2 text-center">
+              <img src={s.pix_qr_url} alt="QR Code" className="mx-auto w-40 rounded-lg" />
+              <Button variant="ghost" size="sm" onClick={() => setS({ ...s, pix_qr_url: "" })}>Remover imagem</Button>
+            </div>
+          )}
         </div>
-
-        {/* Cards de Estatísticas */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="border-border bg-card p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
-              <Users className="h-4 w-4 text-primary" />
-              <span className="text-xs uppercase font-semibold">Participantes</span>
-            </div>
-            <p className="font-display text-3xl text-foreground">{profiles.length}</p>
-            <p className="text-xs text-muted-foreground mt-1">homens cadastrados</p>
-          </Card>
-
-          <Card className="border-border bg-card p-4">
-            <div className="flex items-center gap-2 text-muted-foreground mb-1">
-              <BookOpen className="h-4 w-4 text-gold" />
-              <span className="text-xs uppercase font-semibold">Desafio</span>
-            </div>
-            <p className="font-display text-3xl text-foreground">180 Dias</p>
-            <p className="text-xs text-muted-foreground mt-1">Igreja Batista Belém</p>
-          </Card>
-        </div>
-
-        {/* Gerenciamento de Participantes */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="font-display text-lg uppercase flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" /> Participantes Ativos ({profiles.length})
-            </CardTitle>
-            <CardDescription>
-              Lista atualizada dos homens no desafio dos Mamutes.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {profiles.map((p, index) => (
-                <div key={p.id || index} className="flex items-center justify-between rounded-xl border border-border p-3 bg-muted/30">
-                  <div>
-                    <p className="font-semibold text-foreground text-sm">{p.name}</p>
-                    <p className="text-xs text-muted-foreground">Dias concluídos: {p.done} • Ofensiva: {p.streak} dias</p>
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-success font-semibold">
-                    <CheckCircle2 className="h-4 w-4" /> Ativo
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Ações Administrativas */}
-        <Card className="border-border bg-card">
-          <CardHeader>
-            <CardTitle className="font-display text-lg uppercase">Gerenciamento de Conteúdo</CardTitle>
-            <CardDescription>Ferramentas rápidas para o pastor e líderes.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => alert("Funcionalidade de envio de notificação push ou devocional em breve!")}>
-              <BookOpen className="h-4 w-4 text-primary" /> Publicar novo devocional do dia
-            </Button>
-            <Button className="w-full justify-start gap-2" variant="outline" onClick={() => alert("Relatório exportado com sucesso!")}>
-              <Users className="h-4 w-4 text-gold" /> Exportar relatório de presença (CSV)
-            </Button>
-          </CardContent>
-        </Card>
+        <Button className="w-full" onClick={async () => {
+          const { error } = await db.from("app_settings").update({ pix_key: s.pix_key || null, pix_receiver: s.pix_receiver || null, pix_qr_url: s.pix_qr_url || null }).eq("id", 1);
+          if (!fail(error)) toast.success("Pix salvo — já aparece na página Oferta");
+        }}>Salvar</Button>
       </div>
-    </Page>
+    </Box>
+  );
+}
+
+function DevocionalTab() {
+  const today = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 86400000) + 1;
+  const [day, setDay] = useState(Math.min(365, today));
+  const [f, setF] = useState({ title: "", verse: "", reference: "", body: "", author: "" });
+  const [custom, setCustom] = useState(false);
+
+  useEffect(() => {
+    db.from("devotional_overrides").select("*").eq("day_of_year", day).maybeSingle().then(({ data }: { data: DevOverride | null }) => {
+      const base = getDevotionalForDay(day);
+      setCustom(!!data);
+      setF(data
+        ? { title: data.title, verse: data.verse ?? "", reference: data.reference ?? "", body: data.body, author: data.author ?? "" }
+        : { title: base.title, verse: base.verse, reference: base.ref, body: base.body.join("\n\n"), author: base.author });
+    });
+  }, [day]);
+
+  const date = new Date(new Date().getFullYear(), 0, day).toLocaleDateString("pt-BR", { day: "2-digit", month: "long" });
+
+  return (
+    <Box title="Editar devocional">
+      <div className="space-y-2">
+        <div className="flex items-end gap-2">
+          <div className="flex-1"><Label>Dia do ano (1–365)</Label><Input type="number" min={1} max={365} value={day} onChange={(e) => setDay(Math.min(365, Math.max(1, Number(e.target.value) || 1)))} /></div>
+          <p className="pb-2 text-sm text-muted-foreground">{date}</p>
+        </div>
+        <p className="text-xs text-gold">{custom ? "Texto personalizado pelo líder" : "Texto padrão do app — edite e salve para personalizar"}</p>
+        <Input placeholder="Título" value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} />
+        <Textarea placeholder="Versículo" value={f.verse} onChange={(e) => setF({ ...f, verse: e.target.value })} />
+        <Input placeholder="Referência (ex.: João 3:16)" value={f.reference} onChange={(e) => setF({ ...f, reference: e.target.value })} />
+        <Textarea rows={10} placeholder="Texto (deixe uma linha em branco entre parágrafos)" value={f.body} onChange={(e) => setF({ ...f, body: e.target.value })} />
+        <Input placeholder="Autor" value={f.author} onChange={(e) => setF({ ...f, author: e.target.value })} />
+        <div className="flex gap-2">
+          <Button className="flex-1" disabled={!f.title.trim() || !f.body.trim()} onClick={async () => {
+            const { error } = await db.from("devotional_overrides").upsert({ day_of_year: day, title: f.title, verse: f.verse || null, reference: f.reference || null, body: f.body, author: f.author || null });
+            if (!fail(error)) { setCustom(true); toast.success("Devocional salvo"); }
+          }}>Salvar</Button>
+          {custom && (
+            <Button variant="outline" onClick={async () => {
+              if (fail((await db.from("devotional_overrides").delete().eq("day_of_year", day)).error)) return;
+              setDay((d) => d); setCustom(false); toast.success("Voltou ao texto padrão");
+            }}>Restaurar padrão</Button>
+          )}
+        </div>
+      </div>
+    </Box>
+  );
+}
+
+function AdminsTab() {
+  const [rows, setRows] = useState<{ user_id: string; email: string }[]>([]);
+  const [email, setEmail] = useState("");
+  const load = useCallback(async () => {
+    const { data } = await db.from("user_roles").select("user_id").eq("role", "admin");
+    const ids = (data ?? []).map((r: { user_id: string }) => r.user_id);
+    if (!ids.length) return setRows([]);
+    const { data: p } = await supabase.from("profiles").select("id,email").in("id", ids);
+    setRows(ids.map((id: string) => ({ user_id: id, email: p?.find((x) => x.id === id)?.email ?? id })));
+  }, []);
+  useEffect(() => { void load(); }, [load]);
+
+  return (
+    <Box title="Administradores">
+      <p className="mb-2 text-xs text-muted-foreground">A pessoa precisa ter criado uma conta no app antes.</p>
+      <div className="mb-3 flex gap-2">
+        <Input type="email" placeholder="email do líder" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Button disabled={!email.trim()} onClick={async () => {
+          const { data: p } = await supabase.from("profiles").select("id").ilike("email", email.trim()).maybeSingle();
+          if (!p) { toast.error("Nenhuma conta com esse email."); return; }
+          const { error } = await db.from("user_roles").insert({ user_id: p.id, role: "admin" });
+          if (fail(error)) return;
+          setEmail(""); toast.success("Administrador adicionado"); void load();
+        }}>Adicionar</Button>
+      </div>
+      {rows.map((r) => (
+        <div key={r.user_id} className="mb-2 flex items-center justify-between rounded-xl border border-border p-3">
+          <span className="truncate text-sm text-foreground">{r.email}</span>
+          <Button variant="ghost" size="icon" aria-label="Remover admin" disabled={rows.length <= 1} onClick={async () => {
+            if (!confirm("Remover este administrador?")) return;
+            fail((await db.from("user_roles").delete().eq("user_id", r.user_id).eq("role", "admin")).error); void load();
+          }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+        </div>
+      ))}
+    </Box>
   );
 }
