@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { Toaster } from "../components/ui/sonner";
 import { BottomNav } from "../components/Shell";
 import { StoreProvider } from "../lib/store";
 import { ThemeProvider } from "../lib/theme";
@@ -152,6 +153,7 @@ function RootComponent() {
           <DailyDevotionalGreeting />
           <Outlet />
           <BottomNav />
+          <Toaster />
         </StoreProvider>
       </ThemeProvider>
     </QueryClientProvider>
