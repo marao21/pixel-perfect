@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Page, BottomNav } from "@/components/Shell";
+import { Page } from "@/components/Shell";
 import { db, youtubeId, type CustomPage } from "@/lib/content";
 
 export const Route = createFileRoute("/p/$slug")({
@@ -53,7 +53,6 @@ function CustomPageView() {
           </article>
         )}
       </Page>
-      <BottomNav />
     </>
   );
 }
