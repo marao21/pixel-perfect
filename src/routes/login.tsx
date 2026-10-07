@@ -38,7 +38,12 @@ function LoginRoute() {
           },
         });
         if (error) throw error;
-        setSuccessMsg("Conta criada com sucesso! Verifique seu email se necessário ou faça login.");
+        // Se a sessão já vier criada (caso o Supabase esteja sem confirmação obrigatória), faz o login direto ou avisa
+        if (data.session) {
+          navigate({ to: "/" });
+          return;
+        }
+        setSuccessMsg("Conta criada com sucesso! Você já pode fazer login.");
         setIsSignUp(false);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
