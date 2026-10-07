@@ -218,7 +218,7 @@ function PixTab() {
 
   function onFile(file: File | undefined) {
     if (!file) return;
-    if (file.size > 1_000_000) return toast.error("Imagem muito grande (máx. 1 MB).");
+    if (file.size > 1_000_000) { toast.error("Imagem muito grande (máx. 1 MB)."); return; }
     const r = new FileReader();
     r.onload = () => setS((v) => ({ ...v, pix_qr_url: String(r.result) }));
     r.readAsDataURL(file);
@@ -315,7 +315,7 @@ function AdminsTab() {
         <Input type="email" placeholder="email do líder" value={email} onChange={(e) => setEmail(e.target.value)} />
         <Button disabled={!email.trim()} onClick={async () => {
           const { data: p } = await supabase.from("profiles").select("id").ilike("email", email.trim()).maybeSingle();
-          if (!p) return toast.error("Nenhuma conta com esse email.");
+          if (!p) { toast.error("Nenhuma conta com esse email."); return; }
           const { error } = await db.from("user_roles").insert({ user_id: p.id, role: "admin" });
           if (fail(error)) return;
           setEmail(""); toast.success("Administrador adicionado"); void load();
