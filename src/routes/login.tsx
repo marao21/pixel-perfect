@@ -38,11 +38,6 @@ function LoginRoute() {
           },
         });
         if (error) throw error;
-        // Se a sessão já vier criada (caso o Supabase esteja sem confirmação obrigatória), faz o login direto ou avisa
-        if (data.session) {
-          navigate({ to: "/" });
-          return;
-        }
         setSuccessMsg("Conta criada com sucesso! Você já pode fazer login.");
         setIsSignUp(false);
       } else {
@@ -56,6 +51,23 @@ function LoginRoute() {
     } catch (err: any) {
       setErrorMsg(err.message || "Ocorreu um erro na autenticação.");
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setErrorMsg(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      setErrorMsg(err.message || "Ocorreu um erro ao entrar com o Gmail.");
       setLoading(false);
     }
   };
@@ -139,6 +151,28 @@ function LoginRoute() {
 
               <Button type="submit" className="w-full font-bold shadow-glow" disabled={loading}>
                 {loading ? "Carregando..." : isSignUp ? "Criar Conta" : "Entrar"}
+              </Button>
+
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Ou</span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full font-bold gap-2"
+                onClick={handleGoogleLogin}
+                disabled={loading}
+              >
+                <svg className="h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                  <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C318.5 110.7 286.7 96 248 96c-87.8 0-160 72.2-160 160s72.2 160 160 160c94.2 0 134.4-65.7 140.2-104H248v-85.2h239.9c1.2 12.8 2.1 26.7 2.1 41.2z"></path>
+                </svg>
+                Entrar com o Gmail
               </Button>
 
               <div className="text-center">
