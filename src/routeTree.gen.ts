@@ -10,8 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BibliaRouteImport } from './routes/biblia'
 import { Route as DevocionalRouteImport } from './routes/devocional'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as OfertaRouteImport } from './routes/oferta'
 import { Route as PecadoRouteImport } from './routes/pecado'
 import { Route as PlanoRouteImport } from './routes/plano'
@@ -19,6 +21,11 @@ import { Route as PlanoRouteImport } from './routes/plano'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BibliaRoute = BibliaRouteImport.update({
@@ -29,6 +36,11 @@ const BibliaRoute = BibliaRouteImport.update({
 const DevocionalRoute = DevocionalRouteImport.update({
   id: '/devocional',
   path: '/devocional',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OfertaRoute = OfertaRouteImport.update({
@@ -49,16 +61,20 @@ const PlanoRoute = PlanoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/biblia': typeof BibliaRoute
   '/devocional': typeof DevocionalRoute
+  '/login': typeof LoginRoute
   '/oferta': typeof OfertaRoute
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/biblia': typeof BibliaRoute
   '/devocional': typeof DevocionalRoute
+  '/login': typeof LoginRoute
   '/oferta': typeof OfertaRoute
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
@@ -66,22 +82,42 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/biblia': typeof BibliaRoute
   '/devocional': typeof DevocionalRoute
+  '/login': typeof LoginRoute
   '/oferta': typeof OfertaRoute
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/biblia' | '/devocional' | '/oferta' | '/pecado' | '/plano'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/biblia'
+    | '/devocional'
+    | '/login'
+    | '/oferta'
+    | '/pecado'
+    | '/plano'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/biblia' | '/devocional' | '/oferta' | '/pecado' | '/plano'
+  to:
+    | '/'
+    | '/admin'
+    | '/biblia'
+    | '/devocional'
+    | '/login'
+    | '/oferta'
+    | '/pecado'
+    | '/plano'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/biblia'
     | '/devocional'
+    | '/login'
     | '/oferta'
     | '/pecado'
     | '/plano'
@@ -89,8 +125,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   BibliaRoute: typeof BibliaRoute
   DevocionalRoute: typeof DevocionalRoute
+  LoginRoute: typeof LoginRoute
   OfertaRoute: typeof OfertaRoute
   PecadoRoute: typeof PecadoRoute
   PlanoRoute: typeof PlanoRoute
@@ -105,6 +143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/biblia': {
       id: '/biblia'
       path: '/biblia'
@@ -117,6 +162,13 @@ declare module '@tanstack/react-router' {
       path: '/devocional'
       fullPath: '/devocional'
       preLoaderRoute: typeof DevocionalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/oferta': {
@@ -145,8 +197,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   BibliaRoute: BibliaRoute,
   DevocionalRoute: DevocionalRoute,
+  LoginRoute: LoginRoute,
   OfertaRoute: OfertaRoute,
   PecadoRoute: PecadoRoute,
   PlanoRoute: PlanoRoute,
