@@ -192,6 +192,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
           ) : (
             <Link
               to="/login"
+              search={{ cadastro: false }}
               aria-label="Login"
               title="Login"
               className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground transition-colors"
