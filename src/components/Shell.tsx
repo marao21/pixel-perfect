@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
   { id: "claro", label: "Claro", icon: Sun },
@@ -63,6 +65,21 @@ const TABS = [
 ] as const;
 
 export function Page({ children }: { title: string; kicker?: string; children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+  };
+
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0">
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
@@ -81,6 +98,23 @@ export function Page({ children }: { title: string; kicker?: string; children: R
         <div className="flex shrink-0 items-center gap-1">
           <NetworkStatus />
           <ThemeSwitcher />
+          {user ? (
+            <button
+              onClick={handleLogout}
+              title="Sair da conta"
+              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              title="Entrar"
+              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <LogIn className="h-4 w-4" />
+            </Link>
+          )}
         </div>
       </header>
       {children}
