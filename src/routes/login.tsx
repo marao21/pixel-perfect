@@ -49,7 +49,16 @@ function LoginRoute() {
         navigate({ to: "/" });
       }
     } catch (err: any) {
-      setErrorMsg(err.message || "Ocorreu um erro na autenticação.");
+      const rawMsg = err?.message || err?.error_description || JSON.stringify(err) || "";
+      if (
+        rawMsg.toLowerCase().includes("rate limit") ||
+        rawMsg.toLowerCase().includes("over_email_send_rate_limit") ||
+        rawMsg.toLowerCase().includes("email rate limit exceeded")
+      ) {
+        setErrorMsg("Limite de envios de email excedido pelo provedor (Supabase). Por favor, aguarde alguns minutos antes de tentar cadastrar novamente ou desative a confirmação de email no painel do Supabase se estiver em ambiente de testes.");
+      } else {
+        setErrorMsg(rawMsg || "Ocorreu um erro na autenticação.");
+      }
     } finally {
       setLoading(false);
     }
