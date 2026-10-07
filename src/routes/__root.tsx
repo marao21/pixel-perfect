@@ -11,7 +11,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { Toaster } from "../components/ui/sonner";
-import { BottomNav } from "../components/Shell";
 import { StoreProvider } from "../lib/store";
 import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
@@ -152,7 +151,6 @@ function RootComponent() {
         <StoreProvider>
           <DailyDevotionalGreeting />
           <Outlet />
-          <BottomNav />
           <Toaster />
         </StoreProvider>
       </ThemeProvider>

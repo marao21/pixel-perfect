@@ -41,6 +41,16 @@ function MenuButton() {
             </Link>
           ))}
         </nav>
+        <section className="mt-6 border-t border-border pt-4">
+          <h3 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Aparência</h3>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {THEMES.map(({ id, label, icon: Icon }) => (
+              <button key={id} onClick={() => setTheme(id)} aria-pressed={theme === id} className={`flex min-h-11 items-center gap-2 rounded-xl border px-3 text-sm font-medium ${theme === id ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:bg-muted"}`}>
+                <Icon className="h-4 w-4" /> {label}
+              </button>
+            ))}
+          </div>
+        </section>
       </SheetContent>
     </Sheet>
   );
@@ -95,7 +105,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
   };
 
   return (
-    <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0 md:max-w-2xl lg:max-w-3xl relative overflow-x-hidden">
+    <main className="mx-auto w-full max-w-xl px-4 pb-6 pt-0 md:max-w-2xl lg:max-w-3xl relative overflow-x-hidden">
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 md:rounded-b-2xl items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
         <MenuButton />
         <div className="min-w-0 flex-1">
@@ -137,40 +147,3 @@ export function Page({ children }: { title: string; kicker?: string; children: R
   );
 }
 
-export function BottomNav() {
-  const { theme, setTheme } = useTheme();
-  return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
-      <div className="mx-auto flex items-center justify-center gap-2 py-1.5 border-b border-border/40 bg-secondary/30 px-2">
-        {THEMES.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setTheme(id)}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${theme === id ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-secondary"}`}
-            title={`Tema ${label}`}
-          >
-            <Icon className="h-3.5 w-3.5" />
-            <span>{label}</span>
-          </button>
-        ))}
-      </div>
-      <ul className="mx-auto grid w-full max-w-xl grid-cols-5 md:max-w-2xl lg:max-w-3xl">
-        {TABS.map(({ to, label, icon: Icon }) => (
-          <li key={to} className="min-w-0">
-            <Link
-              to={to}
-              activeOptions={{ exact: to === "/" }}
-              aria-label={label}
-              title={label}
-              className="flex min-h-14 w-full min-w-0 flex-col items-center justify-center gap-1 overflow-hidden px-0 py-2 text-xs leading-none font-medium text-muted-foreground transition-colors"
-              activeProps={{ className: "text-primary" }}
-            >
-              <Icon className="h-5 w-5 shrink-0" />
-              <span className="block max-w-full whitespace-nowrap tracking-[-0.03em] text-[11px] sm:text-xs">{label === "Devocional" ? "Devoc." : label}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
