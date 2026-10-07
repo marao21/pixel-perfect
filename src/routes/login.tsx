@@ -50,7 +50,7 @@ function LoginRoute() {
           setSuccessMsg("Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email ou faça login caso a confirmação esteja desativada.");
           setIsSignUp(false);
         } else {
-          setSuccessMsg("Conta criada com sucesso!");
+          setSuccessMsg("Conta criada com sucesso! Faça login abaixo.");
           setIsSignUp(false);
         }
       } else {
@@ -62,13 +62,15 @@ function LoginRoute() {
         navigate({ to: "/" });
       }
     } catch (err: any) {
-      const rawMsg = err?.message || err?.error_description || JSON.stringify(err) || "";
+      const rawMsg = err?.message || err?.error_description || (typeof err === 'string' ? err : JSON.stringify(err)) || "";
       if (
         rawMsg.toLowerCase().includes("rate limit") ||
         rawMsg.toLowerCase().includes("over_email_send_rate_limit") ||
         rawMsg.toLowerCase().includes("email rate limit exceeded")
       ) {
         setErrorMsg("Limite de envios de email excedido pelo provedor (Supabase). Por favor, aguarde alguns minutos antes de tentar cadastrar novamente ou desative a confirmação de email no painel do Supabase se estiver em ambiente de testes.");
+      } else if (rawMsg.toLowerCase().includes("database error saving new user") || rawMsg.toLowerCase().includes("db error")) {
+        setErrorMsg("Erro ao salvar o usuário no banco de dados. Certifique-se de que a tabela profiles e a trigger do Supabase estão configuradas corretamente.");
       } else {
         setErrorMsg(rawMsg || "Ocorreu um erro na autenticação.");
       }
