@@ -75,7 +75,6 @@ const TABS = [
   { to: "/plano", label: "Plano", icon: CalendarDays },
   { to: "/biblia", label: "Bíblia", icon: BookMarked },
   { to: "/oferta", label: "Oferta", icon: HandCoins },
-  { to: "/pecado", label: "Pecado", icon: ShieldCheck },
   { to: "/devocional", label: "Devocional", icon: BookOpen },
 ] as const;
 
@@ -155,7 +154,7 @@ export function BottomNav() {
           </button>
         ))}
       </div>
-      <ul className="mx-auto grid w-full max-w-xl grid-cols-6 md:max-w-2xl lg:max-w-3xl">
+      <ul className="mx-auto grid w-full max-w-xl grid-cols-5 md:max-w-2xl lg:max-w-3xl">
         {TABS.map(({ to, label, icon: Icon }) => (
           <li key={to} className="min-w-0">
             <Link
