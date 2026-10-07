@@ -31,12 +31,7 @@ function Home() {
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
 
-  // Estado para controlar visibilidade da lista de traduções
-  const [showTranslations, setShowTranslations] = useState(false);
-  // Traduções disponíveis
-  const translations = ["ACF", "ARC", "ARA", "NAA", "NVI", "NVT", "NTLH"];
-  // Estado para tradução selecionada
-  const [selectedTranslation, setSelectedTranslation] = useState("NAA");
+
 
   return (
     <Page kicker="Os Mamutes 🦣" title={`E aí, ${ME.name}`}>
@@ -49,44 +44,7 @@ function Home() {
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
 
-        {/* Botão para mostrar/esconder lista de traduções */}
-        <div className="mt-4">
-          <button
-            onClick={() => setShowTranslations(!showTranslations)}
-            className="flex items-center justify-between rounded-lg border border-border bg-secondary/60 px-4 py-2.5 text-xs font-semibold uppercase tracking-widest text-foreground hover:bg-secondary transition-colors w-full sm:w-auto"
-            aria-expanded={showTranslations}
-            aria-controls="translation-list"
-          >
-            <span>Versão: <strong className="text-primary font-bold">{selectedTranslation}</strong></span>
-            <span className="ml-2 text-muted-foreground text-[10px]">{showTranslations ? "▲ Fechar" : "▼ Selecionar"}</span>
-          </button>
 
-          {/* Lista de traduções, visível quando showTranslations é true */}
-          {showTranslations && (
-            <div
-              id="translation-list"
-              className="mt-2 flex flex-wrap gap-2 rounded-xl border border-border bg-card p-3 shadow-md"
-              style={{ maxWidth: "100%" }}
-            >
-              {translations.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => {
-                    setSelectedTranslation(t);
-                    setShowTranslations(false);
-                  }}
-                  className={`rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-widest transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary ${
-                    selectedTranslation === t
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
 
         <button
           onClick={() => toggle(CURRENT_DAY)}

@@ -7,9 +7,17 @@ import type { User } from "@supabase/supabase-js";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCustomPages } from "@/lib/content";
 
+const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
+  { id: "claro", label: "Claro", icon: Sun },
+  { id: "escuro", label: "Escuro", icon: Moon },
+  { id: "sepia", label: "Sépia", icon: Coffee },
+  { id: "azul", label: "Azul", icon: Palette },
+];
+
 function MenuButton() {
   const [open, setOpen] = useState(false);
   const pages = useCustomPages();
+  const { theme, setTheme } = useTheme();
   const item = "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted";
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -35,32 +43,6 @@ function MenuButton() {
         </nav>
       </SheetContent>
     </Sheet>
-  );
-}
-
-const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
-  { id: "claro", label: "Claro", icon: Sun },
-  { id: "escuro", label: "Escuro", icon: Moon },
-  { id: "sepia", label: "Sépia", icon: Coffee },
-  { id: "azul", label: "Azul", icon: Palette },
-];
-
-function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
-  return (
-    <div className="flex shrink-0 gap-1 rounded-full border border-border bg-card p-1">
-      {THEMES.map(({ id, label, icon: Icon }) => (
-        <button
-          key={id}
-          onClick={() => setTheme(id)}
-          aria-label={label}
-          title={label}
-          className={`rounded-full p-1.5 transition-colors ${theme === id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-        >
-          <Icon className="h-4 w-4" />
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -115,32 +97,14 @@ export function Page({ children }: { title: string; kicker?: string; children: R
 
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-28 pt-0 md:max-w-2xl lg:max-w-3xl relative overflow-x-hidden">
-      {/* Watermelon / Mammoth background watermark logo */}
-      <div className="pointer-events-none fixed inset-0 flex items-center justify-center -z-10 overflow-hidden opacity-[0.14] dark:opacity-[0.20]">
-        <img
-          src="/mamutes-logo-transparent-256.png"
-          alt=""
-          className="w-[85vw] max-w-[550px] h-auto object-contain select-none"
-        />
-      </div>
-
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 md:rounded-b-2xl items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
         <MenuButton />
-        <img
-          src="/mamutes-logo-transparent-256.png"
-          alt="Os Mamutes"
-          width={64}
-          height={64}
-          decoding="async"
-          className="h-16 w-16 shrink-0 object-contain"
-        />
         <div className="min-w-0 flex-1">
           <p className="font-display text-xl uppercase leading-none tracking-wide text-foreground">Os Mamutes</p>
           <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-gold">Desafio Bíblico</p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <NetworkStatus />
-          <ThemeSwitcher />
           <Link
             to="/admin"
             title="Área Admin"
@@ -175,8 +139,22 @@ export function Page({ children }: { title: string; kicker?: string; children: R
 }
 
 export function BottomNav() {
+  const { theme, setTheme } = useTheme();
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur">
+      <div className="mx-auto flex items-center justify-center gap-2 py-1.5 border-b border-border/40 bg-secondary/30 px-2">
+        {THEMES.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setTheme(id)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${theme === id ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-secondary"}`}
+            title={`Tema ${label}`}
+          >
+            <Icon className="h-3.5 w-3.5" />
+            <span>{label}</span>
+          </button>
+        ))}
+      </div>
       <ul className="mx-auto grid w-full max-w-xl grid-cols-6 md:max-w-2xl lg:max-w-3xl">
         {TABS.map(({ to, label, icon: Icon }) => (
           <li key={to} className="min-w-0">
