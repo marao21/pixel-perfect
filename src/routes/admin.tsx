@@ -56,7 +56,7 @@ function AdminRoute() {
       <Page title="Admin">
         <Box title="Área dos líderes">
           <p className="text-sm text-muted-foreground">Entre com sua conta para acessar o painel.</p>
-          <Button asChild className="mt-3 w-full"><Link to="/login">Entrar</Link></Button>
+          <Button asChild className="mt-3 w-full"><Link to="/login" search={{ cadastro: false }}>Entrar</Link></Button>
         </Box>
       </Page>
     );
