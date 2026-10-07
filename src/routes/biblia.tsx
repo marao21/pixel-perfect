@@ -221,8 +221,8 @@ function Biblia() {
       )}
       <section className="mb-4 rounded-2xl border border-border bg-secondary/50 p-3">
         <p className="mb-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Escolha a passagem</p>
-        <div className="grid grid-cols-2 gap-2">
-          <label className="col-span-2 min-w-0">
+        <div className="grid grid-cols-3 gap-2">
+          <label className="col-span-3 min-w-0">
             <span className="mb-1 block text-xs text-muted-foreground">Livro</span>
             <select aria-label="Livro" className={`${sel} w-full`} value={bookIdx} onChange={(e) => { setBookIdx(Number(e.target.value)); setChapter(1); setSelectedVerse(1); setShouldScrollToVerse(false); }}>
               {BOOKS.map((b, i) => <option key={b.en} value={i}>{b.pt}</option>)}
@@ -234,16 +234,22 @@ function Biblia() {
               {Array.from({ length: book.ch }, (_, i) => <option key={i} value={i + 1}>{i + 1}</option>)}
             </select>
           </label>
+          <label>
+            <span className="mb-1 block text-xs text-muted-foreground">Versículo</span>
+            <select aria-label="Versículo" className={`${sel} w-full`} value={selectedVerse} onChange={(e) => { setSelectedVerse(Number(e.target.value)); setShouldScrollToVerse(true); }}>
+              {verses.length
+                ? verses.map((v) => <option key={v.verse} value={v.verse}>{v.verse}</option>)
+                : <option value={1}>1</option>}
+            </select>
+          </label>
           <div className="relative min-w-0">
-            <div className="mb-1 flex h-[1.25rem] items-center justify-between gap-1">
-              <span className="text-xs text-muted-foreground">Versículo</span>
-              <button type="button" aria-label={`Tradução da Bíblia: ${VERSIONS.find((item) => item.id === version)?.label}`} aria-expanded={versionMenuOpen} onClick={() => setVersionMenuOpen((open) => !open)} className="inline-flex min-h-6 items-center gap-0.5 rounded-md px-1 text-xs font-bold text-primary hover:bg-primary/10">
-                {VERSIONS.find((item) => item.id === version)?.label}
+            <span className="mb-1 block text-xs text-muted-foreground">Tradução</span>
+            <button type="button" aria-label={`Tradução da Bíblia: ${VERSIONS.find((item) => item.id === version)?.label}`} aria-expanded={versionMenuOpen} onClick={() => setVersionMenuOpen((open) => !open)} className={`${sel} flex w-full items-center justify-between gap-1 text-left font-semibold`}>
+                <span className="truncate">{VERSIONS.find((item) => item.id === version)?.label}</span>
                 <ChevronDown className="h-3 w-3" />
-              </button>
-            </div>
+            </button>
             {versionMenuOpen && (
-              <div role="group" aria-label="Escolha a tradução da Bíblia" className="absolute right-0 top-7 z-30 w-40 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-xl">
+              <div role="group" aria-label="Escolha a tradução da Bíblia" className="absolute right-0 top-full z-30 mt-1 w-40 overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-xl">
                 {VERSIONS.map((item) => (
                   <button key={item.id} type="button" aria-pressed={version === item.id} disabled={Boolean(downloadController.current)} onClick={() => { setVersionMenuOpen(false); void selectTranslation(item.id); }} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-left text-sm font-semibold disabled:opacity-50 ${version === item.id ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-secondary"}`}>
                     <span>{item.label}</span>
@@ -252,11 +258,6 @@ function Biblia() {
                 ))}
               </div>
             )}
-            <select aria-label="Versículo" className={`${sel} w-full`} value={selectedVerse} onChange={(e) => { setSelectedVerse(Number(e.target.value)); setShouldScrollToVerse(true); }}>
-              {verses.length
-                ? verses.map((v) => <option key={v.verse} value={v.verse}>{v.verse}</option>)
-                : <option value={1}>1</option>}
-            </select>
           </div>
         </div>
       </section>
