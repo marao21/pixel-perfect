@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { db, youtubeId, type Announcement, type DevOverride, type Settings, type Video } from "@/lib/content";
+import { db, youtubeId, type Announcement, type DevOverride, type PixOption, type Settings, type Video } from "@/lib/content";
 import { getDevotionalForDay } from "@/lib/devotionals";
 
 export const Route = createFileRoute("/admin")({
@@ -210,45 +210,77 @@ function Row({ title, sub, published, onToggle, onDelete, bare }: { title: strin
   );
 }
 
+function newPix(): PixOption {
+  return { id: crypto.randomUUID(), label: "", key: "", receiver: "", amount: null, qr: "" };
+}
+
 function PixTab() {
-  const [s, setS] = useState<Settings>({ pix_key: "", pix_receiver: "", pix_qr_url: "" });
+  const [list, setList] = useState<PixOption[]>([]);
   useEffect(() => {
-    db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url").eq("id", 1).maybeSingle().then(({ data }: { data: Settings | null }) => data && setS(data));
+    db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url,pix_options").eq("id", 1).maybeSingle().then(({ data }: { data: Settings | null }) => {
+      const opts = data?.pix_options ?? [];
+      if (opts.length) return setList(opts);
+      if (data && (data.pix_key || data.pix_qr_url)) return setList([{ ...newPix(), key: data.pix_key ?? "", receiver: data.pix_receiver ?? "", qr: data.pix_qr_url ?? "" }]);
+      setList([newPix()]);
+    });
   }, []);
 
-  function onFile(file: File | undefined) {
+  const upd = (id: string, patch: Partial<PixOption>) => setList((l) => l.map((p) => (p.id === id ? { ...p, ...patch } : p)));
+
+  function onFile(id: string, file: File | undefined) {
     if (!file) return;
     if (file.size > 1_000_000) { toast.error("Imagem muito grande (máx. 1 MB)."); return; }
     const r = new FileReader();
-    r.onload = () => setS((v) => ({ ...v, pix_qr_url: String(r.result) }));
+    r.onload = () => upd(id, { qr: String(r.result) });
     r.readAsDataURL(file);
   }
 
+  async function save() {
+    const clean = list.filter((p) => p.key.trim() || p.qr);
+    const first = clean[0];
+    const { error } = await db.from("app_settings").update({
+      pix_options: clean,
+      pix_key: first?.key || null, pix_receiver: first?.receiver || null, pix_qr_url: first?.qr || null,
+    }).eq("id", 1);
+    if (!fail(error)) toast.success("Pix salvo — já aparece na página Oferta");
+  }
+
   return (
-    <Box title="Pix da oferta">
-      <div className="space-y-3">
-        <div><Label>Nome do recebedor</Label><Input value={s.pix_receiver ?? ""} onChange={(e) => setS({ ...s, pix_receiver: e.target.value })} placeholder="Igreja Batista Belém" /></div>
-        <div><Label>Chave Pix (copia e cola)</Label><Input value={s.pix_key ?? ""} onChange={(e) => setS({ ...s, pix_key: e.target.value })} /></div>
-        <div>
-          <Label>Imagem do QR Code</Label>
-          <Input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} />
-          {s.pix_qr_url && (
-            <div className="mt-2 text-center">
-              <img src={s.pix_qr_url} alt="QR Code" className="mx-auto w-40 rounded-lg" />
-              <Button variant="ghost" size="sm" onClick={() => setS({ ...s, pix_qr_url: "" })}>Remover imagem</Button>
+    <>
+      {list.map((p, i) => (
+        <Box key={p.id} title={`Pix ${i + 1}`}>
+          <div className="space-y-3">
+            <div><Label>Nome (ex.: Oferta, Dízimo, Missões)</Label><Input value={p.label} onChange={(e) => upd(p.id, { label: e.target.value })} /></div>
+            <div><Label>Nome do recebedor</Label><Input value={p.receiver} onChange={(e) => upd(p.id, { receiver: e.target.value })} placeholder="Igreja Batista Belém" /></div>
+            <div><Label>Chave Pix</Label><Input value={p.key} onChange={(e) => upd(p.id, { key: e.target.value })} /></div>
+            <div>
+              <Label>Valor</Label>
+              <label className="my-1 flex items-center gap-2 text-sm text-muted-foreground">
+                <Switch checked={p.amount === null} onCheckedChange={(free) => upd(p.id, { amount: free ? null : 10 })} /> Valor livre (só a chave)
+              </label>
+              {p.amount !== null && (
+                <Input type="number" min={0} step="0.01" value={p.amount} onChange={(e) => upd(p.id, { amount: Number(e.target.value) || 0 })} placeholder="R$" />
+              )}
             </div>
-          )}
-        </div>
-        <Button className="w-full" onClick={async () => {
-          const { error } = await db.from("app_settings").update({ pix_key: s.pix_key || null, pix_receiver: s.pix_receiver || null, pix_qr_url: s.pix_qr_url || null }).eq("id", 1);
-          if (!fail(error)) {
-            toast.success("Pix salvo — já aparece na página Oferta");
-            const { data } = await db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url").eq("id", 1).maybeSingle();
-            if (data) setS(data as Settings);
-          }
-        }}>Salvar</Button>
-      </div>
-    </Box>
+            <div>
+              <Label>Imagem do QR Code (opcional)</Label>
+              <Input type="file" accept="image/*" onChange={(e) => onFile(p.id, e.target.files?.[0])} />
+              {p.qr && (
+                <div className="mt-2 text-center">
+                  <img src={p.qr} alt="QR Code" className="mx-auto w-40 rounded-lg" />
+                  <Button variant="ghost" size="sm" onClick={() => upd(p.id, { qr: "" })}>Remover imagem</Button>
+                </div>
+              )}
+            </div>
+            <Button variant="outline" className="w-full" onClick={() => setList((l) => l.filter((x) => x.id !== p.id))}>
+              <Trash2 className="h-4 w-4 text-destructive" /> Remover este Pix
+            </Button>
+          </div>
+        </Box>
+      ))}
+      <Button variant="outline" className="mb-3 w-full" onClick={() => setList((l) => [...l, newPix()])}><Plus className="h-4 w-4" /> Adicionar outro Pix</Button>
+      <Button className="w-full" onClick={() => void save()}>Salvar</Button>
+    </>
   );
 }
 

@@ -45,6 +45,7 @@ export type Database = {
         Row: {
           id: number
           pix_key: string | null
+          pix_options: Json
           pix_qr_url: string | null
           pix_receiver: string | null
           updated_at: string
@@ -52,6 +53,7 @@ export type Database = {
         Insert: {
           id?: number
           pix_key?: string | null
+          pix_options?: Json
           pix_qr_url?: string | null
           pix_receiver?: string | null
           updated_at?: string
@@ -59,6 +61,7 @@ export type Database = {
         Update: {
           id?: number
           pix_key?: string | null
+          pix_options?: Json
           pix_qr_url?: string | null
           pix_receiver?: string | null
           updated_at?: string

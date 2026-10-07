@@ -6,7 +6,8 @@ import type { DailyDevotional } from "@/lib/devotionals";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const db = supabase as any;
 
-export type Settings = { pix_key: string | null; pix_receiver: string | null; pix_qr_url: string | null };
+export type PixOption = { id: string; label: string; key: string; receiver: string; amount: number | null; qr: string };
+export type Settings = { pix_key: string | null; pix_receiver: string | null; pix_qr_url: string | null; pix_options?: PixOption[] | null };
 export type Video = { id: string; title: string; youtube_url: string; description: string | null; position: number; published: boolean };
 export type Announcement = { id: string; title: string; body: string | null; published: boolean; created_at: string };
 export type DevOverride = { day_of_year: number; title: string; verse: string | null; reference: string | null; body: string; author: string | null };
@@ -19,7 +20,7 @@ export function youtubeId(url: string): string | null {
 export function useSettings() {
   const [s, setS] = useState<Settings | null>(null);
   useEffect(() => {
-    db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url").eq("id", 1).maybeSingle().then(({ data }: { data: Settings | null }) => setS(data));
+    db.from("app_settings").select("pix_key,pix_receiver,pix_qr_url,pix_options").eq("id", 1).maybeSingle().then(({ data }: { data: Settings | null }) => setS(data));
   }, []);
   return s;
 }
