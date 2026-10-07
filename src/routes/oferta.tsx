@@ -4,14 +4,6 @@ import { Check, Copy, Heart } from "lucide-react";
 import { Page } from "@/components/Shell";
 import { useSettings } from "@/lib/content";
 
-const pixOptions = [
-  { label: "R$ 5,00", code: "PIX-DEMO-OFERTA-05" },
-  { label: "R$ 10,00", code: "PIX-DEMO-OFERTA-10" },
-  { label: "R$ 20,00", code: "PIX-DEMO-OFERTA-20" },
-  { label: "R$ 50,00", code: "PIX-DEMO-OFERTA-50" },
-  { label: "Oferta livre", code: "PIX-DEMO-OFERTA-LIVRE" },
-];
-
 export const Route = createFileRoute("/oferta")({
   head: () => ({
     meta: [
@@ -28,73 +20,69 @@ export const Route = createFileRoute("/oferta")({
 
 function Oferta() {
   const settings = useSettings();
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
-  async function copyCode(code: string) {
+  const hasPix = Boolean(settings && (settings.pix_qr_url || settings.pix_key || settings.pix_receiver));
+
+  async function copyKey() {
+    if (!settings?.pix_key) return;
     try {
-      await navigator.clipboard.writeText(code);
-      setCopiedCode(code);
-      window.setTimeout(() => setCopiedCode(null), 2000);
+      await navigator.clipboard.writeText(settings.pix_key);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      setCopiedCode(null);
+      setCopied(false);
     }
   }
 
   return (
     <Page kicker="Igreja Batista Belém" title="Oferta">
-      {settings && (settings.pix_qr_url || settings.pix_key) && (
-        <section className="mb-4 rounded-2xl border border-border bg-card p-4 text-center">
-          <h2 className="font-display text-xl uppercase text-foreground">Pix da igreja</h2>
-          {settings.pix_qr_url && (
-            <img src={settings.pix_qr_url} alt="QR Code Pix" className="mx-auto mt-3 w-56 rounded-xl bg-card p-2" />
-          )}
-          {settings.pix_receiver && <p className="mt-2 text-sm text-muted-foreground">Recebedor: <strong className="text-foreground">{settings.pix_receiver}</strong></p>}
-          {settings.pix_key && (
-            <button type="button" onClick={() => void copyCode(settings.pix_key!)} className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-              {copiedCode === settings.pix_key ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              {copiedCode === settings.pix_key ? "Chave copiada" : "Copiar chave Pix"}
-            </button>
-          )}
-        </section>
-      )}
       <section className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="bg-hero px-4 py-3 text-center">
           <Heart className="mx-auto h-6 w-6 text-gold" aria-hidden="true" />
           <h2 className="mt-1 font-display text-xl uppercase text-foreground">Ofertar é um ato de gratidão</h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Escolha um valor e copie o código Pix para testar a experiência.
+            Aponte a câmera do seu banco para o QR Code ou copie a chave Pix.
           </p>
         </div>
-        <div className="px-4 py-3">
-          <div className="grid gap-2 sm:grid-cols-2">
-            {pixOptions.map(({ label, code }) => {
-              const isCopied = copiedCode === code;
 
-              return (
-                <div key={label} className="rounded-xl border border-border bg-background p-2.5">
-                  <div className="flex items-center justify-between">
-                    <p className="font-display text-lg text-foreground">{label}</p>
-                    <button
-                      type="button"
-                      onClick={() => void copyCode(code)}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground transition hover:opacity-90"
-                      aria-label={`${isCopied ? "Código copiado" : "Copiar código Pix fictício"} para ${label}`}
-                    >
-                      {isCopied ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
-                      {isCopied ? "Copiado" : "Copiar"}
-                    </button>
-                  </div>
-                  <p className="mt-1.5 truncate rounded bg-muted px-2 py-1 font-mono text-[11px] text-muted-foreground">
-                    {code}
-                  </p>
+        {hasPix ? (
+          <div className="px-4 py-4 text-center">
+            {settings?.pix_qr_url && (
+              <img src={settings.pix_qr_url} alt="QR Code Pix" className="mx-auto w-56 rounded-xl bg-white p-2" />
+            )}
+            <div className="mt-4 space-y-3 text-left">
+              {settings?.pix_receiver && (
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Recebedor</p>
+                  <p className="text-sm font-semibold text-foreground">{settings.pix_receiver}</p>
                 </div>
-              );
-            })}
+              )}
+              {settings?.pix_key && (
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Chave Pix</p>
+                  <p className="mt-1 truncate rounded-lg bg-muted px-3 py-2 font-mono text-xs text-foreground">
+                    {settings.pix_key}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void copyKey()}
+                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+                  >
+                    {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+                    {copied ? "Chave copiada" : "Copiar chave Pix"}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-          <p className="mt-3 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2 text-center text-[11px] leading-snug text-muted-foreground">
-            Demonstração: estes códigos são fictícios e não fazem pagamentos Pix reais.
-          </p>
-        </div>
+        ) : (
+          <div className="px-4 py-6 text-center">
+            <div className="mx-auto flex w-56 items-center justify-center rounded-xl border-2 border-dashed border-border px-4 py-10">
+              <p className="text-sm text-muted-foreground">O QR Code do Pix da igreja aparecerá aqui em breve.</p>
+            </div>
+          </div>
+        )}
       </section>
     </Page>
   );
