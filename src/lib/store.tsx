@@ -44,6 +44,7 @@ type Ctx = {
   done: Set<number>;
   toggle: (d: number) => void;
   profiles: Profile[];
+  addProfile?: (name: string) => void;
 };
 
 const C = createContext<Ctx | null>(null);
@@ -84,7 +85,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const profiles = [...PROFILES, { id: ME.id, name: `${ME.name} (você)`, done: done.size, streak }]
     .sort((a, b) => b.done - a.done || b.streak - a.streak);
 
-  return <C.Provider value={{ done, toggle, profiles }}>{children}</C.Provider>;
+  const addProfile = (name: string) => {
+    if (!name.trim()) return;
+    const newProfile: Profile = { id: String(Date.now()), name: name.trim(), done: 0, streak: 0 };
+    PROFILES.push(newProfile);
+  };
+
+  return <C.Provider value={{ done, toggle, profiles, addProfile }}>{children}</C.Provider>;
 }
 
 export const useStore = () => {
