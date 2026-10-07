@@ -69,7 +69,7 @@ function MenuButton() {
             ) : (
               <>
                 <Link to="/login" search={{ cadastro: false }} onClick={() => setOpen(false)} className={item}>
-                  <LogIn className="h-5 w-5" /> Entrar
+                  <LogIn className="h-5 w-5" /> Login
                 </Link>
                 <Link to="/login" search={{ cadastro: true }} onClick={() => setOpen(false)} className={item}>
                   <UserPlus className="h-5 w-5" /> Criar cadastro
@@ -177,7 +177,8 @@ export function Page({ children }: { title: string; kicker?: string; children: R
           ) : (
             <Link
               to="/login"
-              title="Entrar"
+              aria-label="Login"
+              title="Login"
               className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground transition-colors"
             >
               <LogIn className="h-4 w-4" />
