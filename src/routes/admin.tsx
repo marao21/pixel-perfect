@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { Megaphone, PlayCircle, HandCoins, BookOpen, Users, Trash2, LogOut, Plus } from "lucide-react";
+import { Megaphone, PlayCircle, HandCoins, BookOpen, Users, Trash2, LogOut, Plus, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Page } from "@/components/Shell";
@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { db, youtubeId, type Announcement, type DevOverride, type PixOption, type Settings, type Video } from "@/lib/content";
+import { db, youtubeId, type Announcement, type DevOverride, type PixOption, type Settings, type Video, type CustomPage, slugify } from "@/lib/content";
 import { getDevotionalForDay } from "@/lib/devotionals";
 import { useServerFn } from "@tanstack/react-start";
 import { createAdmin } from "@/lib/admin.functions";
@@ -93,12 +93,14 @@ function AdminRoute() {
           <TabsTrigger value="videos" aria-label="Vídeos"><PlayCircle className="h-4 w-4" /></TabsTrigger>
           <TabsTrigger value="pix" aria-label="Oferta"><HandCoins className="h-4 w-4" /></TabsTrigger>
           <TabsTrigger value="devocional" aria-label="Devocional"><BookOpen className="h-4 w-4" /></TabsTrigger>
+          <TabsTrigger value="paginas" aria-label="Páginas"><FileText className="h-4 w-4" /></TabsTrigger>
           <TabsTrigger value="admins" aria-label="Administradores"><Users className="h-4 w-4" /></TabsTrigger>
         </TabsList>
         <TabsContent value="avisos"><AvisosTab /></TabsContent>
         <TabsContent value="videos"><VideosTab /></TabsContent>
         <TabsContent value="pix"><PixTab /></TabsContent>
         <TabsContent value="devocional"><DevocionalTab /></TabsContent>
+        <TabsContent value="paginas"><PaginasTab /></TabsContent>
         <TabsContent value="admins"><AdminsTab /></TabsContent>
       </Tabs>
     </Page>
@@ -190,6 +192,56 @@ function VideosTab() {
             </div>
           );
         })}
+      </Box>
+    </>
+  );
+}
+
+function PaginasTab() {
+  const [rows, setRows] = useState<CustomPage[]>([]);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [body, setBody] = useState("");
+  const load = useCallback(() => db.from("custom_pages").select("*").order("position").order("created_at").then(({ data }: { data: CustomPage[] | null }) => setRows(data ?? [])), []);
+  useEffect(() => { void load(); }, [load]);
+  const urlBad = !!url.trim() && !youtubeId(url);
+  const reset = () => { setEditing(null); setTitle(""); setUrl(""); setBody(""); };
+
+  async function save() {
+    const data = { title: title.trim(), body: body.trim() || null, youtube_url: url.trim() || null };
+    const { error } = editing
+      ? await db.from("custom_pages").update(data).eq("id", editing)
+      : await db.from("custom_pages").insert({ ...data, slug: `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`, position: rows.length });
+    if (fail(error)) return;
+    toast.success(editing ? "Aba atualizada" : "Aba criada — já aparece no menu");
+    reset(); void load();
+  }
+
+  return (
+    <>
+      <Box title={editing ? "Editar aba" : "Nova aba no menu"}>
+        <div className="space-y-2">
+          <Input placeholder="Nome da aba (ex.: Estudos)" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <Input placeholder="Link do YouTube (opcional)" value={url} onChange={(e) => setUrl(e.target.value)} />
+          {urlBad && <p className="text-xs text-destructive">Link do YouTube inválido.</p>}
+          <Textarea rows={8} placeholder="Texto da página (opcional)" value={body} onChange={(e) => setBody(e.target.value)} />
+          <div className="flex gap-2">
+            <Button className="flex-1" disabled={!title.trim() || urlBad} onClick={save}><Plus className="h-4 w-4" /> {editing ? "Salvar" : "Criar aba"}</Button>
+            {editing && <Button variant="outline" onClick={reset}>Cancelar</Button>}
+          </div>
+        </div>
+      </Box>
+      <Box title={`Abas (${rows.length})`}>
+        {rows.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma aba ainda. Elas aparecem no menu (☰).</p>}
+        {rows.map((p) => (
+          <div key={p.id}>
+            <Row title={p.title} sub={p.body?.slice(0, 80)} published={p.published}
+              onToggle={async (v) => { fail((await db.from("custom_pages").update({ published: v }).eq("id", p.id)).error); void load(); }}
+              onDelete={async () => { fail((await db.from("custom_pages").delete().eq("id", p.id)).error); void load(); }} />
+            <button className="-mt-1 mb-3 text-xs font-semibold text-primary" onClick={() => { setEditing(p.id); setTitle(p.title); setUrl(p.youtube_url ?? ""); setBody(p.body ?? ""); }}>Editar</button>
+          </div>
+        ))}
       </Box>
     </>
   );

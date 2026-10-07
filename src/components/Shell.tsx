@@ -1,9 +1,42 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useCustomPages } from "@/lib/content";
+
+function MenuButton() {
+  const [open, setOpen] = useState(false);
+  const pages = useCustomPages();
+  const item = "flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground hover:bg-muted";
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <button aria-label="Abrir menu" title="Menu" className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground">
+          <Menu className="h-4 w-4" />
+        </button>
+      </SheetTrigger>
+      <SheetContent side="left" className="w-72 overflow-y-auto bg-card">
+        <SheetHeader><SheetTitle className="font-display uppercase">Menu</SheetTitle></SheetHeader>
+        <nav className="mt-4 flex flex-col gap-1">
+          {TABS.map(({ to, label, icon: Icon }) => (
+            <Link key={to} to={to} onClick={() => setOpen(false)} activeOptions={{ exact: to === "/" }} className={item} activeProps={{ className: "text-primary" }}>
+              <Icon className="h-5 w-5" /> {label}
+            </Link>
+          ))}
+          {pages.length > 0 && <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-wider text-gold">Mais</p>}
+          {pages.map((p) => (
+            <Link key={p.id} to="/p/$slug" params={{ slug: p.slug }} onClick={() => setOpen(false)} className={item} activeProps={{ className: "text-primary" }}>
+              <FileText className="h-5 w-5" /> {p.title}
+            </Link>
+          ))}
+        </nav>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
   { id: "claro", label: "Claro", icon: Sun },
@@ -92,6 +125,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
       </div>
 
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 md:rounded-b-2xl items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
+        <MenuButton />
         <img
           src="/mamutes-logo-transparent-256.png"
           alt="Os Mamutes"
