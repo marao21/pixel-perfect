@@ -78,6 +78,7 @@ export type Database = {
           slug: string
           title: string
           youtube_url: string | null
+          youtube_urls: string[] | null
         }
         Insert: {
           body?: string | null
@@ -88,6 +89,7 @@ export type Database = {
           slug: string
           title: string
           youtube_url?: string | null
+          youtube_urls?: string[] | null
         }
         Update: {
           body?: string | null
@@ -98,6 +100,7 @@ export type Database = {
           slug?: string
           title?: string
           youtube_url?: string | null
+          youtube_urls?: string[] | null
         }
         Relationships: []
       }
