@@ -50,7 +50,7 @@ export function useDevotionalOverride(day: number, fallback: DailyDevotional): D
   };
 }
 
-export type CustomPage = { id: string; slug: string; title: string; body: string | null; youtube_url: string | null; position: number; published: boolean };
+export type CustomPage = { id: string; slug: string; title: string; body: string | null; youtube_url: string | null; youtube_urls?: string[] | null; position: number; published: boolean };
 
 export function useCustomPages() {
   const [rows, setRows] = useState<CustomPage[]>([]);

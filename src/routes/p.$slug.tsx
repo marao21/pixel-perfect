@@ -24,7 +24,8 @@ function CustomPageView() {
     setPage(undefined);
     db.from("custom_pages").select("*").eq("slug", slug).maybeSingle().then(({ data }: { data: CustomPage | null }) => setPage(data));
   }, [slug]);
-  const vid = page?.youtube_url ? youtubeId(page.youtube_url) : null;
+  const urls = page ? (page.youtube_urls?.length ? page.youtube_urls : page.youtube_url ? [page.youtube_url] : []) : [];
+  const vids = Array.from(new Set(urls.map((u) => youtubeId(u)).filter((x): x is string => !!x)));
 
   return (
     <>
@@ -39,12 +40,12 @@ function CustomPageView() {
         {page && (
           <article className="space-y-4">
             <h1 className="font-display text-3xl uppercase text-foreground">{page.title}</h1>
-            {vid && (
-              <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-card">
-                <iframe className="h-full w-full" src={`https://www.youtube.com/embed/${vid}`} title={page.title}
+            {vids.map((vid, i) => (
+              <div key={vid} className="aspect-video overflow-hidden rounded-2xl border border-border bg-card">
+                <iframe className="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${vid}?rel=0`} title={`${page.title} — vídeo ${i + 1}`} loading="lazy"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
               </div>
-            )}
+            ))}
             {page.body && (
               <div className="rounded-2xl border border-border bg-card p-5 font-serif-read text-[17px] leading-relaxed text-foreground whitespace-pre-line">
                 {page.body}
