@@ -62,7 +62,6 @@ export function HomeFeed() {
 }
 
 function VideoWithToggle({ video, videoId, onPlay }: { video: Video; videoId: string; onPlay: () => void }) {
-  const [visible, setVisible] = useState(false);
   return (
     <div className="mb-4">
       <button
@@ -80,20 +79,6 @@ function VideoWithToggle({ video, videoId, onPlay }: { video: Video; videoId: st
           <span className="text-xs text-gold">Assistir aqui</span>
         </span>
       </button>
-      <div className="mt-2">
-        <button
-          type="button"
-          onClick={() => setVisible((v) => !v)}
-          className="text-sm font-semibold text-primary underline"
-        >
-          {visible ? "Ocultar texto" : "Mostrar texto"}
-        </button>
-        {visible && (
-          <p className="mt-1 rounded border border-border bg-muted p-2 text-sm text-muted-foreground">
-            Aqui está o texto oculto abaixo do vídeo para leitura. Clique no botão para ocultar novamente.
-          </p>
-        )}
-      </div>
     </div>
   );
 }
