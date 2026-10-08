@@ -3,27 +3,31 @@ import { Megaphone, PlayCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { usePublished, youtubeId, type Announcement, type Video } from "@/lib/content";
 
-export function HomeFeed() {
+export function Avisos() {
   const avisos = usePublished<Announcement>("announcements", "created_at", false);
+  if (avisos.length === 0) return null;
+  return (
+    <section className="mb-4 space-y-2">
+      <h3 className="flex items-center gap-2 font-display text-lg uppercase text-foreground">
+        <Megaphone className="h-5 w-5 text-gold" /> Avisos
+      </h3>
+      {avisos.map((a) => (
+        <article key={a.id} className="avisos-blink rounded-xl border border-gold/60 bg-gold/15 p-3 shadow-elevated">
+          <p className="font-semibold text-foreground">{a.title}</p>
+          {a.body && <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body}</p>}
+        </article>
+      ))}
+    </section>
+  );
+}
+
+export function HomeFeed() {
   const videos = usePublished<Video>("videos", "position", true);
   const [playing, setPlaying] = useState<Video | null>(null);
   const playingId = playing ? youtubeId(playing.youtube_url) : null;
 
   return (
     <>
-      {avisos.length > 0 && (
-        <section className="mt-6 space-y-2">
-          <h3 className="flex items-center gap-2 font-display text-lg uppercase text-foreground">
-            <Megaphone className="h-5 w-5 text-gold" /> Avisos
-          </h3>
-          {avisos.map((a) => (
-            <article key={a.id} className="rounded-xl border border-gold/40 bg-gold/10 p-3">
-              <p className="font-semibold text-foreground">{a.title}</p>
-              {a.body && <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body}</p>}
-            </article>
-          ))}
-        </section>
-      )}
       {videos.length > 0 && (
         <section className="mt-6 space-y-3">
           <h3 className="flex items-center gap-2 font-display text-lg uppercase text-foreground">
