@@ -181,25 +181,6 @@ export function Page({ children }: { title: string; kicker?: string; children: R
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <NetworkStatus />
-          {user ? (
-            <button
-              onClick={handleLogout}
-              title="Sair da conta"
-              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              search={{ cadastro: false }}
-              aria-label="Login"
-              title="Login"
-              className="rounded-full border border-border bg-card p-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <LogIn className="h-4 w-4" />
-            </Link>
-          )}
         </div>
       </header>
       <div className="relative z-10">
