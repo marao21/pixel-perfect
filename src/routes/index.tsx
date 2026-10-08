@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
 import { HomeFeed } from "@/components/HomeFeed";
 import { getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
-import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,13 +22,20 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { done, toggle, profiles } = useStore();
-  const [len] = usePlanLength();
+  const [len, setLen] = usePlanLength();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const PLAN = getPlan(len);
   const today = PLAN[Math.min(CURRENT_DAY, len) - 1]!;
   const isDone = done.has(CURRENT_DAY);
   const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session);
+    });
+  }, []);
 
   return (
     <Page title="Home">
@@ -41,6 +48,20 @@ function Home() {
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
       </section>
+
+      {isLoggedIn && (
+        <section className="mt-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">Discipulado</p>
+              <h3 className="font-display text-lg text-foreground">Discipulado de 30 dias</h3>
+            </div>
+            <Link to="/discipulado" className="rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90">
+              Acessar
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-border bg-card p-4">
