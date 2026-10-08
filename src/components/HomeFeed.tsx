@@ -7,7 +7,7 @@ export function Avisos() {
   const avisos = usePublished<Announcement>("announcements", "created_at", false);
   if (avisos.length === 0) return null;
   return (
-    <section className="space-y-2">
+    <section className="mb-4 space-y-2">
       <h3 className="flex items-center gap-2 font-display text-lg uppercase text-foreground">
         <Megaphone className="h-5 w-5 text-gold" /> Avisos
       </h3>
