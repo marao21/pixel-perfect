@@ -7,7 +7,6 @@ export function HomeFeed() {
   const avisos = usePublished<Announcement>("announcements", "created_at", false);
   const videos = usePublished<Video>("videos", "position", true);
   const [playing, setPlaying] = useState<Video | null>(null);
-  const [showReading, setShowReading] = useState(false);
   const playingId = playing ? youtubeId(playing.youtube_url) : null;
 
   return (
@@ -34,44 +33,11 @@ export function HomeFeed() {
             const id = youtubeId(v.youtube_url);
             if (!id) return null;
             return (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => setPlaying(v)}
-                className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-2 text-left transition-colors hover:bg-secondary"
-              >
-                <span className="relative shrink-0">
-                  <img src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" loading="lazy" className="h-16 w-28 rounded-lg object-cover" />
-                  <PlayCircle className="absolute inset-0 m-auto h-7 w-7 text-primary-foreground drop-shadow" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-semibold text-foreground">{v.title}</span>
-                  {v.description && <span className="line-clamp-2 block text-sm text-muted-foreground">{v.description}</span>}
-                  <span className="text-xs text-gold">Assistir aqui</span>
-                </span>
-              </button>
+              <VideoWithToggle key={v.id} video={v} videoId={id} onPlay={() => setPlaying(v)} />
             );
           })}
         </section>
       )}
-
-      <div className="mt-6">
-        <button
-          type="button"
-          onClick={() => setShowReading((prev) => !prev)}
-          className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-left font-display uppercase tracking-wide text-foreground shadow-sm transition-colors hover:bg-secondary"
-        >
-          <span>Campo de Leitura</span>
-          <span className="text-xs font-sans font-semibold text-gold">
-            {showReading ? "Ocultar" : "Aperte para ver"}
-          </span>
-        </button>
-        {showReading && (
-          <div className="mt-2 rounded-xl border border-border bg-card p-4 text-sm text-foreground animate-fadeIn">
-            <p className="leading-relaxed">Aqui está o campo para leitura disponível para meditação e acompanhamento do desafio. Clique novamente no botão acima para ocultá-lo.</p>
-          </div>
-        )}
-      </div>
 
       <Dialog open={!!playing} onOpenChange={(open) => !open && setPlaying(null)}>
         <DialogContent className="max-w-3xl border-border bg-card p-3 sm:p-4">
@@ -92,5 +58,42 @@ export function HomeFeed() {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function VideoWithToggle({ video, videoId, onPlay }: { video: Video; videoId: string; onPlay: () => void }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="mb-4">
+      <button
+        type="button"
+        onClick={onPlay}
+        className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-2 text-left transition-colors hover:bg-secondary"
+      >
+        <span className="relative shrink-0">
+          <img src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`} alt="" loading="lazy" className="h-16 w-28 rounded-lg object-cover" />
+          <PlayCircle className="absolute inset-0 m-auto h-7 w-7 text-primary-foreground drop-shadow" />
+        </span>
+        <span className="min-w-0">
+          <span className="block font-semibold text-foreground">{video.title}</span>
+          {video.description && <span className="line-clamp-2 block text-sm text-muted-foreground">{video.description}</span>}
+          <span className="text-xs text-gold">Assistir aqui</span>
+        </span>
+      </button>
+      <div className="mt-2">
+        <button
+          type="button"
+          onClick={() => setVisible((v) => !v)}
+          className="text-sm font-semibold text-primary underline"
+        >
+          {visible ? "Ocultar texto" : "Mostrar texto"}
+        </button>
+        {visible && (
+          <p className="mt-1 rounded border border-border bg-muted p-2 text-sm text-muted-foreground">
+            Aqui está o texto oculto abaixo do vídeo para leitura. Clique no botão para ocultar novamente.
+          </p>
+        )}
+      </div>
+    </div>
   );
 }
