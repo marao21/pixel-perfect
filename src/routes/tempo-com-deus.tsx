@@ -72,7 +72,7 @@ let audioCtx: AudioContext | null = null;
 let alarmTimer: number | null = null;
 let alarmStop: number | null = null;
 
-export function unlockAudio() {
+function unlockAudio() {
   try {
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!audioCtx) audioCtx = new AC();
