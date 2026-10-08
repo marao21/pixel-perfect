@@ -39,19 +39,14 @@ function CustomPageView() {
         {page && (
           <article className="space-y-4">
             <h1 className="font-display text-3xl uppercase text-foreground">{page.title}</h1>
-            {vids.map((v, i) => (
-              <section key={`${v.id}-${i}`} className="space-y-2">
-                {v.title && <h2 className="font-display text-xl uppercase text-foreground">{v.title}</h2>}
-                <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-card">
-                  <iframe className="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${v.id}?rel=0`} title={v.title || `${page.title} — vídeo ${i + 1}`} loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
-                </div>
-                {v.text && (
-                  <div className="rounded-2xl border border-border bg-card p-4 font-serif-read text-[16px] leading-relaxed text-foreground whitespace-pre-line">
-                    {v.text}
-                  </div>
-                )}
-              </section>
+              <VideoSection
+                key={`${v.id}-${i}`}
+                videoId={v.id}
+                title={v.title}
+                text={v.text}
+                index={i}
+                pageTitle={page.title}
+              />
             ))}
             {page.body && (
               <div className="rounded-2xl border border-border bg-card p-5 font-serif-read text-[17px] leading-relaxed text-foreground whitespace-pre-line">
