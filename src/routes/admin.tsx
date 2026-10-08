@@ -218,22 +218,26 @@ function PaginasTab() {
   const [rows, setRows] = useState<CustomPage[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
   const [title, setTitle] = useState("");
-  const [youtubeUrls, setYoutubeUrls] = useState<string[]>([""]);
+  const [videos, setVideos] = useState<PageVideo[]>([]);
   const [body, setBody] = useState("");
   const load = useCallback(() => db.from("custom_pages").select("*").order("position").order("created_at").then(({ data }: { data: CustomPage[] | null }) => setRows(data ?? [])), []);
   useEffect(() => { void load(); }, [load]);
 
-  const hasInvalidUrl = youtubeUrls.some((u) => u.trim() && !youtubeId(u));
-  const reset = () => { setEditing(null); setTitle(""); setYoutubeUrls([""]); setBody(""); };
+  const hasInvalidUrl = videos.some((v) => v.url.trim() && !youtubeId(v.url));
+  const reset = () => { setEditing(null); setTitle(""); setVideos([]); setBody(""); };
+  const updVideo = (index: number, patch: Partial<PageVideo>) =>
+    setVideos((prev) => prev.map((v, i) => (i === index ? { ...v, ...patch } : v)));
 
   async function save() {
-    const cleanedUrls = youtubeUrls.map((u) => u.trim()).filter(Boolean);
-    const primaryUrl = cleanedUrls[0] || null;
+    const cleaned = videos
+      .map((v) => ({ url: v.url.trim(), title: v.title.trim(), text: v.text.trim() }))
+      .filter((v) => v.url);
     const data = {
       title: title.trim(),
       body: body.trim() || null,
-      youtube_url: primaryUrl,
-      youtube_urls: cleanedUrls.length > 0 ? cleanedUrls : null,
+      youtube_url: cleaned[0]?.url || null,
+      youtube_urls: cleaned.length > 0 ? cleaned.map((v) => v.url) : null,
+      videos: cleaned,
     };
     const { error } = editing
       ? await db.from("custom_pages").update(data).eq("id", editing)
@@ -248,39 +252,26 @@ function PaginasTab() {
       <Box title={editing ? "Editar aba" : "Nova aba no menu"}>
         <div className="space-y-2">
           <Input placeholder="Nome da aba (ex.: Estudos)" value={title} onChange={(e) => setTitle(e.target.value)} />
-          
-          <div className="space-y-2">
-            <Label>Links do YouTube (opcional)</Label>
-            {youtubeUrls.map((u, index) => (
-              <div key={index} className="flex gap-2">
-                <Input
-                  placeholder={`Link do YouTube #${index + 1}`}
-                  value={u}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setYoutubeUrls((prev) => prev.map((item, i) => (i === index ? val : item)));
-                  }}
-                />
-                {youtubeUrls.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setYoutubeUrls((prev) => prev.filter((_, i) => i !== index))}
-                  >
+
+          <div className="space-y-3">
+            <Label>Vídeos (opcional)</Label>
+            {videos.map((v, index) => (
+              <div key={index} className="space-y-2 rounded-xl border border-border p-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold text-muted-foreground">Vídeo {index + 1}</p>
+                  <Button type="button" variant="ghost" size="icon" aria-label="Remover vídeo"
+                    onClick={() => setVideos((prev) => prev.filter((_, i) => i !== index))}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
-                )}
+                </div>
+                <Input placeholder="Link do YouTube" value={v.url} onChange={(e) => updVideo(index, { url: e.target.value })} />
+                <Input placeholder="Título do vídeo (opcional)" value={v.title} onChange={(e) => updVideo(index, { title: e.target.value })} />
+                <Textarea rows={3} placeholder="Texto deste vídeo (opcional)" value={v.text} onChange={(e) => updVideo(index, { text: e.target.value })} />
               </div>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => setYoutubeUrls((prev) => [...prev, ""])}
-            >
-              <Plus className="h-4 w-4" /> Adicionar outro vídeo
+            <Button type="button" variant="outline" size="sm" className="w-full"
+              onClick={() => setVideos((prev) => [...prev, { url: "", title: "", text: "" }])}>
+              <Plus className="h-4 w-4" /> Adicionar vídeo
             </Button>
           </div>
 
@@ -302,8 +293,7 @@ function PaginasTab() {
             <button className="-mt-1 mb-3 text-xs font-semibold text-primary" onClick={() => {
               setEditing(p.id);
               setTitle(p.title);
-              const urls = p.youtube_urls?.length ? p.youtube_urls : p.youtube_url ? [p.youtube_url] : [""];
-              setYoutubeUrls(urls);
+              setVideos(pageVideos(p));
               setBody(p.body ?? "");
             }}>Editar</button>
           </div>
