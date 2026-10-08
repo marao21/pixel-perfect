@@ -15,6 +15,7 @@ import { StoreProvider } from "../lib/store";
 import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { InstallGate } from "../components/InstallGate";
 
 function NotFoundComponent() {
   return (
@@ -169,7 +170,9 @@ function RootComponent() {
       <ThemeProvider>
         <StoreProvider>
           <DailyDevotionalGreeting />
-          <Outlet />
+          <InstallGate>
+            <Outlet />
+          </InstallGate>
           <Toaster />
         </StoreProvider>
       </ThemeProvider>
