@@ -3,7 +3,10 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 export type Theme = "claro" | "escuro" | "sepia" | "azul";
 const KEY = "mamutes-theme";
 
-const ThemeCtx = createContext<{ theme: Theme; setTheme: (t: Theme) => void }>({ theme: "escuro", setTheme: () => {} });
+const ThemeCtx = createContext<{ theme: Theme; setTheme: (t: Theme) => void }>({
+  theme: "escuro",
+  setTheme: () => {},
+});
 
 function apply(t: Theme) {
   const el = document.documentElement;

@@ -1,22 +1,24 @@
-# Os Mamutes — Desafio Bíblico (Android)
+# Pixel Perfect
 
-Aplicativo Android nativo desenvolvido em Kotlin com Jetpack Compose para o grupo **Os Mamutes** da Igreja Batista Belém.
+Implement exactly the screenshot and nothing else
 
-## Funcionalidades Principais
+This project was built with [Lovable](https://lovable.dev).
 
-- **Home**: Resumo do dia atual do plano de leitura (90, 180 dias ou 1 ano), porcentagem de progresso geral, ofensiva/streak diária, atalho para o devocional diário e comunicados (Avisos).
-- **Plano de Leitura**: Cronograma bíblico completo com seleção de ritmo (90 dias, 180 dias ou 1 ano), filtros (Todos, Concluídos, Pendentes) e check-in diário.
-- **Bíblia Sagrada**: Leitor bíblico completo com suporte a 66 livros, capítulos e múltiplas traduções (NAA, NVI, ACF, ARA, ARC, NVT, NTLH), integração com API online (bolls.life) e cache local para leitura offline.
-- **Oferta**: Contribuições para a Igreja Batista Belém via Pix, com valores sugeridos ou livres, recebedor e cópia rápida da chave Pix.
-- **Pecado, Aqui Não!**: Checklist interativo de 21 dias em Romanos com oração, leitura e reflexão diária.
-- **Devocional Diário**: 365 devocionais diários com versículo, reflexão prática para o homem cristão, citações inspiradoras e autor.
-- **Tempo com Deus**: Temporizador de oração e reflexão pessoal (5, 10, 15, 30 e 60 minutos) com versículos inspiradores.
-- **Temas**: Suporte a 4 esquemas de cores: Claro, Escuro (padrão dos Mamutes), Sépia e Azul.
+## Build with Lovable
 
-## Arquitetura Android
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/5ff41c03-30a6-4886-9ae4-56321b4f5dac).
 
-- **Linguagem**: Kotlin
-- **Interface**: Jetpack Compose com Material Design 3 (M3)
-- **Navegação**: Navigation Compose e Bottom Navigation Bar
-- **Persistência Local**: SharedPreferences e cache local de capítulos bíblicos
-- **Rede**: OkHttp com suporte a chamadas assíncronas em Coroutines
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+
+## Development
+
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+```sh
+git clone <this-repository-url>
+cd <repository-name>
+npm i
+npm run dev
+```
