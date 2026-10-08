@@ -16,7 +16,11 @@ export function Avisos() {
   const avisos = usePublished<Announcement>("announcements", "created_at", false);
   const [closed, setClosed] = useState<string[] | null>(null);
   useEffect(() => {
-    try { setClosed(JSON.parse(localStorage.getItem(DISMISS_KEY) ?? "[]")); } catch { setClosed([]); }
+    try {
+      setClosed(JSON.parse(localStorage.getItem(DISMISS_KEY) ?? "[]"));
+    } catch {
+      setClosed([]);
+    }
   }, []);
   if (closed === null) return null;
   const visible = avisos.filter((a) => !closed.includes(sig(a)));
@@ -32,10 +36,15 @@ export function Avisos() {
         <Megaphone className="h-5 w-5 text-gold" /> Avisos
       </h3>
       {visible.map((a) => (
-        <article key={a.id} className="relative rounded-xl border border-gold/60 bg-gold/15 p-3 pr-11 shadow-elevated">
+        <article
+          key={a.id}
+          className="relative rounded-xl border border-gold/60 bg-gold/15 p-3 pr-11 shadow-elevated"
+        >
           <div className="avisos-blink">
             <p className="font-semibold text-foreground">{a.title}</p>
-            {a.body && <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body}</p>}
+            {a.body && (
+              <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body}</p>
+            )}
           </div>
           <button
             onClick={() => dismiss(a)}
@@ -74,7 +83,9 @@ export function HomeFeed() {
 
       <Dialog open={!!playing} onOpenChange={(open) => !open && setPlaying(null)}>
         <DialogContent className="max-w-3xl border-border bg-card p-3 sm:p-4">
-          <DialogTitle className="font-display text-lg uppercase text-foreground">{playing?.title}</DialogTitle>
+          <DialogTitle className="font-display text-lg uppercase text-foreground">
+            {playing?.title}
+          </DialogTitle>
           {playingId && (
             <div className="aspect-video w-full overflow-hidden rounded-lg">
               <iframe
@@ -87,14 +98,24 @@ export function HomeFeed() {
               />
             </div>
           )}
-          {playing?.description && <p className="text-sm text-muted-foreground">{playing.description}</p>}
+          {playing?.description && (
+            <p className="text-sm text-muted-foreground">{playing.description}</p>
+          )}
         </DialogContent>
       </Dialog>
     </>
   );
 }
 
-function VideoWithToggle({ video, videoId, onPlay }: { video: Video; videoId: string; onPlay: () => void }) {
+function VideoWithToggle({
+  video,
+  videoId,
+  onPlay,
+}: {
+  video: Video;
+  videoId: string;
+  onPlay: () => void;
+}) {
   return (
     <div className="mb-4">
       <button
@@ -103,12 +124,21 @@ function VideoWithToggle({ video, videoId, onPlay }: { video: Video; videoId: st
         className="flex w-full items-center gap-3 rounded-xl border border-border bg-card p-2 text-left transition-colors hover:bg-secondary"
       >
         <span className="relative shrink-0">
-          <img src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`} alt="" loading="lazy" className="h-16 w-28 rounded-lg object-cover" />
+          <img
+            src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
+            alt=""
+            loading="lazy"
+            className="h-16 w-28 rounded-lg object-cover"
+          />
           <PlayCircle className="absolute inset-0 m-auto h-7 w-7 text-primary-foreground drop-shadow" />
         </span>
         <span className="min-w-0">
           <span className="block font-semibold text-foreground">{video.title}</span>
-          {video.description && <span className="line-clamp-2 block text-sm text-muted-foreground">{video.description}</span>}
+          {video.description && (
+            <span className="line-clamp-2 block text-sm text-muted-foreground">
+              {video.description}
+            </span>
+          )}
           <span className="text-xs text-gold">Assistir aqui</span>
         </span>
       </button>

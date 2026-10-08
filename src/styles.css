@@ -195,11 +195,25 @@
   --shadow-elevated: 0 20px 40px -20px oklch(0 0 0 / 0.6);
   --shadow-glow: 0 10px 30px -10px color-mix(in oklab, var(--primary) 60%, transparent);
   --animate-pop: pop 0.4s ease-out;
-  @keyframes pop { 0% { transform: scale(0.94); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+  @keyframes pop {
+    0% {
+      transform: scale(0.94);
+    }
+    60% {
+      transform: scale(1.04);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
 }
 
 @utility bg-hero {
-  background: linear-gradient(150deg, color-mix(in oklab, var(--primary) 22%, var(--card)), var(--card) 65%);
+  background: linear-gradient(
+    150deg,
+    color-mix(in oklab, var(--primary) 22%, var(--card)),
+    var(--card) 65%
+  );
 }
 
 @layer base {
@@ -233,17 +247,33 @@
 }
 
 /* Rolagem sem barra visível */
-html, body, * { scrollbar-width: none; -ms-overflow-style: none; }
-*::-webkit-scrollbar { display: none; width: 0; height: 0; }
+html,
+body,
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
 
 /* Aviso piscando para chamar atenção */
 @keyframes avisos-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
 }
 .avisos-blink {
   animation: avisos-blink 1.1s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .avisos-blink { animation: none; }
+  .avisos-blink {
+    animation: none;
+  }
 }

@@ -22,7 +22,8 @@ interface Theme {
 const THEMES: Theme[] = [
   {
     title: "Viver em paz",
-    verse: "E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos em Cristo Jesus.",
+    verse:
+      "E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos pensamentos em Cristo Jesus.",
     ref: "Filipenses 4:7",
     body: [
       "Parece uma utopia imaginar que é possível viver em paz neste mundo. Conflitos acontecem em todas as áreas da vida e, quando as coisas parecem finalmente tranquilas, ainda precisamos lidar com nossas próprias preocupações, medos e conflitos interiores.",
@@ -36,7 +37,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Firmeza no meio da tempestade",
-    verse: "Sede firmes, inabaláveis e sempre abundantes na obra do Senhor, sabendo que o vosso trabalho não é vão no Senhor.",
+    verse:
+      "Sede firmes, inabaláveis e sempre abundantes na obra do Senhor, sabendo que o vosso trabalho não é vão no Senhor.",
     ref: "1 Coríntios 15:58",
     body: [
       "Homem de Deus não é medido pela ausência de tempestades, mas pela firmeza com que permanece de pé quando elas chegam. A tempestade revela o alicerce.",
@@ -59,12 +61,14 @@ const THEMES: Theme[] = [
       "A liderança que serve não é fraqueza — é força sob controle, a mesma força que levou o Rei do universo a uma cruz.",
     ],
     author: "Equipe Os Mamutes",
-    quote: "O verdadeiro líder não usa os outros para subir; usa sua posição para levantar os outros.",
+    quote:
+      "O verdadeiro líder não usa os outros para subir; usa sua posição para levantar os outros.",
     quoteAuthor: "Anônimo",
   },
   {
     title: "Integridade no oculto",
-    verse: "O que anda em integridade anda seguro, mas o que perverte os seus caminhos será conhecido.",
+    verse:
+      "O que anda em integridade anda seguro, mas o que perverte os seus caminhos será conhecido.",
     ref: "Provérbios 10:9",
     body: [
       "Integridade é ser o mesmo homem quando ninguém está olhando. O caráter não é o que fazemos em público; é o que somos no escuro.",
@@ -106,7 +110,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Coragem para obedecer",
-    verse: "Esforça-te e tem bom ânimo; não temas, nem te espantes, porque o Senhor teu Deus é contigo, por onde quer que andares.",
+    verse:
+      "Esforça-te e tem bom ânimo; não temas, nem te espantes, porque o Senhor teu Deus é contigo, por onde quer que andares.",
     ref: "Josué 1:9",
     body: [
       "Deus não chamou Josué para uma missão fácil: substituir Moisés e conduzir um povo teimoso à Terra Prometida. A ordem divina não foi 'não tenha medo do perigo', mas 'não temas, porque eu sou contigo'.",
@@ -120,7 +125,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Domínio próprio",
-    verse: "Como a cidade derrubada, que não tem muros, assim é o homem que não pode conter o seu espírito.",
+    verse:
+      "Como a cidade derrubada, que não tem muros, assim é o homem que não pode conter o seu espírito.",
     ref: "Provérbios 16:32",
     body: [
       "Na antiguidade, uma cidade sem muros estava à mercê de qualquer invasor. Assim é o homem sem domínio próprio: qualquer provocação, qualquer tentação, qualquer emoção o derruba.",
@@ -190,7 +196,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Perdão que liberta",
-    verse: "Antes sede uns para com os outros benignos, misericordiosos, perdoando-vos uns aos outros, como também Deus vos perdoou em Cristo.",
+    verse:
+      "Antes sede uns para com os outros benignos, misericordiosos, perdoando-vos uns aos outros, como também Deus vos perdoou em Cristo.",
     ref: "Efésios 4:32",
     body: [
       "Guardar mágoa é beber veneno esperando que o outro morra. O perdão não absolve o ofensor primeiro — liberta o ofendido.",
@@ -218,7 +225,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Esperança que não decepciona",
-    verse: "E a esperança não traz confusão, porquanto o amor de Deus está derramado em nossos corações pelo Espírito Santo.",
+    verse:
+      "E a esperança não traz confusão, porquanto o amor de Deus está derramado em nossos corações pelo Espírito Santo.",
     ref: "Romanos 5:5",
     body: [
       "O mundo oferece esperanças frágeis: dinheiro, saúde, planos. Todas podem ruir. A esperança cristã é diferente — está ancorada no caráter de Deus.",
@@ -288,7 +296,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Ansiedade sob o domínio de Cristo",
-    verse: "Não estejais inquietos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus, pela oração e súplicas, com ação de graças.",
+    verse:
+      "Não estejais inquietos por coisa alguma; antes, as vossas petições sejam em tudo conhecidas diante de Deus, pela oração e súplicas, com ação de graças.",
     ref: "Filipenses 4:6",
     body: [
       "Ansiedade é orar sem endereço: carregar o peso sem entregar a ninguém. Paulo não manda fingir que o problema não existe; manda transferir o problema.",
@@ -302,7 +311,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Pai presente",
-    verse: "E vós, pais, não provoqueis à ira vossos filhos, mas criai-os na disciplina e na admoestação do Senhor.",
+    verse:
+      "E vós, pais, não provoqueis à ira vossos filhos, mas criai-os na disciplina e na admoestação do Senhor.",
     ref: "Efésios 6:4",
     body: [
       "Seus filhos não precisam de um pai perfeito; precisam de um pai presente. Presença não é estar no mesmo teto — é estar disponível de coração.",
@@ -316,7 +326,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Vencendo a tentação",
-    verse: "Fiel é Deus, o qual não vos deixará tentados além da vossa capacidade, mas com a tentação dará também o escape, para que a possais suportar.",
+    verse:
+      "Fiel é Deus, o qual não vos deixará tentados além da vossa capacidade, mas com a tentação dará também o escape, para que a possais suportar.",
     ref: "1 Coríntios 10:13",
     body: [
       "Toda tentação vem com duas informações falsas: 'isso é inevitável' e 'você é o único que cai nisso'. Nenhuma das duas é verdade.",
@@ -330,7 +341,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Testemunho que se vê",
-    verse: "Assim resplandeça a vossa luz diante dos homens, para que vejam as vossas boas obras e glorifiquem ao vosso Pai que está nos céus.",
+    verse:
+      "Assim resplandeça a vossa luz diante dos homens, para que vejam as vossas boas obras e glorifiquem ao vosso Pai que está nos céus.",
     ref: "Mateus 5:16",
     body: [
       "O mundo não lê a Bíblia; lê o cristão. Sua conduta no trânsito, na fila, no fechamento de negócio é o único sermão que muita gente vai ouvir.",
@@ -344,7 +356,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Sabedoria para decidir",
-    verse: "Se algum de vós tem falta de sabedoria, peça-a a Deus, que a todos dá liberalmente e não o lança em rosto; e ser-lhe-á dada.",
+    verse:
+      "Se algum de vós tem falta de sabedoria, peça-a a Deus, que a todos dá liberalmente e não o lança em rosto; e ser-lhe-á dada.",
     ref: "Tiago 1:5",
     body: [
       "A vida é o resultado das decisões: com quem casar, onde trabalhar, como criar os filhos, como reagir à crise. Sabedoria é a arte de decidir bem.",
@@ -358,7 +371,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Perseverança até o fim",
-    verse: "Bem-aventurado o homem que suporta a tentação, porque receberá a coroa da vida, a qual o Senhor prometeu aos que o amam.",
+    verse:
+      "Bem-aventurado o homem que suporta a tentação, porque receberá a coroa da vida, a qual o Senhor prometeu aos que o amam.",
     ref: "Tiago 1:12",
     body: [
       "Começar é fácil; todo mundo sabe começar. A coroa não é para quem largou bem, é para quem terminou.",
@@ -372,7 +386,8 @@ const THEMES: Theme[] = [
   },
   {
     title: "Amor que dá a vida",
-    verse: "Maridos, amai vossa mulher, como também Cristo amou a igreja e a si mesmo se entregou por ela.",
+    verse:
+      "Maridos, amai vossa mulher, como também Cristo amou a igreja e a si mesmo se entregou por ela.",
     ref: "Efésios 5:25",
     body: [
       "Cristo não amou a igreja porque ela era perfeita; amou-a dando a vida por ela. Esse é o padrão do amor do marido — não sentimento, é sacrifício.",
@@ -394,9 +409,15 @@ const EXTRA_VERSES: [string, string][] = [
   ["Tudo posso naquele que me fortalece.", "Filipenses 4:13"],
   ["O Senhor é a minha luz e a minha salvação; a quem temerei?", "Salmo 27:1"],
   ["Entrega o teu caminho ao Senhor; confia nele, e ele tudo fará.", "Salmo 37:5"],
-  ["O coração do homem planeja o seu caminho, mas o Senhor lhe dirige os passos.", "Provérbios 16:9"],
+  [
+    "O coração do homem planeja o seu caminho, mas o Senhor lhe dirige os passos.",
+    "Provérbios 16:9",
+  ],
   ["Eis que farei novas todas as coisas.", "Apocalipse 21:5"],
-  ["O Senhor te abençoe e te guarde; o Senhor faça resplandecer o seu rosto sobre ti.", "Números 6:24-25"],
+  [
+    "O Senhor te abençoe e te guarde; o Senhor faça resplandecer o seu rosto sobre ti.",
+    "Números 6:24-25",
+  ],
   ["Buscai ao Senhor e a sua força; buscai perpetuamente a sua face.", "Salmo 105:4"],
   ["O temor do Senhor é o princípio da sabedoria.", "Provérbios 9:10"],
   ["A tua palavra é lâmpada para os meus pés e luz para o meu caminho.", "Salmo 119:105"],
@@ -405,80 +426,188 @@ const EXTRA_VERSES: [string, string][] = [
   ["Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.", "Salmo 46:1"],
   ["Esforça-te, e ele fortalecerá o teu coração; espera, pois, no Senhor.", "Salmo 27:14"],
   ["Melhor é o fim das coisas do que o princípio delas.", "Eclesiastes 7:8"],
-  ["Não vos conformeis com este mundo, mas transformai-vos pela renovação da vossa mente.", "Romanos 12:2"],
-  ["Fiai-vos do Senhor de todo o vosso coração e não te estribes no teu próprio entendimento.", "Provérbios 3:5"],
+  [
+    "Não vos conformeis com este mundo, mas transformai-vos pela renovação da vossa mente.",
+    "Romanos 12:2",
+  ],
+  [
+    "Fiai-vos do Senhor de todo o vosso coração e não te estribes no teu próprio entendimento.",
+    "Provérbios 3:5",
+  ],
   ["O que semeia em lágrimas segará com alegria.", "Salmo 126:5"],
   ["A tua fidelidade alcança até às nuvens.", "Salmo 36:5"],
-  ["Vinde, comamos e bebamos, porque amanhã faremos algo grande — mas hoje, o pequeno bem feito é já grande aos olhos de Deus.", "Neemias 8:10 (espírito do texto)"],
+  [
+    "Vinde, comamos e bebamos, porque amanhã faremos algo grande — mas hoje, o pequeno bem feito é já grande aos olhos de Deus.",
+    "Neemias 8:10 (espírito do texto)",
+  ],
   ["O Senhor sustenta a todos os que caem e levanta a todos os abatidos.", "Salmo 145:14"],
-  ["Antes sejais exemplo dos fiéis, na palavra, no procedimento, no amor, na fé, na pureza.", "1 Timóteo 4:12"],
+  [
+    "Antes sejais exemplo dos fiéis, na palavra, no procedimento, no amor, na fé, na pureza.",
+    "1 Timóteo 4:12",
+  ],
   ["O homem temente ao Senhor, esse acha o bem.", "Provérbios 15:16"],
-  ["Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procede a vida.", "Provérbios 4:23"],
+  [
+    "Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procede a vida.",
+    "Provérbios 4:23",
+  ],
   ["Alegrai-vos sempre no Senhor; outra vez digo, alegrai-vos.", "Filipenses 4:4"],
-  ["O que é generoso prospera; quem dá alívio ao outro, alívio encontra.", "Provérbios 11:25 (espírito do texto)"],
+  [
+    "O que é generoso prospera; quem dá alívio ao outro, alívio encontra.",
+    "Provérbios 11:25 (espírito do texto)",
+  ],
   ["O Senhor é bom, uma fortaleza no dia da angústia, e conhece os que confiam nele.", "Naum 1:7"],
-  ["Melhor é a paciente sabedoria do sábio do que a arrogância do tolo.", "Eclesiastes 7:8 (espírito do texto)"],
-  ["Pelo exercício, o corpo se fortalece; pela prática, a piedade se faz hábito.", "1 Timóteo 4:8 (espírito do texto)"],
+  [
+    "Melhor é a paciente sabedoria do sábio do que a arrogância do tolo.",
+    "Eclesiastes 7:8 (espírito do texto)",
+  ],
+  [
+    "Pelo exercício, o corpo se fortalece; pela prática, a piedade se faz hábito.",
+    "1 Timóteo 4:8 (espírito do texto)",
+  ],
   ["O justo cai sete vezes e se levanta de novo.", "Provérbios 24:16"],
-  ["O Senhor é bom para todos, e as suas misericórdias alcançam todas as suas obras.", "Salmo 145:9"],
-  ["Lâmpada para os meus pés é a tua palavra; mostra-me o caminho que devo seguir.", "Salmo 119:105 (espírito do texto)"],
+  [
+    "O Senhor é bom para todos, e as suas misericórdias alcançam todas as suas obras.",
+    "Salmo 145:9",
+  ],
+  [
+    "Lâmpada para os meus pés é a tua palavra; mostra-me o caminho que devo seguir.",
+    "Salmo 119:105 (espírito do texto)",
+  ],
   ["Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus.", "Isaías 41:10"],
   ["O que guarda a sua boca e a sua língua guarda a sua alma das angústias.", "Provérbios 21:23"],
-  ["O fruto do Espírito é amor, gozo, paz, longanimidade, benignidade, bondade, fé, mansidão, domínio próprio.", "Gálatas 5:22-23"],
-  ["O que cobre a transgressão busca a amizade, mas quem renova a questão separa os príncipes.", "Provérbios 17:9"],
+  [
+    "O fruto do Espírito é amor, gozo, paz, longanimidade, benignidade, bondade, fé, mansidão, domínio próprio.",
+    "Gálatas 5:22-23",
+  ],
+  [
+    "O que cobre a transgressão busca a amizade, mas quem renova a questão separa os príncipes.",
+    "Provérbios 17:9",
+  ],
   ["Vigiai e orai, para que não entreis em tentação.", "Mateus 26:41"],
   ["Onde estiver o teu tesouro, aí estará também o teu coração.", "Mateus 6:21"],
-  ["Melhor é um punhado de descanso do que duas mãos cheias de trabalho e aflição.", "Eclesiastes 4:6"],
+  [
+    "Melhor é um punhado de descanso do que duas mãos cheias de trabalho e aflição.",
+    "Eclesiastes 4:6",
+  ],
   ["Deus resiste aos soberbos, mas dá graça aos humildes.", "Tiago 4:6"],
-  ["O que honra a Deus com a sua fazenda, as suas colheitas se encherão de fartura.", "Provérbios 3:9-10 (espírito do texto)"],
-  ["Elevo os meus olhos para os montes: de onde me vem o socorro? O socorro me vem do Senhor.", "Salmo 121:1-2"],
+  [
+    "O que honra a Deus com a sua fazenda, as suas colheitas se encherão de fartura.",
+    "Provérbios 3:9-10 (espírito do texto)",
+  ],
+  [
+    "Elevo os meus olhos para os montes: de onde me vem o socorro? O socorro me vem do Senhor.",
+    "Salmo 121:1-2",
+  ],
   ["O coração alegre serve de bom remédio.", "Provérbios 17:22"],
   ["Nada temas, crê somente.", "Marcos 5:36"],
   ["O Senhor guerreará por vós, e vós estareis quietos.", "Êxodo 14:14"],
-  ["Anda na presença de Deus e sê perfeito — íntegro, inteiro, sem divisão.", "Gênesis 17:1 (espírito do texto)"],
-  ["Ensinai o menino no caminho em que deve andar, e até quando envelhecer não se desviará dele.", "Provérbios 22:6"],
+  [
+    "Anda na presença de Deus e sê perfeito — íntegro, inteiro, sem divisão.",
+    "Gênesis 17:1 (espírito do texto)",
+  ],
+  [
+    "Ensinai o menino no caminho em que deve andar, e até quando envelhecer não se desviará dele.",
+    "Provérbios 22:6",
+  ],
   ["O Senhor concederá força ao seu povo; o Senhor abençoará o seu povo com paz.", "Salmo 29:11"],
-  ["Confessai as vossas culpas uns aos outros e orai uns pelos outros, para que sareis.", "Tiago 5:16"],
+  [
+    "Confessai as vossas culpas uns aos outros e orai uns pelos outros, para que sareis.",
+    "Tiago 5:16",
+  ],
   ["Não se turbe o vosso coração, nem atemorize; crede em Deus, crede também em mim.", "João 14:1"],
-  ["O sábio de coração aceita os mandamentos, mas o tolo de lábios será castigado.", "Provérbios 10:8"],
-  ["Honra ao Senhor com a tua substância; faze-o antes de pensar em ti mesmo.", "Provérbios 3:9 (espírito do texto)"],
+  [
+    "O sábio de coração aceita os mandamentos, mas o tolo de lábios será castigado.",
+    "Provérbios 10:8",
+  ],
+  [
+    "Honra ao Senhor com a tua substância; faze-o antes de pensar em ti mesmo.",
+    "Provérbios 3:9 (espírito do texto)",
+  ],
   ["O homem que tem amigos deve mostrar-se amigo.", "Provérbios 18:24"],
   ["A bênção do Senhor enriquece, e não acrescenta tristeza nenhuma.", "Provérbios 10:22"],
-  ["Deus não faz distinção de pessoas; recompensa cada um conforme a sua obra.", "Atos 10:34-35 (espírito do texto)"],
-  ["O que dilata a sua alma ao faminto e satisfaz a alma aflita, a sua luz nascerá em trevas.", "Isaías 58:10"],
+  [
+    "Deus não faz distinção de pessoas; recompensa cada um conforme a sua obra.",
+    "Atos 10:34-35 (espírito do texto)",
+  ],
+  [
+    "O que dilata a sua alma ao faminto e satisfaz a alma aflita, a sua luz nascerá em trevas.",
+    "Isaías 58:10",
+  ],
   ["Perseverai na oração, velando com ações de graças.", "Colossenses 4:2"],
   ["O sangue de Jesus nos purifica de todo o pecado.", "1 João 1:7"],
   ["Tu és o Deus que me vê.", "Gênesis 16:13"],
   ["Fazei o bem a todos, especialmente aos domésticos da fé.", "Gálatas 6:10"],
-  ["O caminho do justo é como a luz da aurora, que vai brilhando até o dia perfeito.", "Provérbios 4:18"],
+  [
+    "O caminho do justo é como a luz da aurora, que vai brilhando até o dia perfeito.",
+    "Provérbios 4:18",
+  ],
   ["Deus é fiel; por ele fostes chamados à comunhão de seu Filho.", "1 Coríntios 1:9"],
   ["Lembra-te do teu Criador nos dias da tua mocidade.", "Eclesiastes 12:1"],
   ["O Senhor te guardará de todo o mal; guardará a tua alma.", "Salmo 121:7"],
-  ["Em vez de andar ansioso, entregue toda a sua preocupação a ele, porque ele tem cuidado de vós.", "1 Pedro 5:7 (espírito do texto)"],
+  [
+    "Em vez de andar ansioso, entregue toda a sua preocupação a ele, porque ele tem cuidado de vós.",
+    "1 Pedro 5:7 (espírito do texto)",
+  ],
   ["O sábio teme e desvia-se do mal, mas o tolo passa e se enfurece.", "Provérbios 14:16"],
   ["Fazei tudo sem murmurações nem contendas.", "Filipenses 2:14"],
   ["O Senhor é misericordioso e piedoso; longânimo e grande em benignidade.", "Salmo 103:8"],
   ["O que ouve a repreensão adquire entendimento.", "Provérbios 15:32"],
-  ["Grande é a tua fidelidade; cada manhã se renovam as tuas misericórdias.", "Lamentações 3:23 (espírito do texto)"],
+  [
+    "Grande é a tua fidelidade; cada manhã se renovam as tuas misericórdias.",
+    "Lamentações 3:23 (espírito do texto)",
+  ],
   ["Deus está no meio dela; não se moverá; Deus a ajudará desde o raiar da alva.", "Salmo 46:5"],
-  ["Melhor é o que domina a sua alma do que o que toma cidades.", "Provérbios 16:32 (espírito do texto)"],
-  ["O justo andará na sua integridade; os seus filhos serão abençoados depois dele.", "Salmo 37:26 (espírito do texto)"],
+  [
+    "Melhor é o que domina a sua alma do que o que toma cidades.",
+    "Provérbios 16:32 (espírito do texto)",
+  ],
+  [
+    "O justo andará na sua integridade; os seus filhos serão abençoados depois dele.",
+    "Salmo 37:26 (espírito do texto)",
+  ],
   ["Deus é amor; e quem está em amor está em Deus, e Deus nele.", "1 João 4:16"],
-  ["Sede solícitos uns pelos outros, sem serdes preguiçosos; sede fervorosos no espírito.", "Romanos 12:11 (espírito do texto)"],
-  ["O homem que anda na companhia dos sábios será sábio, mas o companheiro dos tolos sofrerá o mal.", "Provérbios 13:20 (espírito do texto)"],
+  [
+    "Sede solícitos uns pelos outros, sem serdes preguiçosos; sede fervorosos no espírito.",
+    "Romanos 12:11 (espírito do texto)",
+  ],
+  [
+    "O homem que anda na companhia dos sábios será sábio, mas o companheiro dos tolos sofrerá o mal.",
+    "Provérbios 13:20 (espírito do texto)",
+  ],
   ["E conhecereis a verdade, e a verdade vos libertará.", "João 8:32"],
-  ["Não te esqueças de todos os benefícios dele; ele perdoa todas as tuas iniquidades e sara todas as tuas enfermidades.", "Salmo 103:2-3 (espírito do texto)"],
+  [
+    "Não te esqueças de todos os benefícios dele; ele perdoa todas as tuas iniquidades e sara todas as tuas enfermidades.",
+    "Salmo 103:2-3 (espírito do texto)",
+  ],
   ["O Senhor coroa o ano com a sua bondade.", "Salmo 65:11"],
-  ["Regozija-te, ó jovem, na tua mocidade, mas sabe que de todas estas coisas Deus te pedirá contas.", "Eclesiastes 11:9 (espírito do texto)"],
-  ["O que semeia pouco, pouco segará; e o que semeia em abundância, em abundância segará.", "2 Coríntios 9:6"],
+  [
+    "Regozija-te, ó jovem, na tua mocidade, mas sabe que de todas estas coisas Deus te pedirá contas.",
+    "Eclesiastes 11:9 (espírito do texto)",
+  ],
+  [
+    "O que semeia pouco, pouco segará; e o que semeia em abundância, em abundância segará.",
+    "2 Coríntios 9:6",
+  ],
   ["A tua direita, Senhor, é majestosa em poder; a tua direita derribou o inimigo.", "Êxodo 15:6"],
-  ["Guarda o coração com toda a diligência, porque dele procedem as questões da vida.", "Provérbios 4:23 (espírito do texto)"],
-  ["Vinde a mim, e eu vos darei descanso; o meu jugo é suave e o meu fardo é leve.", "Mateus 11:28-30 (espírito do texto)"],
+  [
+    "Guarda o coração com toda a diligência, porque dele procedem as questões da vida.",
+    "Provérbios 4:23 (espírito do texto)",
+  ],
+  [
+    "Vinde a mim, e eu vos darei descanso; o meu jugo é suave e o meu fardo é leve.",
+    "Mateus 11:28-30 (espírito do texto)",
+  ],
   ["O Senhor é a minha porção e o meu cálice; tu sustentas a minha sorte.", "Salmo 16:5"],
-  ["Toda a Escritura é divinamente inspirada e proveitosa para ensinar, para redarguir, para corrigir, para instruir.", "2 Timóteo 3:16"],
+  [
+    "Toda a Escritura é divinamente inspirada e proveitosa para ensinar, para redarguir, para corrigir, para instruir.",
+    "2 Timóteo 3:16",
+  ],
   ["O que semeia justiça segará fruto de misericórdia.", "Oséias 10:12 (espírito do texto)"],
   ["Jesus Cristo é o mesmo ontem, hoje e eternamente.", "Hebreus 13:8"],
-  ["Deus, que começou em vós a boa obra, a aperfeiçoará até ao dia de Jesus Cristo.", "Filipenses 1:6"],
+  [
+    "Deus, que começou em vós a boa obra, a aperfeiçoará até ao dia de Jesus Cristo.",
+    "Filipenses 1:6",
+  ],
 ];
 
 const EXTRA_PARAS = [
@@ -536,7 +665,7 @@ const DIAS_POR_ANO = 365;
 
 /** Devocional do dia (1 a 365). Cada dia do ano tem um devocional diferente. */
 export function getDevotionalForDay(day: number): DailyDevotional {
-  const d = ((Math.max(1, day) - 1) % DIAS_POR_ANO);
+  const d = (Math.max(1, day) - 1) % DIAS_POR_ANO;
   const rawWeek = Math.floor(d / 7); // 0-52, sem módulo — usado nos índices
   const week = rawWeek % THEMES.length;
   const slot = d % 7; // 0-6: dia da semana dentro do tema

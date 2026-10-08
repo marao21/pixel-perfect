@@ -22,22 +22,50 @@ const PROFILES: Profile[] = [
 ];
 
 export const DEVOTIONALS: Devotional[] = [
-  { day: 23, title: "Firmeza no meio da tempestade", verse: "Sede firmes, inabaláveis e sempre abundantes na obra do Senhor.", ref: "1 Coríntios 15:58", body: [
-    "Homem de Deus não é medido pela ausência de tempestades, mas pela firmeza com que permanece de pé quando elas chegam.",
-    "Hoje, escolha ser constante: na leitura, na oração, no cuidado com sua família. A constância silenciosa constrói legado.",
-    "Prática: ore com sua esposa ou filhos antes de dormir. Cinco minutos. Todos os dias desta semana." ] },
-  { day: 22, title: "Liderança que serve", verse: "Quem quiser tornar-se grande entre vós, será esse o que vos sirva.", ref: "Mateus 20:26", body: [
-    "Cristo inverteu a lógica do poder. Liderar é carregar o peso primeiro, não por último.",
-    "Em casa e no trabalho, procure uma oportunidade concreta de servir sem ser notado.",
-    "Prática: assuma hoje uma tarefa que normalmente você deixa para outro." ] },
-  { day: 21, title: "Integridade no oculto", verse: "O que anda em integridade anda seguro.", ref: "Provérbios 10:9", body: [
-    "Integridade é ser o mesmo homem quando ninguém está olhando.",
-    "Pequenas concessões abrem grandes brechas. Feche as portas antes que se tornem caminhos.",
-    "Prática: confesse a um irmão do grupo uma área em que você precisa de prestação de contas." ] },
-  { day: 20, title: "O sacerdote do lar", verse: "Eu e a minha casa serviremos ao Senhor.", ref: "Josué 24:15", body: [
-    "Josué não decidiu só por si. Decidiu pela casa. Essa é a vocação do homem cristão.",
-    "Sua família precisa ver sua fé em ação, não apenas ouvir sobre ela.",
-    "Prática: leia um salmo em voz alta à mesa no jantar de hoje." ] },
+  {
+    day: 23,
+    title: "Firmeza no meio da tempestade",
+    verse: "Sede firmes, inabaláveis e sempre abundantes na obra do Senhor.",
+    ref: "1 Coríntios 15:58",
+    body: [
+      "Homem de Deus não é medido pela ausência de tempestades, mas pela firmeza com que permanece de pé quando elas chegam.",
+      "Hoje, escolha ser constante: na leitura, na oração, no cuidado com sua família. A constância silenciosa constrói legado.",
+      "Prática: ore com sua esposa ou filhos antes de dormir. Cinco minutos. Todos os dias desta semana.",
+    ],
+  },
+  {
+    day: 22,
+    title: "Liderança que serve",
+    verse: "Quem quiser tornar-se grande entre vós, será esse o que vos sirva.",
+    ref: "Mateus 20:26",
+    body: [
+      "Cristo inverteu a lógica do poder. Liderar é carregar o peso primeiro, não por último.",
+      "Em casa e no trabalho, procure uma oportunidade concreta de servir sem ser notado.",
+      "Prática: assuma hoje uma tarefa que normalmente você deixa para outro.",
+    ],
+  },
+  {
+    day: 21,
+    title: "Integridade no oculto",
+    verse: "O que anda em integridade anda seguro.",
+    ref: "Provérbios 10:9",
+    body: [
+      "Integridade é ser o mesmo homem quando ninguém está olhando.",
+      "Pequenas concessões abrem grandes brechas. Feche as portas antes que se tornem caminhos.",
+      "Prática: confesse a um irmão do grupo uma área em que você precisa de prestação de contas.",
+    ],
+  },
+  {
+    day: 20,
+    title: "O sacerdote do lar",
+    verse: "Eu e a minha casa serviremos ao Senhor.",
+    ref: "Josué 24:15",
+    body: [
+      "Josué não decidiu só por si. Decidiu pela casa. Essa é a vocação do homem cristão.",
+      "Sua família precisa ver sua fé em ação, não apenas ouvir sobre ela.",
+      "Prática: leia um salmo em voz alta à mesa no jantar de hoje.",
+    ],
+  },
 ];
 
 type Ctx = {
@@ -58,7 +86,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const saved = localStorage.getItem(PROGRESS_KEY);
       if (saved) {
         const days: unknown = JSON.parse(saved);
-        if (Array.isArray(days) && days.every((day) => Number.isInteger(day) && day >= 1 && day <= 365)) {
+        if (
+          Array.isArray(days) &&
+          days.every((day) => Number.isInteger(day) && day >= 1 && day <= 365)
+        ) {
           setDone(new Set(days));
         }
       }
@@ -77,13 +108,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [done, progressRestored]);
 
-  const toggle = (d: number) => setDone((s) => { const n = new Set(s); n.has(d) ? n.delete(d) : n.add(d); return n; });
+  const toggle = (d: number) =>
+    setDone((s) => {
+      const n = new Set(s);
+      if (n.has(d)) {
+        n.delete(d);
+      } else {
+        n.add(d);
+      }
+      return n;
+    });
 
   let streak = 0;
   for (let d = CURRENT_DAY; d > 0 && done.has(d); d--) streak++;
-  if (!done.has(CURRENT_DAY)) { streak = 0; for (let d = CURRENT_DAY - 1; d > 0 && done.has(d); d--) streak++; }
-  const profiles = [...PROFILES, { id: ME.id, name: `${ME.name} (você)`, done: done.size, streak }]
-    .sort((a, b) => b.done - a.done || b.streak - a.streak);
+  if (!done.has(CURRENT_DAY)) {
+    streak = 0;
+    for (let d = CURRENT_DAY - 1; d > 0 && done.has(d); d--) streak++;
+  }
+  const profiles = [
+    ...PROFILES,
+    { id: ME.id, name: `${ME.name} (você)`, done: done.size, streak },
+  ].sort((a, b) => b.done - a.done || b.streak - a.streak);
 
   const addProfile = (name: string) => {
     if (!name.trim()) return;
