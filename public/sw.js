@@ -1,4 +1,4 @@
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = `os-mamutes-shell-${VERSION}`;
 const ASSET_CACHE = `os-mamutes-assets-${VERSION}`;
 const PAGE_CACHE = `os-mamutes-pages-${VERSION}`;
@@ -7,9 +7,9 @@ const APP_SHELL = [
   "/",
   "/manifest.webmanifest",
   "/favicon.png",
-  "/apple-touch-icon.png",
-  "/icon-192.png",
-  "/icon-512.png",
+  "/apple-touch-icon-v2.png",
+  "/icon-192-v2.png",
+  "/icon-512-v2.png",
   "/mamutes-logo-transparent-256.png",
 ];
 
