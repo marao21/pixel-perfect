@@ -77,7 +77,7 @@ function VideoSection({ videoId, title, text, index, pageTitle }: { videoId: str
             onClick={() => setShowText((s) => !s)}
             className="w-full rounded-xl border border-border bg-card px-4 py-3 text-left font-semibold text-foreground transition-colors hover:bg-secondary"
           >
-            {title || "Mostrar texto"}
+            {showText ? "Ocultar texto" : "Mostrar texto"}
           </button>
           {showText && (
             <div className="mt-2 rounded-2xl border border-border bg-card p-4 font-serif-read text-[16px] leading-relaxed text-foreground whitespace-pre-line">
