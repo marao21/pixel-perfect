@@ -30,9 +30,6 @@ function Home() {
   const me = profiles.find((p) => p.id === "me");
   const dev = DEVOTIONALS[0]!;
 
-  // Estado para controlar visibilidade do texto oculto
-  const [showText, setShowText] = useState(false);
-
   return (
     <Page title="Home">
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
