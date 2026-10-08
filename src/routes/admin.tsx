@@ -201,15 +201,23 @@ function PaginasTab() {
   const [rows, setRows] = useState<CustomPage[]>([]);
   const [editing, setEditing] = useState<string | null>(null);
   const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
+  const [youtubeUrls, setYoutubeUrls] = useState<string[]>([""]);
   const [body, setBody] = useState("");
   const load = useCallback(() => db.from("custom_pages").select("*").order("position").order("created_at").then(({ data }: { data: CustomPage[] | null }) => setRows(data ?? [])), []);
   useEffect(() => { void load(); }, [load]);
-  const urlBad = !!url.trim() && !youtubeId(url);
-  const reset = () => { setEditing(null); setTitle(""); setUrl(""); setBody(""); };
+
+  const hasInvalidUrl = youtubeUrls.some((u) => u.trim() && !youtubeId(u));
+  const reset = () => { setEditing(null); setTitle(""); setYoutubeUrls([""]); setBody(""); };
 
   async function save() {
-    const data = { title: title.trim(), body: body.trim() || null, youtube_url: url.trim() || null };
+    const cleanedUrls = youtubeUrls.map((u) => u.trim()).filter(Boolean);
+    const primaryUrl = cleanedUrls[0] || null;
+    const data = {
+      title: title.trim(),
+      body: body.trim() || null,
+      youtube_url: primaryUrl,
+      youtube_urls: cleanedUrls.length > 0 ? cleanedUrls : null,
+    };
     const { error } = editing
       ? await db.from("custom_pages").update(data).eq("id", editing)
       : await db.from("custom_pages").insert({ ...data, slug: `${slugify(title)}-${Math.random().toString(36).slice(2, 6)}`, position: rows.length });
@@ -223,11 +231,46 @@ function PaginasTab() {
       <Box title={editing ? "Editar aba" : "Nova aba no menu"}>
         <div className="space-y-2">
           <Input placeholder="Nome da aba (ex.: Estudos)" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <Input placeholder="Link do YouTube (opcional)" value={url} onChange={(e) => setUrl(e.target.value)} />
-          {urlBad && <p className="text-xs text-destructive">Link do YouTube inválido.</p>}
+          
+          <div className="space-y-2">
+            <Label>Links do YouTube (opcional)</Label>
+            {youtubeUrls.map((u, index) => (
+              <div key={index} className="flex gap-2">
+                <Input
+                  placeholder={`Link do YouTube #${index + 1}`}
+                  value={u}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setYoutubeUrls((prev) => prev.map((item, i) => (i === index ? val : item)));
+                  }}
+                />
+                {youtubeUrls.length > 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setYoutubeUrls((prev) => prev.filter((_, i) => i !== index))}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="w-full"
+              onClick={() => setYoutubeUrls((prev) => [...prev, ""])}
+            >
+              <Plus className="h-4 w-4" /> Adicionar outro vídeo
+            </Button>
+          </div>
+
+          {hasInvalidUrl && <p className="text-xs text-destructive">Há um ou mais links do YouTube inválidos.</p>}
           <Textarea rows={8} placeholder="Texto da página (opcional)" value={body} onChange={(e) => setBody(e.target.value)} />
           <div className="flex gap-2">
-            <Button className="flex-1" disabled={!title.trim() || urlBad} onClick={save}><Plus className="h-4 w-4" /> {editing ? "Salvar" : "Criar aba"}</Button>
+            <Button className="flex-1" disabled={!title.trim() || hasInvalidUrl} onClick={save}><Plus className="h-4 w-4" /> {editing ? "Salvar" : "Criar aba"}</Button>
             {editing && <Button variant="outline" onClick={reset}>Cancelar</Button>}
           </div>
         </div>
@@ -239,7 +282,13 @@ function PaginasTab() {
             <Row title={p.title} sub={p.body ? p.body.slice(0, 80) : null} published={p.published}
               onToggle={async (v) => { fail((await db.from("custom_pages").update({ published: v }).eq("id", p.id)).error); void load(); }}
               onDelete={async () => { fail((await db.from("custom_pages").delete().eq("id", p.id)).error); void load(); }} />
-            <button className="-mt-1 mb-3 text-xs font-semibold text-primary" onClick={() => { setEditing(p.id); setTitle(p.title); setUrl(p.youtube_url ?? ""); setBody(p.body ?? ""); }}>Editar</button>
+            <button className="-mt-1 mb-3 text-xs font-semibold text-primary" onClick={() => {
+              setEditing(p.id);
+              setTitle(p.title);
+              const urls = p.youtube_urls?.length ? p.youtube_urls : p.youtube_url ? [p.youtube_url] : [""];
+              setYoutubeUrls(urls);
+              setBody(p.body ?? "");
+            }}>Editar</button>
           </div>
         ))}
       </Box>
@@ -322,7 +371,6 @@ function PixTab() {
                   value={p.amount}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    // Se digitou um valor maior que zero, não é mais "valor livre"; se apagou/zerou, volta a ser livre.
                     upd(p.id, { amount: v > 0 ? v : null });
                   }}
                   placeholder="R$"
