@@ -7,6 +7,7 @@ export function HomeFeed() {
   const avisos = usePublished<Announcement>("announcements", "created_at", false);
   const videos = usePublished<Video>("videos", "position", true);
   const [playing, setPlaying] = useState<Video | null>(null);
+  const [showReading, setShowReading] = useState(false);
   const playingId = playing ? youtubeId(playing.youtube_url) : null;
 
   return (
@@ -53,6 +54,24 @@ export function HomeFeed() {
           })}
         </section>
       )}
+
+      <div className="mt-6">
+        <button
+          type="button"
+          onClick={() => setShowReading((prev) => !prev)}
+          className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-left font-display uppercase tracking-wide text-foreground shadow-sm transition-colors hover:bg-secondary"
+        >
+          <span>Campo de Leitura</span>
+          <span className="text-xs font-sans font-semibold text-gold">
+            {showReading ? "Ocultar" : "Aperte para ver"}
+          </span>
+        </button>
+        {showReading && (
+          <div className="mt-2 rounded-xl border border-border bg-card p-4 text-sm text-foreground animate-fadeIn">
+            <p className="leading-relaxed">Aqui está o campo para leitura disponível para meditação e acompanhamento do desafio. Clique novamente no botão acima para ocultá-lo.</p>
+          </div>
+        )}
+      </div>
 
       <Dialog open={!!playing} onOpenChange={(open) => !open && setPlaying(null)}>
         <DialogContent className="max-w-3xl border-border bg-card p-3 sm:p-4">
