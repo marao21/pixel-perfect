@@ -77,6 +77,7 @@ export type Database = {
           published: boolean
           slug: string
           title: string
+          videos: Json
           youtube_url: string | null
           youtube_urls: string[] | null
         }
@@ -88,6 +89,7 @@ export type Database = {
           published?: boolean
           slug: string
           title: string
+          videos?: Json
           youtube_url?: string | null
           youtube_urls?: string[] | null
         }
@@ -99,6 +101,7 @@ export type Database = {
           published?: boolean
           slug?: string
           title?: string
+          videos?: Json
           youtube_url?: string | null
           youtube_urls?: string[] | null
         }
