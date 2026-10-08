@@ -149,6 +149,55 @@ function NetworkStatus() {
   );
 }
 
+type BeforeInstallPromptEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> };
+
+function InstallButton() {
+  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installed, setInstalled] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true;
+    if (isStandalone) { setInstalled(true); return; }
+    const onPrompt = (e: Event) => { e.preventDefault(); setDeferred(e as BeforeInstallPromptEvent); };
+    const onInstalled = () => { setInstalled(true); setDeferred(null); };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
+  if (installed) return null;
+
+  const handleClick = async () => {
+    if (deferred) {
+      await deferred.prompt();
+      const { outcome } = await deferred.userChoice;
+      if (outcome === "accepted") setInstalled(true);
+      setDeferred(null);
+    } else {
+      setShowHelp((v) => !v);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button type="button" onClick={() => void handleClick()} aria-label="Instalar app" title="Instalar app" className="flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-gold hover:bg-gold/20">
+        <Download className="h-4 w-4" /> <span className="hidden sm:inline">Instalar</span>
+      </button>
+      {showHelp && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-border bg-card p-3 text-xs text-foreground shadow-lg">
+          <p className="font-semibold">Instalar o app Os Mamutes</p>
+          <p className="mt-1 text-muted-foreground">No celular: abra o menu do navegador (⋮ ou Compartilhar) e toque em <strong>"Adicionar à tela inicial"</strong> ou <strong>"Instalar app"</strong>.</p>
+          <button type="button" onClick={() => setShowHelp(false)} className="mt-2 text-gold underline">Fechar</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TABS = [
   { to: "/", label: "Home", icon: Home },
   { to: "/plano", label: "Plano", icon: CalendarDays },
