@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown } from "lucide-react";
+import { Home, CalendarDays, HandCoins, ShieldCheck, BookOpen, BookMarked, Sun, Moon, Coffee, Palette, LogIn, LogOut, ShieldAlert, Menu, FileText, UserPlus, ChevronDown, Timer } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTheme, type Theme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,6 +65,9 @@ function MenuButton() {
               <Icon className="h-5 w-5" /> {label}
             </Link>
           ))}
+          <Link to="/tempo-com-deus" onClick={() => setOpen(false)} className={item} activeProps={{ className: "text-primary" }}>
+            <Timer className="h-5 w-5" /> Tempo com Deus
+          </Link>
           {pages.length > 0 && <p className="mt-3 px-3 text-xs font-semibold uppercase tracking-wider text-gold">Mais</p>}
           {pages.map((p) => (
             <Link key={p.id} to="/p/$slug" params={{ slug: p.slug }} onClick={() => setOpen(false)} className={item} activeProps={{ className: "text-primary" }}>

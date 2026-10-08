@@ -18,6 +18,7 @@ import { Route as OfertaRouteImport } from './routes/oferta'
 import { Route as PecadoRouteImport } from './routes/pecado'
 import { Route as PlanoRouteImport } from './routes/plano'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as TempoComDeusRouteImport } from './routes/tempo-com-deus'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TempoComDeusRoute = TempoComDeusRouteImport.update({
+  id: '/tempo-com-deus',
+  path: '/tempo-com-deus',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PSlugRoute = PSlugRouteImport.update({
   id: '/p/$slug',
   path: '/p/$slug',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tempo-com-deus': typeof TempoComDeusRoute
   '/p/$slug': typeof PSlugRoute
 }
 export interface FileRoutesByTo {
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tempo-com-deus': typeof TempoComDeusRoute
   '/p/$slug': typeof PSlugRoute
 }
 export interface FileRoutesById {
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/pecado': typeof PecadoRoute
   '/plano': typeof PlanoRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/tempo-com-deus': typeof TempoComDeusRoute
   '/p/$slug': typeof PSlugRoute
 }
 export interface FileRouteTypes {
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/pecado'
     | '/plano'
     | '/reset-password'
+    | '/tempo-com-deus'
     | '/p/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/pecado'
     | '/plano'
     | '/reset-password'
+    | '/tempo-com-deus'
     | '/p/$slug'
   id:
     | '__root__'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/pecado'
     | '/plano'
     | '/reset-password'
+    | '/tempo-com-deus'
     | '/p/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   PecadoRoute: typeof PecadoRoute
   PlanoRoute: typeof PlanoRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  TempoComDeusRoute: typeof TempoComDeusRoute
   PSlugRoute: typeof PSlugRoute
 }
 
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tempo-com-deus': {
+      id: '/tempo-com-deus'
+      path: '/tempo-com-deus'
+      fullPath: '/tempo-com-deus'
+      preLoaderRoute: typeof TempoComDeusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/p/$slug': {
       id: '/p/$slug'
       path: '/p/$slug'
@@ -245,6 +265,7 @@ const rootRouteChildren: RootRouteChildren = {
   PecadoRoute: PecadoRoute,
   PlanoRoute: PlanoRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  TempoComDeusRoute: TempoComDeusRoute,
   PSlugRoute: PSlugRoute,
 }
 export const routeTree = rootRouteImport
