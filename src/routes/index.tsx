@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
-import { HomeFeed } from "@/components/HomeFeed";
+import { HomeFeed, Avisos } from "@/components/HomeFeed";
 import { getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
 import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
@@ -31,6 +31,7 @@ function Home() {
 
   return (
     <Page title="Home">
+      <Avisos />
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
 
       <section className="rounded-2xl border border-border bg-hero p-5 shadow-elevated">
