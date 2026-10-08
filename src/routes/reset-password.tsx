@@ -44,15 +44,7 @@ function ResetPassword() {
           }}
         >
           <div className="relative">
-            <Input
-              type={showPw ? "text" : "password"}
-              minLength={6}
-              required
-              placeholder="Nova senha (mín. 6 caracteres)"
-              value={pw}
-              onChange={(e) => setPw(e.target.value)}
-              className="pr-10"
-            />
+            <Input type={showPw ? "text" : "password"} minLength={6} required placeholder="Nova senha (mín. 6 caracteres)" value={pw} onChange={(e) => setPw(e.target.value)} className="pr-10" />
             <button
               type="button"
               onClick={() => setShowPw((v) => !v)}
@@ -63,9 +55,7 @@ function ResetPassword() {
             </button>
           </div>
           {msg && <p className="text-sm text-destructive">{msg}</p>}
-          <Button type="submit" className="w-full" disabled={busy}>
-            Salvar senha
-          </Button>
+          <Button type="submit" className="w-full" disabled={busy}>Salvar senha</Button>
         </form>
       </section>
     </Page>

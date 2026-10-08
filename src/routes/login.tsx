@@ -9,9 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ShieldCheck, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    cadastro: search["cadastro"] === true || search["cadastro"] === "true",
-  }),
+  validateSearch: (search: Record<string, unknown>) => ({ cadastro: search["cadastro"] === true || search["cadastro"] === "true" }),
   component: LoginRoute,
 });
 
@@ -49,17 +47,15 @@ function LoginRoute() {
           },
         });
         if (error) throw error;
-
+        
         if (data?.session) {
           setSuccessMsg("Conta criada e login realizado com sucesso!");
           navigate({ to: "/" });
         } else if (data?.user && (data.user.identities?.length ?? 0) === 0) {
-          setErrorMsg('Este email já tem conta. Faça login ou use "Esqueci minha senha".');
+          setErrorMsg("Este email já tem conta. Faça login ou use \"Esqueci minha senha\".");
           setIsSignUp(false);
         } else if (data?.user) {
-          setSuccessMsg(
-            "Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email ou faça login caso a confirmação esteja desativada.",
-          );
+          setSuccessMsg("Conta criada com sucesso! Verifique sua caixa de entrada para confirmar o email ou faça login caso a confirmação esteja desativada.");
           setIsSignUp(false);
         } else {
           setSuccessMsg("Conta criada com sucesso! Faça login abaixo.");
@@ -77,36 +73,20 @@ function LoginRoute() {
           setErrorMsg("Falha ao realizar login. Verifique seu email e senha.");
         }
       }
-    } catch (err: unknown) {
-      const errObj = err as { message?: string; error_description?: string } | null;
-      const rawMsg =
-        errObj?.message ||
-        errObj?.error_description ||
-        (typeof err === "string" ? err : JSON.stringify(err)) ||
-        "";
+    } catch (err: any) {
+      const rawMsg = err?.message || err?.error_description || (typeof err === 'string' ? err : JSON.stringify(err)) || "";
       if (
         rawMsg.toLowerCase().includes("rate limit") ||
         rawMsg.toLowerCase().includes("over_email_send_rate_limit") ||
         rawMsg.toLowerCase().includes("email rate limit exceeded")
       ) {
-        setErrorMsg(
-          "Limite de envios de email excedido pelo provedor (Supabase). Por favor, aguarde alguns minutos antes de tentar cadastrar novamente ou desative a confirmação de email no painel do Supabase se estiver em ambiente de testes.",
-        );
-      } else if (
-        rawMsg.toLowerCase().includes("database error saving new user") ||
-        rawMsg.toLowerCase().includes("db error")
-      ) {
-        setErrorMsg(
-          "Erro ao salvar o usuário no banco de dados. Certifique-se de que a tabela profiles e a trigger do Supabase estão configuradas corretamente.",
-        );
+        setErrorMsg("Limite de envios de email excedido pelo provedor (Supabase). Por favor, aguarde alguns minutos antes de tentar cadastrar novamente ou desative a confirmação de email no painel do Supabase se estiver em ambiente de testes.");
+      } else if (rawMsg.toLowerCase().includes("database error saving new user") || rawMsg.toLowerCase().includes("db error")) {
+        setErrorMsg("Erro ao salvar o usuário no banco de dados. Certifique-se de que a tabela profiles e a trigger do Supabase estão configuradas corretamente.");
       } else if (rawMsg.toLowerCase().includes("invalid login credentials")) {
-        setErrorMsg(
-          'Email ou senha incorretos. Se você já tem conta e esqueceu a senha, toque em "Esqueci minha senha".',
-        );
+        setErrorMsg("Email ou senha incorretos. Se você já tem conta e esqueceu a senha, toque em \"Esqueci minha senha\".");
       } else if (rawMsg.toLowerCase().includes("email not confirmed")) {
-        setErrorMsg(
-          "Seu email ainda não foi confirmado. Abra o link que enviamos para sua caixa de entrada.",
-        );
+        setErrorMsg("Seu email ainda não foi confirmado. Abra o link que enviamos para sua caixa de entrada.");
       } else {
         setErrorMsg(rawMsg || "Ocorreu um erro na autenticação.");
       }
@@ -126,17 +106,14 @@ function LoginRoute() {
         },
       });
       if (error) throw error;
-    } catch (err: unknown) {
-      const errObj = err as { message?: string; error_description?: string } | null;
-      const rawMsg = errObj?.message || errObj?.error_description || JSON.stringify(err) || "";
+    } catch (err: any) {
+      const rawMsg = err?.message || err?.error_description || JSON.stringify(err) || "";
       if (
         rawMsg.includes("Unsupported provider") ||
         rawMsg.includes("not enabled") ||
         rawMsg.includes("validation_failed")
       ) {
-        setErrorMsg(
-          "O login com o Google/Gmail não está habilitado no painel do Supabase. Por favor, utilize email e senha ou cadastre-se.",
-        );
+        setErrorMsg("O login com o Google/Gmail não está habilitado no painel do Supabase. Por favor, utilize email e senha ou cadastre-se.");
       } else {
         setErrorMsg(rawMsg || "Ocorreu um erro ao entrar com o Gmail.");
       }
@@ -249,20 +226,8 @@ function LoginRoute() {
                 onClick={handleGoogleLogin}
                 disabled={loading}
               >
-                <svg
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                  focusable="false"
-                  data-prefix="fab"
-                  data-icon="google"
-                  role="img"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 488 512"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C318.5 110.7 286.7 96 248 96c-87.8 0-160 72.2-160 160s72.2 160 160 160c94.2 0 134.4-65.7 140.2-104H248v-85.2h239.9c1.2 12.8 2.1 26.7 2.1 41.2z"
-                  ></path>
+                <svg className="h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
+                  <path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C318.5 110.7 286.7 96 248 96c-87.8 0-160 72.2-160 160s72.2 160 160 160c94.2 0 134.4-65.7 140.2-104H248v-85.2h239.9c1.2 12.8 2.1 26.7 2.1 41.2z"></path>
                 </svg>
                 Entrar com o Gmail
               </Button>
@@ -274,18 +239,10 @@ function LoginRoute() {
                     className="text-xs text-muted-foreground underline-offset-4 hover:underline"
                     onClick={async () => {
                       setErrorMsg(null);
-                      if (!email.trim()) {
-                        setErrorMsg("Digite seu email acima para recuperar a senha.");
-                        return;
-                      }
-                      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-                        redirectTo: `${window.location.origin}/reset-password`,
-                      });
+                      if (!email.trim()) { setErrorMsg("Digite seu email acima para recuperar a senha."); return; }
+                      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/reset-password` });
                       if (error) setErrorMsg(error.message);
-                      else
-                        setSuccessMsg(
-                          "Enviamos um link para criar uma nova senha. Confira seu email.",
-                        );
+                      else setSuccessMsg("Enviamos um link para criar uma nova senha. Confira seu email.");
                     }}
                   >
                     Esqueci minha senha
@@ -300,7 +257,9 @@ function LoginRoute() {
                   }}
                   className="text-xs text-primary underline-offset-4 hover:underline"
                 >
-                  {isSignUp ? "Já tem uma conta? Faça login" : "Não tem conta? Cadastre-se"}
+                  {isSignUp
+                    ? "Já tem uma conta? Faça login"
+                    : "Não tem conta? Cadastre-se"}
                 </button>
               </div>
             </form>

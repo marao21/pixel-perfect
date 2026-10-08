@@ -22,17 +22,9 @@ function CustomPageView() {
   const [page, setPage] = useState<CustomPage | null | undefined>(undefined);
   useEffect(() => {
     setPage(undefined);
-    db.from("custom_pages")
-      .select("*")
-      .eq("slug", slug)
-      .maybeSingle()
-      .then(({ data }: { data: CustomPage | null }) => setPage(data));
+    db.from("custom_pages").select("*").eq("slug", slug).maybeSingle().then(({ data }: { data: CustomPage | null }) => setPage(data));
   }, [slug]);
-  const vids = page
-    ? pageVideos(page)
-        .map((v) => ({ ...v, id: youtubeId(v.url) }))
-        .filter((v): v is typeof v & { id: string } => !!v.id)
-    : [];
+  const vids = page ? pageVideos(page).map((v) => ({ ...v, id: youtubeId(v.url) })).filter((v): v is typeof v & { id: string } => !!v.id) : [];
 
   return (
     <>
@@ -41,9 +33,7 @@ function CustomPageView() {
         {page === null && (
           <div className="rounded-2xl border border-border bg-card p-6 text-center">
             <p className="text-foreground">Página não encontrada.</p>
-            <Link to="/" className="mt-2 inline-block text-sm font-semibold text-primary">
-              Voltar ao início
-            </Link>
+            <Link to="/" className="mt-2 inline-block text-sm font-semibold text-primary">Voltar ao início</Link>
           </div>
         )}
         {page && (
@@ -71,32 +61,14 @@ function CustomPageView() {
   );
 }
 
-function VideoSection({
-  videoId,
-  title,
-  text,
-  index,
-  pageTitle,
-}: {
-  videoId: string;
-  title: string;
-  text: string;
-  index: number;
-  pageTitle: string;
-}) {
+function VideoSection({ videoId, title, text, index, pageTitle }: { videoId: string; title: string; text: string; index: number; pageTitle: string }) {
   const [showText, setShowText] = useState(false);
   return (
     <section className="space-y-2">
       {title && <h2 className="font-display text-xl uppercase text-foreground">{title}</h2>}
       <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-card">
-        <iframe
-          className="h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
-          title={title || `${pageTitle} — vídeo ${index + 1}`}
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
+        <iframe className="h-full w-full" src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`} title={title || `${pageTitle} — vídeo ${index + 1}`} loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
       </div>
       {text && (
         <div>

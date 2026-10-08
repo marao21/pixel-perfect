@@ -27,8 +27,7 @@ function openOfflineDatabase(): Promise<IDBDatabase | null> {
         store.createIndex("version", "version");
       } else {
         const store = request.transaction!.objectStore(CHAPTER_STORE);
-        if (!store.indexNames.contains("lastAccessedAt"))
-          store.createIndex("lastAccessedAt", "lastAccessedAt");
+        if (!store.indexNames.contains("lastAccessedAt")) store.createIndex("lastAccessedAt", "lastAccessedAt");
         if (!store.indexNames.contains("version")) store.createIndex("version", "version");
       }
     };
@@ -56,14 +55,8 @@ export async function getOfflineBibleChapter(key: string): Promise<Verse[] | nul
       result = record.verses;
       store.put({ ...record, lastAccessedAt: Date.now() });
     };
-    transaction.oncomplete = () => {
-      db.close();
-      resolve(result);
-    };
-    transaction.onerror = transaction.onabort = () => {
-      db.close();
-      resolve(result);
-    };
+    transaction.oncomplete = () => { db.close(); resolve(result); };
+    transaction.onerror = transaction.onabort = () => { db.close(); resolve(result); };
   });
 }
 
@@ -76,16 +69,11 @@ export async function listPreparedOfflineChapterKeys(version: string): Promise<S
     const request = transaction.objectStore(CHAPTER_STORE).index("version").getAll(version);
     request.onsuccess = () => {
       const records = request.result as CachedChapter[];
-      resolve(
-        new Set(records.filter((record) => record.preserveOffline).map((record) => record.key)),
-      );
+      resolve(new Set(records.filter((record) => record.preserveOffline).map((record) => record.key)));
     };
     request.onerror = () => resolve(new Set());
     transaction.oncomplete = () => db.close();
-    transaction.onerror = transaction.onabort = () => {
-      db.close();
-      resolve(new Set());
-    };
+    transaction.onerror = transaction.onabort = () => { db.close(); resolve(new Set()); };
   });
 }
 
@@ -114,9 +102,7 @@ export async function saveOfflineBibleChapter(
         lastAccessedAt: now,
         preserveOffline: preserveOffline || existing?.preserveOffline === true,
       } satisfies CachedChapter);
-      putRequest.onsuccess = () => {
-        stored = true;
-      };
+      putRequest.onsuccess = () => { stored = true; };
 
       const countRequest = store.count();
       countRequest.onsuccess = () => {
@@ -135,13 +121,7 @@ export async function saveOfflineBibleChapter(
         };
       };
     };
-    transaction.oncomplete = () => {
-      db.close();
-      resolve(stored);
-    };
-    transaction.onerror = transaction.onabort = () => {
-      db.close();
-      resolve(false);
-    };
+    transaction.oncomplete = () => { db.close(); resolve(stored); };
+    transaction.onerror = transaction.onabort = () => { db.close(); resolve(false); };
   });
 }

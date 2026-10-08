@@ -1,7 +1,0 @@
-{
-  "name": "Os Mamutes",
-  "description": "Desafio bíblico de 180 dias dos homens da Igreja Batista Belém.",
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}

@@ -15,7 +15,6 @@ import { StoreProvider } from "../lib/store";
 import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { InstallGate } from "../components/InstallGate";
 
 function NotFoundComponent() {
   return (
@@ -81,24 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
-      },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" },
       { title: "Os Mamutes" },
-      {
-        name: "description",
-        content: "Desafio bíblico de 180 dias dos homens da Igreja Batista Belém.",
-      },
+      { name: "description", content: "Desafio bíblico de 180 dias dos homens da Igreja Batista Belém." },
       { name: "theme-color", content: "#0f130f" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "Os Mamutes" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Os Mamutes" },
-      {
-        property: "og:description",
-        content: "Desafio bíblico de 180 dias dos homens da Igreja Batista Belém.",
-      },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
     ],
@@ -109,12 +97,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
       { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/apple-touch-icon-v2.png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Lora:ital@0;1&display=swap",
-      },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Lora:ital@0;1&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -141,12 +126,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   useEffect(() => {
-    if (
-      import.meta.env.DEV ||
-      !("serviceWorker" in navigator) ||
-      window.location.protocol !== "https:"
-    )
-      return;
+    if (import.meta.env.DEV || !("serviceWorker" in navigator) || window.location.protocol !== "https:") return;
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {
       // App routes remain usable online even if the browser blocks PWA registration.
     });
@@ -170,9 +150,7 @@ function RootComponent() {
       <ThemeProvider>
         <StoreProvider>
           <DailyDevotionalGreeting />
-          <InstallGate>
-            <Outlet />
-          </InstallGate>
+          <Outlet />
           <Toaster />
         </StoreProvider>
       </ThemeProvider>
@@ -199,19 +177,16 @@ function DailyDevotionalGreeting() {
       started = true;
       localStorage.setItem(dateKey, "1");
     };
-    utterance.onend = () => {
-      finished = true;
-    };
+    utterance.onend = () => { finished = true; };
     utterance.onerror = (event) => {
       if (event.error !== "not-allowed") finished = true;
     };
 
     const chooseVoiceAndSpeak = () => {
       const voices = synth.getVoices();
-      utterance.voice =
-        voices.find((voice) => voice.lang.toLowerCase() === "pt-br") ??
-        voices.find((voice) => voice.lang.toLowerCase().startsWith("pt")) ??
-        null;
+      utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === "pt-br")
+        ?? voices.find((voice) => voice.lang.toLowerCase().startsWith("pt"))
+        ?? null;
       synth.cancel();
       synth.speak(utterance);
     };
