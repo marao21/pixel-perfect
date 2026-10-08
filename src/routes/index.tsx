@@ -18,7 +18,6 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-import { useState } from "react";
 
 function Home() {
   const { done, toggle, profiles } = useStore();
@@ -61,20 +60,6 @@ function Home() {
       <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold"><BookOpen className="h-4 w-4" /> Devocional do dia</p>
         <h3 className="mt-2 text-lg font-semibold text-foreground">{dev.title}</h3>
-        {/* Botão para mostrar/ocultar texto */}
-        <button
-          type="button"
-          onClick={() => setShowText((v) => !v)}
-          className="mt-1 text-sm font-semibold text-primary underline"
-        >
-          {showText ? "Ocultar texto" : "Mostrar texto"}
-        </button>
-        {/* Texto oculto que aparece ao clicar no botão */}
-        {showText && (
-          <p className="mt-2 rounded border border-border bg-muted p-2 text-sm text-muted-foreground">
-            {dev.body.join(" ")}
-          </p>
-        )}
         <Link to="/devocional" className="mt-3 inline-flex items-center text-sm text-primary">Ler completo <ChevronRight className="h-4 w-4" /></Link>
       </section>
       <HomeFeed />
