@@ -41,12 +41,7 @@ function Home() {
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
 
-        <button
-          onClick={() => toggle(CURRENT_DAY)}
-          className={`mt-5 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-bold transition-all active:scale-[0.98] ${isDone ? "animate-pop bg-success text-success-foreground" : "bg-primary text-primary-foreground shadow-glow"}`}
-        >
-          {isDone ? <>Concluído <Check className="h-5 w-5" /></> : "Marcar Leitura de Hoje como Concluída"}
-        </button>
+
       </section>
 
       <section className="mt-4 grid grid-cols-2 gap-3">
