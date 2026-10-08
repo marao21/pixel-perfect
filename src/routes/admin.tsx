@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { db, youtubeId, type Announcement, type DevOverride, type PixOption, type Settings, type Video, type CustomPage, slugify } from "@/lib/content";
+import { db, youtubeId, pageVideos, type Announcement, type DevOverride, type PageVideo, type PixOption, type Settings, type Video, type CustomPage, slugify } from "@/lib/content";
 import { getDevotionalForDay } from "@/lib/devotionals";
 import { useServerFn } from "@tanstack/react-start";
 import { createAdmin } from "@/lib/admin.functions";
