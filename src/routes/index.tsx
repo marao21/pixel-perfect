@@ -40,8 +40,6 @@ function Home() {
         <Link to="/biblia" search={{ day: CURRENT_DAY, plan: len }} className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline">
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
-
-
       </section>
 
       <section className="mt-4 grid grid-cols-2 gap-3">
