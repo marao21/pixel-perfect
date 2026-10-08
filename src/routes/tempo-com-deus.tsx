@@ -101,7 +101,7 @@ function notifyEnd() {
   try {
     if ("vibrate" in navigator) navigator.vibrate?.([400, 200, 400, 200, 400]);
     if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("Os Mamutes", { body: "Seu Tempo com Deus terminou.", icon: "/icon-192.png" });
+      new Notification("Os Mamutes", { body: "Seu Tempo com Deus terminou.", icon: "/icon-192-v2.png" });
     }
     unlockAudio();
     stopAlarm();
