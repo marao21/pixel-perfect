@@ -57,7 +57,7 @@ function MenuButton() {
           <Menu className="h-4 w-4" />
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-72 overflow-y-auto bg-card">
+      <SheetContent side="right" className="w-72 overflow-y-auto bg-card">
         <SheetHeader><SheetTitle className="font-display uppercase">Menu</SheetTitle></SheetHeader>
         <nav className="mt-4 flex flex-col gap-1">
           {TABS.map(({ to, label, icon: Icon }) => (
@@ -173,14 +173,14 @@ export function Page({ children }: { title: string; kicker?: string; children: R
   return (
     <main className="mx-auto w-full max-w-xl px-4 pb-6 pt-0 md:max-w-2xl lg:max-w-3xl relative overflow-x-hidden">
       <header className="sticky top-0 z-40 -mx-4 mb-5 flex min-h-16 md:rounded-b-2xl items-center gap-3 border-b border-border bg-background/95 px-4 py-2.5 backdrop-blur">
-        <MenuButton />
         <img src="/mamutes-logo-transparent-256.png" alt="Logotipo dos Mamutes" className="h-14 w-14 shrink-0 object-contain md:h-16 md:w-16" />
         <div className="min-w-0 flex-1">
           <p className="font-display text-xl uppercase leading-none tracking-wide text-foreground">Os Mamutes</p>
           <p className="mt-1 text-xs font-semibold uppercase tracking-[0.12em] text-gold">Desafio Bíblico</p>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex shrink-0 items-center gap-2">
           <NetworkStatus />
+          <MenuButton />
         </div>
       </header>
       <div className="relative z-10">
