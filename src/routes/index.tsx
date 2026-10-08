@@ -31,6 +31,14 @@ function Home() {
 
   return (
     <Page title="Home">
+      <div className="flex justify-center my-8">
+        <img
+          src="/mamutes-logo-transparent-256.png"
+          alt="Mamutes Igreja Batista Belém"
+          className="bg-white p-4 rounded-lg max-w-xs w-full"
+          style={{ backgroundColor: 'white' }}
+        />
+      </div>
       <Avisos />
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
 
