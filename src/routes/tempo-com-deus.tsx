@@ -68,13 +68,27 @@ function fmt(ms: number, long: boolean) {
   const p = (n: number) => String(n).padStart(2, "0");
   return long ? `${p(h)}:${p(m)}:${p(s)}` : `${p(m)}:${p(s)}`;
 }
+let alarmAudio: HTMLAudioElement | null = null;
+
 function notifyEnd() {
   try {
     if ("vibrate" in navigator) navigator.vibrate?.([200, 100, 200]);
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification("Os Mamutes", { body: "Seu Tempo com Deus terminou.", icon: "/icon-192.png" });
     }
+    if (!alarmAudio) {
+      alarmAudio = new Audio("/alarm.mp3");
+      alarmAudio.loop = true;
+    }
+    alarmAudio.play().catch(() => {});
   } catch { /* ignore */ }
+}
+
+function stopAlarm() {
+  if (alarmAudio) {
+    alarmAudio.pause();
+    alarmAudio.currentTime = 0;
+  }
 }
 
 function TempoComDeus() {
@@ -85,7 +99,13 @@ function TempoComDeus() {
 
   useEffect(() => { setState(load()); }, []);
 
-  const update = (s: State | null) => { save(s); setState(s); };
+  const update = (s: State | null) => {
+  if (s?.status !== "done") {
+    stopAlarm();
+  }
+  save(s);
+  setState(s);
+};
 
   useEffect(() => {
     if (state?.status !== "running") return;
