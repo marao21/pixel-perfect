@@ -182,12 +182,29 @@ function VideosTab() {
         {rows.map((v) => {
           const id = youtubeId(v.youtube_url);
           return (
-            <div key={v.id} className="mb-2 flex gap-3 rounded-xl border border-border p-2">
-              {id && <img src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" className="h-14 w-24 shrink-0 rounded object-cover" />}
-              <div className="min-w-0 flex-1">
-                <Row title={v.title} published={v.published} bare
-                  onToggle={async (p) => { fail((await db.from("videos").update({ published: p }).eq("id", v.id)).error); void load(); }}
-                  onDelete={async () => { fail((await db.from("videos").delete().eq("id", v.id)).error); void load(); }} />
+            <div key={v.id} className="mb-3 flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-3">
+              <div className="flex items-start gap-3 min-w-0">
+                {id ? (
+                  <img src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" className="h-16 w-28 shrink-0 rounded-lg object-cover bg-secondary" />
+                ) : (
+                  <div className="grid h-16 w-28 shrink-0 place-items-center rounded-lg bg-secondary text-xs text-muted-foreground">Sem vídeo</div>
+                )}
+                <div className="min-w-0">
+                  <span className="block font-semibold text-foreground truncate">{v.title}</span>
+                  {v.description && <span className="line-clamp-2 block text-xs text-muted-foreground mt-0.5">{v.description}</span>}
+                  <span className="mt-1 inline-block text-[10px] text-gold uppercase tracking-wider font-semibold">{v.published ? "Publicado" : "Rascunho"}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Switch checked={v.published} onCheckedChange={async (val) => {
+                  fail((await db.from("videos").update({ published: val }).eq("id", v.id)).error);
+                  void load();
+                }} />
+                <Button variant="ghost" size="icon" onClick={async () => {
+                  if (!confirm("Excluir este vídeo?")) return;
+                  fail((await db.from("videos").delete().eq("id", v.id)).error);
+                  void load();
+                }}><Trash2 className="h-4 w-4 text-destructive" /></Button>
               </div>
             </div>
           );
