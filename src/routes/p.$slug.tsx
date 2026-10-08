@@ -39,6 +39,7 @@ function CustomPageView() {
         {page && (
           <article className="space-y-4">
             <h1 className="font-display text-3xl uppercase text-foreground">{page.title}</h1>
+            {vids.map((v, i) => (
               <VideoSection
                 key={`${v.id}-${i}`}
                 videoId={v.id}
