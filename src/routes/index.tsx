@@ -31,13 +31,6 @@ function Home() {
 
   return (
     <Page title="Home">
-      <div className="flex justify-center my-8">
-        <img
-          src="/mamutes-logo-transparent-256.png"
-          alt="Mamutes Igreja Batista Belém"
-          className="rounded-lg max-w-xs w-full"
-        />
-      </div>
       <Avisos />
       <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
 
