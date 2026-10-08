@@ -35,8 +35,7 @@ function Home() {
         <img
           src="/mamutes-logo-transparent-256.png"
           alt="Mamutes Igreja Batista Belém"
-          className="bg-white p-4 rounded-lg max-w-xs w-full"
-          style={{ backgroundColor: 'white' }}
+          className="rounded-lg max-w-xs w-full"
         />
       </div>
       <Avisos />
