@@ -68,27 +68,57 @@ function fmt(ms: number, long: boolean) {
   const p = (n: number) => String(n).padStart(2, "0");
   return long ? `${p(h)}:${p(m)}:${p(s)}` : `${p(m)}:${p(s)}`;
 }
-let alarmAudio: HTMLAudioElement | null = null;
+let audioCtx: AudioContext | null = null;
+let alarmTimer: number | null = null;
+let alarmStop: number | null = null;
+
+function unlockAudio() {
+  try {
+    const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+    if (!audioCtx) audioCtx = new AC();
+    void audioCtx.resume();
+  } catch { /* ignore */ }
+}
+
+function beep() {
+  if (!audioCtx) return;
+  const t = audioCtx.currentTime;
+  [0, 0.25, 0.5].forEach((d) => {
+    const o = audioCtx!.createOscillator();
+    const g = audioCtx!.createGain();
+    o.type = "sine";
+    o.frequency.value = 880;
+    g.gain.setValueAtTime(0.0001, t + d);
+    g.gain.exponentialRampToValueAtTime(0.5, t + d + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.2);
+    o.connect(g).connect(audioCtx!.destination);
+    o.start(t + d);
+    o.stop(t + d + 0.22);
+  });
+}
 
 function notifyEnd() {
   try {
-    if ("vibrate" in navigator) navigator.vibrate?.([200, 100, 200]);
+    if ("vibrate" in navigator) navigator.vibrate?.([400, 200, 400, 200, 400]);
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification("Os Mamutes", { body: "Seu Tempo com Deus terminou.", icon: "/icon-192.png" });
     }
-    if (!alarmAudio) {
-      alarmAudio = new Audio("/alarm.mp3");
-      alarmAudio.loop = true;
-    }
-    alarmAudio.play().catch(() => {});
+    unlockAudio();
+    stopAlarm();
+    beep();
+    alarmTimer = window.setInterval(() => {
+      beep();
+      if ("vibrate" in navigator) navigator.vibrate?.([400, 200, 400]);
+    }, 1500);
+    alarmStop = window.setTimeout(stopAlarm, 60_000);
   } catch { /* ignore */ }
 }
 
 function stopAlarm() {
-  if (alarmAudio) {
-    alarmAudio.pause();
-    alarmAudio.currentTime = 0;
-  }
+  if (alarmTimer) clearInterval(alarmTimer);
+  if (alarmStop) clearTimeout(alarmStop);
+  alarmTimer = alarmStop = null;
+  try { navigator.vibrate?.(0); } catch { /* ignore */ }
 }
 
 function TempoComDeus() {
@@ -176,8 +206,9 @@ function TempoComDeus() {
           <h1 className="mt-4 font-display text-3xl uppercase text-foreground">Tempo com Deus concluído ❤️</h1>
           <p className="mx-auto mt-3 max-w-md font-serif-read text-muted-foreground">“Que este momento tenha renovado sua fé, sua esperança e sua comunhão com Deus.”</p>
           <div className="mt-8 flex w-full max-w-sm flex-col gap-3">
+            <button onClick={stopAlarm} className="rounded-xl bg-gold px-4 py-3 font-semibold uppercase text-background">🔕 Parar alarme</button>
             <button onClick={() => update(null)} className="rounded-xl bg-primary px-4 py-3 font-semibold uppercase text-primary-foreground">Fazer novamente</button>
-            <Link to="/" onClick={() => save(null)} className="rounded-xl border border-border px-4 py-3 font-semibold uppercase text-foreground hover:bg-muted">Voltar</Link>
+            <Link to="/" onClick={() => { stopAlarm(); save(null); }} className="rounded-xl border border-border px-4 py-3 font-semibold uppercase text-foreground hover:bg-muted">Voltar</Link>
           </div>
         </section>
       </Page>
