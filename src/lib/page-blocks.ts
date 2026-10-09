@@ -13,6 +13,7 @@ export type PageBlock = {
   collapsed: boolean;
   align: "left" | "center" | "right";
   width: "full" | "medium" | "small";
+  href: string;
 };
 
 export const blockLabels: Record<BlockType, string> = {
@@ -21,7 +22,7 @@ export const blockLabels: Record<BlockType, string> = {
 };
 
 export function newBlock(type: BlockType): PageBlock {
-  return { id: crypto.randomUUID(), type, text: "", url: "", title: "", path: "", alt: "", collapsed: false, align: "left", width: "full" };
+  return { id: crypto.randomUUID(), type, text: "", url: "", title: "", path: "", alt: "", collapsed: false, align: "left", width: "full", href: "" };
 }
 
 // Null means the page still uses the original video/body format; [] means deliberately empty.
@@ -30,9 +31,9 @@ export function blocksForPage(page: CustomPage): PageBlock[] {
   return [
     ...pageVideos(page).map((v, i): PageBlock => ({
       id: `legacy-video-${i}`, type: "video", url: v.url, title: v.title, text: v.text,
-      path: "", alt: "", collapsed: true, align: "left", width: "full",
+      path: "", alt: "", collapsed: true, align: "left", width: "full", href: "",
     })),
-    ...(page.body ? [{ id: "legacy-body", type: "text" as const, text: page.body, url: "", title: "", path: "", alt: "", collapsed: false, align: "left" as const, width: "full" as const }] : []),
+    ...(page.body ? [{ id: "legacy-body", type: "text" as const, text: page.body, url: "", title: "", path: "", alt: "", collapsed: false, align: "left" as const, width: "full" as const, href: "" }] : []),
   ];
 }
 
