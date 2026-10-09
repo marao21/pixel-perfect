@@ -10,6 +10,7 @@ import {
   LogOut,
   Plus,
   FileText,
+  Mail,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -143,7 +144,7 @@ function AdminRoute() {
         </Button>
       </div>
       <Tabs defaultValue="avisos">
-        <TabsList className="grid h-auto w-full grid-cols-6">
+        <TabsList className="grid h-auto w-full grid-cols-7">
           <TabsTrigger value="avisos" aria-label="Avisos">
             <Megaphone className="h-4 w-4" />
           </TabsTrigger>
@@ -161,6 +162,9 @@ function AdminRoute() {
           </TabsTrigger>
           <TabsTrigger value="admins" aria-label="Administradores">
             <Users className="h-4 w-4" />
+          </TabsTrigger>
+          <TabsTrigger value="membros" aria-label="Membros">
+            <Mail className="h-4 w-4" />
           </TabsTrigger>
         </TabsList>
         <TabsContent value="avisos">
@@ -180,6 +184,9 @@ function AdminRoute() {
         </TabsContent>
         <TabsContent value="admins">
           <AdminsTab />
+        </TabsContent>
+        <TabsContent value="membros">
+          <MembrosTab />
         </TabsContent>
       </Tabs>
     </Page>
@@ -872,6 +879,59 @@ function DevocionalTab() {
           )}
         </div>
       </div>
+    </Box>
+  );
+}
+
+function MembrosTab() {
+  const [rows, setRows] = useState<
+    { id: number; nome: string; email: string; criado_em: string | null }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await db
+      .from("membros")
+      .select("id,nome,email,criado_em")
+      .order("criado_em", { ascending: false });
+    if (error) {
+      toast.error("Não foi possível carregar os cadastros");
+      setRows([]);
+    } else {
+      setRows(
+        (data ?? []) as { id: number; nome: string; email: string; criado_em: string | null }[],
+      );
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  return (
+    <Box title={`Cadastros (${rows.length})`}>
+      {loading ? (
+        <p className="text-sm text-muted-foreground">Carregando…</p>
+      ) : rows.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Nenhum cadastro encontrado.</p>
+      ) : (
+        rows.map((r) => (
+          <div key={r.id} className="mb-2 rounded-xl border border-border p-3">
+            <p className="truncate text-sm font-semibold text-foreground">{r.nome}</p>
+            <p className="truncate text-sm text-muted-foreground">{r.email}</p>
+            {r.criado_em && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Cadastrado em {new Date(r.criado_em).toLocaleDateString("pt-BR")}
+              </p>
+            )}
+          </div>
+        ))
+      )}
+      <Button variant="outline" className="mt-2 w-full" onClick={() => void load()}>
+        Atualizar
+      </Button>
     </Box>
   );
 }
