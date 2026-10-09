@@ -32,7 +32,7 @@ export const listMembros = createServerFn({ method: "GET" })
     };
 
     // 1) Contas de autenticação (todos os cadastros do sistema).
-    try {
+    if (process.env["SUPABASE_SERVICE_ROLE_KEY"]) try {
       let page = 1;
       for (;;) {
         const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
@@ -54,7 +54,7 @@ export const listMembros = createServerFn({ method: "GET" })
     }
 
     // 2) Perfis públicos.
-    const { data: profiles } = await supabaseAdmin
+    const { data: profiles } = await context.supabase
       .from("profiles")
       .select("id,email,full_name,updated_at");
     for (const p of profiles ?? []) {
@@ -67,7 +67,9 @@ export const listMembros = createServerFn({ method: "GET" })
     }
 
     // 3) Tabela legada de membros.
-    const { data: membros } = await supabaseAdmin.from("membros").select("id,nome,email,criado_em");
+    const { data: membros } = process.env["SUPABASE_SERVICE_ROLE_KEY"]
+      ? await supabaseAdmin.from("membros").select("id,nome,email,criado_em")
+      : { data: [] as { id: number; nome: string; email: string; criado_em: string | null }[] };
     for (const m of membros ?? []) {
       add({
         id: `membro-${m.id}`,
