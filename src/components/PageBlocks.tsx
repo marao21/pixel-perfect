@@ -52,10 +52,11 @@ export function PageBlocks({ blocks, pageTitle }: { blocks: PageBlock[]; pageTit
     const align = { left: "mr-auto text-left", center: "mx-auto text-center", right: "ml-auto text-right" }[block.align] ?? "text-left";
     const width = { full: "w-full", medium: "w-full sm:w-3/4", small: "w-full sm:w-1/2" }[block.width] ?? "w-full";
     const id = block.type === "video" ? youtubeId(block.url) : null;
+    const linked = block.href && ["heading", "subtitle", "text"].includes(block.type);
     return <section key={block.id} className={`${align} ${width} min-w-0 space-y-3`}>
-      {block.type === "heading" && <h2 className="font-display text-2xl text-foreground break-words"><LinkedText text={block.text} /></h2>}
-      {block.type === "subtitle" && <h3 className="font-display text-xl text-gold break-words"><LinkedText text={block.text} /></h3>}
-      {block.type === "text" && <TextSection text={block.text} collapsed={block.collapsed} />}
+      {block.type === "heading" && <h2 className="font-display text-2xl text-foreground break-words">{linked ? <ContentLink url={block.href}><LinkedText text={block.text} /></ContentLink> : <LinkedText text={block.text} />}</h2>}
+      {block.type === "subtitle" && <h3 className="font-display text-xl text-gold break-words">{linked ? <ContentLink url={block.href}><LinkedText text={block.text} /></ContentLink> : <LinkedText text={block.text} />}</h3>}
+      {block.type === "text" && (linked ? <div className="block break-words"><ContentLink url={block.href}><TextSection text={block.text} collapsed={block.collapsed} /></ContentLink></div> : <TextSection text={block.text} collapsed={block.collapsed} />)}
       {block.type === "link" && <ContentLink url={block.url}>{block.text}</ContentLink>}
       {block.type === "image" && <BlockImage block={block} />}
       {block.type === "video" && id && <>
