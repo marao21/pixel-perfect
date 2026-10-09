@@ -897,6 +897,24 @@ function AdminsTab() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {dbEmails.filter((em) => !rows.some((r) => r.email === em)).length > 0 && (
+              <select
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) setEmail(e.target.value);
+                }}
+              >
+                <option value="">Escolher email do cadastro…</option>
+                {dbEmails
+                  .filter((em) => !rows.some((r) => r.email === em))
+                  .map((em) => (
+                    <option key={em} value={em}>
+                      {em}
+                    </option>
+                  ))}
+              </select>
+            )}
             <Input
               type="text"
               placeholder="Senha (só para email novo, mín. 6)"
