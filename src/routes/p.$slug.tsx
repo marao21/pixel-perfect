@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Page } from "@/components/Shell";
-import { db, youtubeId, pageVideos, type CustomPage } from "@/lib/content";
+import { db, type CustomPage } from "@/lib/content";
+
+import { PageBlocks } from "@/components/PageBlocks";
+import { blocksForPage } from "@/lib/page-blocks";
 
 export const Route = createFileRoute("/p/$slug")({
   head: () => ({
@@ -28,11 +31,6 @@ function CustomPageView() {
       .maybeSingle()
       .then(({ data }: { data: CustomPage | null }) => setPage(data));
   }, [slug]);
-  const vids = page
-    ? pageVideos(page)
-        .map((v) => ({ ...v, id: youtubeId(v.url) }))
-        .filter((v): v is typeof v & { id: string } => !!v.id)
-    : [];
 
   return (
     <>
@@ -49,71 +47,10 @@ function CustomPageView() {
         {page && (
           <article className="space-y-4">
             <h1 className="font-display text-3xl uppercase text-foreground">{page.title}</h1>
-            {vids.map((v, i) => (
-              <VideoSection
-                key={`${v.id}-${i}`}
-                videoId={v.id}
-                title={v.title}
-                text={v.text}
-                index={i}
-                pageTitle={page.title}
-              />
-            ))}
-            {page.body && (
-              <div className="rounded-2xl border border-border bg-card p-5 font-serif-read text-[17px] leading-relaxed text-foreground whitespace-pre-line">
-                {page.body}
-              </div>
-            )}
+            <PageBlocks blocks={blocksForPage(page)} pageTitle={page.title} />
           </article>
         )}
       </Page>
     </>
-  );
-}
-
-function VideoSection({
-  videoId,
-  title,
-  text,
-  index,
-  pageTitle,
-}: {
-  videoId: string;
-  title: string;
-  text: string;
-  index: number;
-  pageTitle: string;
-}) {
-  const [showText, setShowText] = useState(false);
-  return (
-    <section className="space-y-2">
-      {title && <h2 className="font-display text-xl uppercase text-foreground">{title}</h2>}
-      <div className="aspect-video overflow-hidden rounded-2xl border border-border bg-card">
-        <iframe
-          className="h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${videoId}?rel=0`}
-          title={title || `${pageTitle} — vídeo ${index + 1}`}
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-      {text && (
-        <div>
-          <button
-            type="button"
-            onClick={() => setShowText((s) => !s)}
-            className="w-full rounded-xl border border-border bg-card px-4 py-3 text-left font-semibold text-foreground transition-colors hover:bg-secondary"
-          >
-            {showText ? "Ocultar texto" : "Mostrar texto"}
-          </button>
-          {showText && (
-            <div className="mt-2 rounded-2xl border border-border bg-card p-4 font-serif-read text-[16px] leading-relaxed text-foreground whitespace-pre-line">
-              {text}
-            </div>
-          )}
-        </div>
-      )}
-    </section>
   );
 }
