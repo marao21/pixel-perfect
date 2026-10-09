@@ -209,6 +209,48 @@ export type Database = {
         }
         Relationships: []
       }
+      system_pages: {
+        Row: {
+          content_blocks: Json
+          content_position: string
+          created_at: string
+          home_sections: Json
+          intro: string
+          published: boolean
+          show_announcements: boolean
+          show_original: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_blocks?: Json
+          content_position?: string
+          created_at?: string
+          home_sections?: Json
+          intro?: string
+          published?: boolean
+          show_announcements?: boolean
+          show_original?: boolean
+          slug: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          content_blocks?: Json
+          content_position?: string
+          created_at?: string
+          home_sections?: Json
+          intro?: string
+          published?: boolean
+          show_announcements?: boolean
+          show_original?: boolean
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
