@@ -71,10 +71,12 @@ export type Database = {
       custom_pages: {
         Row: {
           body: string | null
+          content_blocks: Json | null
           created_at: string
           id: string
           position: number
           published: boolean
+          show_in_menu: boolean
           slug: string
           title: string
           videos: Json
@@ -83,10 +85,12 @@ export type Database = {
         }
         Insert: {
           body?: string | null
+          content_blocks?: Json | null
           created_at?: string
           id?: string
           position?: number
           published?: boolean
+          show_in_menu?: boolean
           slug: string
           title: string
           videos?: Json
@@ -95,10 +99,12 @@ export type Database = {
         }
         Update: {
           body?: string | null
+          content_blocks?: Json | null
           created_at?: string
           id?: string
           position?: number
           published?: boolean
+          show_in_menu?: boolean
           slug?: string
           title?: string
           videos?: Json
