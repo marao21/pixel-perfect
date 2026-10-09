@@ -15,6 +15,8 @@ export const Route = createFileRoute("/devocional")({
           "Palavra diária sobre liderança, família e integridade para o homem cristão — um devocional diferente para cada dia do ano.",
       },
       { property: "og:title", content: "Devocional Diário — Os Mamutes" },
+      { property: "og:type", content: "article" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
         content: "Um devocional diferente para cada um dos 365 dias do ano.",
