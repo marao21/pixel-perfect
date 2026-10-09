@@ -76,7 +76,7 @@ function BlockFields({ block, update, pages }: { block: PageBlock; update: (patc
 
 export function PageBlockEditor({ blocks, onChange, pages }: { blocks: PageBlock[]; onChange: (blocks: PageBlock[]) => void; pages: CustomPage[] }) {
   return <div className="space-y-4">
-    <div className="flex flex-wrap gap-2">{(Object.keys(blockLabels) as BlockType[]).map((type) => <Button key={type} type="button" variant="outline" size="sm" onClick={() => onChange([...blocks, newBlock(type)])}><Plus />{blockLabels[type]}</Button>)}</div>
+    <div className="sticky top-16 z-30 -mx-2 flex flex-wrap gap-2 rounded-xl border border-border bg-background/95 p-2 shadow-lg backdrop-blur">{(Object.keys(blockLabels) as BlockType[]).map((type) => <Button key={type} type="button" variant="outline" size="sm" onClick={() => onChange([...blocks, newBlock(type)])}><Plus />{blockLabels[type]}</Button>)}</div>
     {blocks.map((block, index) => <article key={block.id} className="space-y-3 rounded-lg border border-border p-3">
       <header className="flex items-center justify-between gap-2"><h3 className="text-sm font-semibold text-foreground">{index + 1}. {blockLabels[block.type]}</h3><div className="flex shrink-0">
         <Button type="button" variant="ghost" size="icon" title="Mover para cima" aria-label="Mover para cima" disabled={index === 0} onClick={() => onChange(moveBlock(blocks, index, -1))}><ArrowUp /></Button>
