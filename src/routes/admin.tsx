@@ -33,6 +33,7 @@ import {
   slugify,
 } from "@/lib/content";
 import { PageBlockEditor } from "@/components/PageBlockEditor";
+import { SystemPagesEditor } from "@/components/SystemPagesEditor";
 import { PageBlocks } from "@/components/PageBlocks";
 import { blocksForPage, blockError, type PageBlock } from "@/lib/page-blocks";
 import { getDevotionalForDay } from "@/lib/devotionals";
@@ -145,8 +146,9 @@ function AdminRoute() {
           <LogOut className="h-4 w-4" /> Sair
         </Button>
       </div>
-      <Tabs defaultValue="avisos">
-        <TabsList className="grid h-auto w-full grid-cols-7">
+      <Tabs defaultValue="sistema">
+        <TabsList className="grid h-auto w-full grid-cols-4 gap-1 sm:grid-cols-8">
+          <TabsTrigger value="sistema" aria-label="Editar abas" title="Editar abas"><FileText className="h-4 w-4" /></TabsTrigger>
           <TabsTrigger value="avisos" aria-label="Avisos">
             <Megaphone className="h-4 w-4" />
           </TabsTrigger>
@@ -169,6 +171,9 @@ function AdminRoute() {
             <Mail className="h-4 w-4" />
           </TabsTrigger>
         </TabsList>
+        <TabsContent value="sistema">
+          <SystemPagesEditor />
+        </TabsContent>
         <TabsContent value="avisos">
           <AvisosTab />
         </TabsContent>

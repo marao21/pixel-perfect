@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Home,
   CalendarDays,
@@ -25,6 +25,8 @@ import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useCustomPages } from "@/lib/content";
+import { systemPageSlug, useSystemPage } from "@/lib/system-pages";
+import { SystemPageContent } from "@/components/SystemPageContent";
 
 const THEMES: { id: Theme; label: string; icon: typeof Sun }[] = [
   { id: "claro", label: "Claro", icon: Sun },
@@ -229,6 +231,9 @@ const TABS = [
 
 export function Page({ children }: { title: string; kicker?: string; children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const slug = systemPageSlug(pathname);
+  const { data: content } = useSystemPage(slug === "home" ? undefined : slug);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
@@ -265,7 +270,7 @@ export function Page({ children }: { title: string; kicker?: string; children: R
           <MenuButton />
         </div>
       </header>
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10">{content ? <SystemPageContent page={content}>{children}</SystemPageContent> : children}</div>
     </main>
   );
 }
