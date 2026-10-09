@@ -43,7 +43,7 @@ describe("custom page blocks", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Vídeo$/ }));
     fireEvent.change(screen.getByRole("textbox", { name: "Link do YouTube" }), { target: { value: "https://youtu.be/dQw4w9WgXcQ" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Mover para cima" })[1] as HTMLElement);
-    expect(screen.getAllByRole("heading")[0]).toHaveTextContent("1. Vídeo");
+    expect(screen.getAllByRole("textbox")[0]).toHaveAttribute("aria-label", "Link do YouTube");
     expect(screen.getByRole("textbox", { name: "Link do YouTube" })).toHaveValue("https://youtu.be/dQw4w9WgXcQ");
   });
 });
