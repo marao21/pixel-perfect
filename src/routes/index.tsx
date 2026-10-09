@@ -16,6 +16,8 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:title", content: "Os Mamutes — Desafio Bíblico 180 Dias" },
       { property: "og:description", content: "Leia a Bíblia inteira em 180 dias com os irmãos." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Home,

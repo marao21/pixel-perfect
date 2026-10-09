@@ -14,6 +14,8 @@ export const Route = createFileRoute("/plano")({
         name: "description",
         content: "Cronograma completo para ler a Bíblia em 90 dias, 180 dias ou 1 ano.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { property: "og:title", content: "Plano de Leitura 90, 180 Dias ou 1 Ano — Os Mamutes" },
       {
         property: "og:description",
