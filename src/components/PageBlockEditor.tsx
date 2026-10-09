@@ -62,6 +62,11 @@ function BlockFields({ block, update, pages }: { block: PageBlock; update: (patc
         }}><Link2 /> Inserir link no texto</Button>
       </div>}
     </>}
+    {["heading", "subtitle", "text"].includes(block.type) && <div className="space-y-2 border-l-2 border-border pl-3">
+      <p className="text-xs font-medium text-muted-foreground">Tornar este {blockLabels[block.type].toLowerCase()} um link (opcional): quem tocar vai direto para a página.</p>
+      <select aria-label="Página de destino do item" className={selectClass} value={pages.some((p) => `/p/${p.slug}` === block.href) ? block.href : ""} onChange={(e) => update({ href: e.target.value })}><option value="">Escolher página do app</option>{pages.map((p) => <option key={p.id} value={`/p/${p.slug}`}>{p.title}{p.show_in_menu === false ? " (fora do menu)" : ""}</option>)}</select>
+      <Input aria-label="Destino do item" placeholder="Ou cole o link de destino" value={block.href} onChange={(e) => update({ href: e.target.value })} />
+    </div>}
     {block.type === "link" && <>
       <select aria-label="Página de destino" className={selectClass} value={pages.some((p) => `/p/${p.slug}` === block.url) ? block.url : ""} onChange={(e) => update({ url: e.target.value })}><option value="">Escolher página do app</option>{pages.map((p) => <option key={p.id} value={`/p/${p.slug}`}>{p.title}{p.show_in_menu === false ? " (fora do menu)" : ""}</option>)}</select>
       <Input aria-label="Destino do link" placeholder="Ou cole o link de destino" value={block.url} onChange={(e) => update({ url: e.target.value })} />
