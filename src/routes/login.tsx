@@ -9,6 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ShieldCheck, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
+  head: () => ({ meta: [
+    { title: "Entrar ou criar conta — Os Mamutes" },
+    { name: "description", content: "Acesse sua conta para participar dos desafios bíblicos dos Mamutes." },
+    { property: "og:title", content: "Entrar ou criar conta — Os Mamutes" },
+    { property: "og:description", content: "Entre no grupo Os Mamutes e acompanhe sua leitura bíblica." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: (search: Record<string, unknown>) => ({
     cadastro: search["cadastro"] === true || search["cadastro"] === "true",
   }),

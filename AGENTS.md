@@ -15,3 +15,4 @@
 - Admin-managed content (avisos, vídeos, Pix, devocionais) lives in Supabase tables guarded by RLS via has_role(); admin rights come only from user_roles, never from client storage or hardcoded credentials.
 - Custom pages use ordered content_blocks with legacy video/body fallback; show_in_menu controls navigation only, while published and RLS control access.
 - Leader-uploaded page images use private Supabase Storage with read access restricted to images referenced by published pages (or administrators), so unpublished content is not publicly readable.
+- Built-in tab customization lives in system_pages with has_role-protected writes; the shared Page shell applies rich content, while Home applies ordered section visibility separately so its announcements remain at the top.

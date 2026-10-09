@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, Flame, BookOpen, ChevronRight } from "lucide-react";
+import { Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
 import { HomeFeed, Avisos } from "@/components/HomeFeed";
 import { getPlan } from "@/lib/bible";
 import { usePlanLength } from "@/lib/plan-choice";
-import { CURRENT_DAY, DEVOTIONALS, ME, useStore } from "@/lib/store";
+import { CURRENT_DAY, DEVOTIONALS, useStore } from "@/lib/store";
+import { defaultSystemPage, normalizeHomeSections, useSystemPage } from "@/lib/system-pages";
+import { SystemPageContent } from "@/components/SystemPageContent";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,21 +26,22 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { done, toggle, profiles } = useStore();
-  const [len, setLen] = usePlanLength();
+  const { done, profiles } = useStore();
+  const [len] = usePlanLength();
   const PLAN = getPlan(len);
-  const today = PLAN[Math.min(CURRENT_DAY, len) - 1]!;
-  const isDone = done.has(CURRENT_DAY);
+  const today = PLAN[Math.min(CURRENT_DAY, len) - 1];
   const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
-  const dev = DEVOTIONALS[0]!;
+  const dev = DEVOTIONALS[0];
+  const { data } = useSystemPage("home");
+  const content = data ?? defaultSystemPage("home");
 
   return (
     <Page title="Home">
-      <Avisos />
-      <p className="mb-5 text-muted-foreground">Pronto para a palavra de hoje?</p>
-
-      <section className="rounded-2xl border border-border bg-hero p-5 shadow-elevated">
+      {content.show_announcements && <Avisos />}
+      <SystemPageContent page={content}>
+      {normalizeHomeSections(content.home_sections).filter((section) => section.visible).map((section) => <div key={section.id}>
+      {section.id === "reading" && today && <section className="rounded-2xl border border-border bg-hero p-5 shadow-elevated">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
           Dia {CURRENT_DAY} de {len} · Plano {len === 365 ? "1 ano" : `${len} dias`}
         </p>
@@ -50,9 +53,9 @@ function Home() {
         >
           Abrir texto da leitura <ChevronRight className="h-4 w-4" />
         </Link>
-      </section>
+      </section>}
 
-      <section className="mt-4 grid grid-cols-2 gap-3">
+      {section.id === "progress" && <section className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">Progresso</p>
           <p className="font-display text-3xl text-foreground">{pct}%</p>
@@ -74,9 +77,9 @@ function Home() {
           </p>
           <p className="mt-2 text-xs text-muted-foreground">dias seguidos</p>
         </div>
-      </section>
+      </section>}
 
-      <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
+      {section.id === "devotional" && dev && <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
           <BookOpen className="h-4 w-4" /> Devocional do dia
         </p>
@@ -84,8 +87,10 @@ function Home() {
         <Link to="/devocional" className="mt-3 inline-flex items-center text-sm text-primary">
           Ler completo <ChevronRight className="h-4 w-4" />
         </Link>
-      </section>
-      <HomeFeed />
+      </section>}
+      {section.id === "feed" && <HomeFeed />}
+      </div>)}
+      </SystemPageContent>
     </Page>
   );
 }
