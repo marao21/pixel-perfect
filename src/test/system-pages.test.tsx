@@ -61,9 +61,9 @@ describe("built-in tab editing", () => {
     fireEvent.click(screen.getByRole("button", { name: "Subir Devocional do dia" }));
     fireEvent.click(screen.getByRole("button", { name: "Salvar alterações da aba" }));
     await waitFor(() => expect(store.writes).toHaveBeenCalledOnce());
-    expect(store.rows.home?.title).toBe("Nossa Home");
-    expect(store.rows.home?.home_sections.map((section) => section.id)).toEqual(["reading", "devotional", "progress", "feed"]);
-    expect(store.rows.home?.home_sections.find((section) => section.id === "progress")?.visible).toBe(false);
+    expect(store.rows["home"]?.title).toBe("Nossa Home");
+    expect(store.rows["home"]?.home_sections.map((section) => section.id)).toEqual(["reading", "devotional", "progress", "feed"]);
+    expect(store.rows["home"]?.home_sections.find((section) => section.id === "progress")?.visible).toBe(false);
     fireEvent.change(screen.getByLabelText("Aba"), { target: { value: "plano" } });
     await waitFor(() => expect(screen.getByLabelText("Título de abertura (opcional)")).toHaveValue(""));
     fireEvent.change(screen.getByLabelText("Aba"), { target: { value: "home" } });
