@@ -2,13 +2,25 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+// Strips invisible characters/spaces that come along when copying an email.
+export function cleanEmail(v: string) {
+  return v
+    .replace(/[\u200B-\u200D\uFEFF\u00A0\s]/g, "")
+    .replace(/^mailto:/i, "")
+    .toLowerCase();
+}
+
 const input = z.object({
-  email: z.string().trim().email().max(255),
-  password: z.string().min(6).max(72),
+  email: z.preprocess(
+    (v) => (typeof v === "string" ? cleanEmail(v) : v),
+    z.string().email("Email inválido").max(255),
+  ),
+  password: z.string().max(72).optional().default(""),
   fullAccess: z.boolean(),
 });
 
-// Creates (or reuses) an account and grants admin. Only full admins may call it.
+// Grants admin. Existing accounts are promoted without changing their password;
+// new emails get an account created with the given password. Only full admins may call it.
 export const createAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => input.parse(d))
@@ -21,24 +33,28 @@ export const createAdmin = createServerFn({ method: "POST" })
       throw new Error("Só administradores com acesso completo podem adicionar administradores.");
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const email = data.email.toLowerCase();
-    let userId: string | null = null;
+    const email = data.email;
 
-    const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password: data.password,
-      email_confirm: true,
-    });
-    if (created?.user) userId = created.user.id;
-    else {
-      const { data: prof } = await supabaseAdmin
-        .from("profiles")
-        .select("id")
-        .ilike("email", email)
-        .maybeSingle();
-      if (!prof) throw new Error(error?.message ?? "Não foi possível criar a conta.");
-      userId = prof.id;
-      await supabaseAdmin.auth.admin.updateUserById(userId, { password: data.password });
+    const { data: prof } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("email", email)
+      .maybeSingle();
+
+    let userId: string | null = prof?.id ?? null;
+    let existed = !!userId;
+
+    if (!userId) {
+      if (data.password.length < 6)
+        throw new Error("Email novo: informe uma senha com pelo menos 6 caracteres.");
+      const { data: created, error } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password: data.password,
+        email_confirm: true,
+      });
+      if (!created?.user) throw new Error(error?.message ?? "Não foi possível criar a conta.");
+      userId = created.user.id;
+      existed = false;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,5 +66,5 @@ export const createAdmin = createServerFn({ method: "POST" })
       full_access: data.fullAccess,
     });
     if (e2) throw new Error(e2.message);
-    return { ok: true };
+    return { ok: true, existed };
   });
