@@ -881,17 +881,22 @@ function AdminsTab() {
         <Box title="Novo administrador">
           <div className="space-y-2">
             <Input
-              type="email"
+              type="text"
+              inputMode="email"
+              autoCapitalize="none"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               type="text"
-              placeholder="Senha (mín. 6 caracteres)"
+              placeholder="Senha (só para email novo, mín. 6)"
               value={pw}
               onChange={(e) => setPw(e.target.value)}
             />
+            <p className="text-xs text-muted-foreground">
+              Se o email já tem cadastro, deixe a senha em branco: ele só vira administrador.
+            </p>
             <label className="flex items-center gap-2 text-sm text-muted-foreground">
               <Switch checked={full} onCheckedChange={setFull} />
               {full
@@ -900,16 +905,20 @@ function AdminsTab() {
             </label>
             <Button
               className="w-full"
-              disabled={busy || !email.trim() || pw.length < 6}
+              disabled={busy || !email.trim()}
               onClick={async () => {
                 setBusy(true);
                 try {
-                  await create({ data: { email: email.trim(), password: pw, fullAccess: full } });
+                  const res = await create({
+                    data: { email, password: pw, fullAccess: full },
+                  });
                   setEmail("");
                   setPw("");
                   setFull(false);
                   toast.success(
-                    "Administrador adicionado. Ele já pode entrar com esse email e senha.",
+                    res.existed
+                      ? "Pronto! Esse cadastro agora é administrador (senha mantida)."
+                      : "Administrador criado. Ele já pode entrar com esse email e senha.",
                   );
                   void load();
                 } catch (e) {
