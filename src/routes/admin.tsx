@@ -847,7 +847,16 @@ function AdminsTab() {
   const [pw, setPw] = useState("");
   const [full, setFull] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dbEmails, setDbEmails] = useState<string[]>([]);
   const create = useServerFn(createAdmin);
+  const list = useServerFn(listMembros);
+
+  // Emails disponíveis no banco, para escolher direto no campo de novo admin.
+  useEffect(() => {
+    list()
+      .then((data) => setDbEmails(data.map((r) => r.email)))
+      .catch(() => setDbEmails([]));
+  }, [list]);
 
   const load = useCallback(async () => {
     const { data: u } = await supabase.auth.getUser();
