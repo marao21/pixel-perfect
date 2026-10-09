@@ -1,0 +1,4 @@
+ALTER TABLE public.custom_pages ADD COLUMN IF NOT EXISTS content_blocks jsonb DEFAULT NULL, ADD COLUMN IF NOT EXISTS show_in_menu boolean NOT NULL DEFAULT true;
+CREATE POLICY "Leaders upload page images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'page-images' AND public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Leaders manage page images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'page-images' AND public.has_role(auth.uid(), 'admin'));
+CREATE POLICY "Published page images readable" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'page-images' AND EXISTS (SELECT 1 FROM public.custom_pages p WHERE p.published AND p.content_blocks @> jsonb_build_array(jsonb_build_object('type','image','path',name))));

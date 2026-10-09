@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { DailyDevotional } from "@/lib/devotionals";
+import type { PageBlock } from "@/lib/page-blocks";
 
 // Tables created after the generated types; use an untyped handle.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,7 +47,7 @@ export type DevOverride = {
 
 export function youtubeId(url: string): string | null {
   const m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/);
-  return m ? m[1]! : /^[\w-]{11}$/.test(url.trim()) ? url.trim() : null;
+  return m?.[1] ?? (/^[\w-]{11}$/.test(url.trim()) ? url.trim() : null);
 }
 
 export function useSettings() {
@@ -110,6 +111,8 @@ export type CustomPage = {
   youtube_url: string | null;
   youtube_urls?: string[] | null;
   videos?: PageVideo[] | null;
+  content_blocks?: PageBlock[] | null;
+  show_in_menu?: boolean;
   position: number;
   published: boolean;
 };
@@ -126,6 +129,7 @@ export function useCustomPages() {
     db.from("custom_pages")
       .select("*")
       .eq("published", true)
+      .eq("show_in_menu", true)
       .order("position")
       .order("created_at")
       .then(({ data }: { data: CustomPage[] | null }) => setRows(data ?? []));
