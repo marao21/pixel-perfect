@@ -37,6 +37,7 @@ import {
 import { getDevotionalForDay } from "@/lib/devotionals";
 import { useServerFn } from "@tanstack/react-start";
 import { createAdmin } from "@/lib/admin.functions";
+import { listMembros, type MembroRow } from "@/lib/membros.functions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -884,27 +885,21 @@ function DevocionalTab() {
 }
 
 function MembrosTab() {
-  const [rows, setRows] = useState<
-    { id: number; nome: string; email: string; criado_em: string | null }[]
-  >([]);
+  const [rows, setRows] = useState<MembroRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const list = useServerFn(listMembros);
 
   const load = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await db
-      .from("membros")
-      .select("id,nome,email,criado_em")
-      .order("criado_em", { ascending: false });
-    if (error) {
-      toast.error("Não foi possível carregar os cadastros");
+    try {
+      const data = await list();
+      setRows(data);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível carregar os cadastros");
       setRows([]);
-    } else {
-      setRows(
-        (data ?? []) as { id: number; nome: string; email: string; criado_em: string | null }[],
-      );
     }
     setLoading(false);
-  }, []);
+  }, [list]);
 
   useEffect(() => {
     void load();
@@ -929,9 +924,26 @@ function MembrosTab() {
           </div>
         ))
       )}
-      <Button variant="outline" className="mt-2 w-full" onClick={() => void load()}>
-        Atualizar
-      </Button>
+      <div className="mt-2 flex gap-2">
+        <Button variant="outline" className="flex-1" onClick={() => void load()} disabled={loading}>
+          Atualizar
+        </Button>
+        <Button
+          variant="outline"
+          className="flex-1"
+          disabled={!rows.length}
+          onClick={async () => {
+            try {
+              await navigator.clipboard.writeText(rows.map((r) => r.email).join(", "));
+              toast.success("Emails copiados");
+            } catch {
+              toast.error("Não foi possível copiar os emails");
+            }
+          }}
+        >
+          Copiar emails
+        </Button>
+      </div>
     </Box>
   );
 }
