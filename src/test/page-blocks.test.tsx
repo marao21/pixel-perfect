@@ -40,7 +40,7 @@ describe("custom page blocks", () => {
       return <PageBlockEditor blocks={blocks} onChange={setBlocks} pages={[page]} />;
     }
     render(<Harness />);
-    fireEvent.click(screen.getByRole("button", { name: "Vídeo", exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: /^Vídeo$/ }));
     fireEvent.change(screen.getByRole("textbox", { name: "Link do YouTube" }), { target: { value: "https://youtu.be/dQw4w9WgXcQ" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Mover para cima" })[1] as HTMLElement);
     expect(screen.getAllByRole("heading")[0]).toHaveTextContent("1. Vídeo");
