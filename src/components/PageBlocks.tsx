@@ -39,11 +39,15 @@ function BlockImage({ block }: { block: PageBlock }) {
   return <figure>{src ? <img src={src} alt={block.alt || block.title} className="h-auto w-full rounded-lg" loading="lazy" onError={() => setError(true)} /> : <div className="aspect-video animate-pulse bg-muted rounded-lg" />}{block.title && <figcaption className="mt-2 text-sm text-muted-foreground">{block.title}</figcaption>}</figure>;
 }
 
+function TextBody({ text }: { text: string }) {
+  return <div className="whitespace-pre-wrap break-words font-serif-read text-[17px] leading-relaxed text-foreground"><LinkedText text={text} /></div>;
+}
+
 function TextSection({ text, collapsed }: { text: string; collapsed: boolean }) {
   const [open, setOpen] = useState(false);
   return <>
     {collapsed && <Button variant="outline" onClick={() => setOpen((v) => !v)} aria-expanded={open} className="w-full justify-start">{open ? "Ocultar texto" : "Mostrar texto"}</Button>}
-    {(!collapsed || open) && <div className="whitespace-pre-wrap break-words font-serif-read text-[17px] leading-relaxed text-foreground"><LinkedText text={text} /></div>}
+    {(!collapsed || open) && <TextBody text={text} />}
   </>;
 }
 
@@ -56,7 +60,7 @@ export function PageBlocks({ blocks, pageTitle }: { blocks: PageBlock[]; pageTit
     return <section key={block.id} className={`${align} ${width} min-w-0 space-y-3`}>
       {block.type === "heading" && <h2 className="font-display text-2xl text-foreground break-words">{linked ? <ContentLink url={block.href}><LinkedText text={block.text} /></ContentLink> : <LinkedText text={block.text} />}</h2>}
       {block.type === "subtitle" && <h3 className="font-display text-xl text-gold break-words">{linked ? <ContentLink url={block.href}><LinkedText text={block.text} /></ContentLink> : <LinkedText text={block.text} />}</h3>}
-      {block.type === "text" && (linked ? <div className="block break-words"><ContentLink url={block.href}><TextSection text={block.text} collapsed={block.collapsed} /></ContentLink></div> : <TextSection text={block.text} collapsed={block.collapsed} />)}
+      {block.type === "text" && (linked ? <ContentLink url={block.href}><TextBody text={block.text} /></ContentLink> : <TextSection text={block.text} collapsed={block.collapsed} />)}
       {block.type === "link" && <ContentLink url={block.url}>{block.text}</ContentLink>}
       {block.type === "image" && <BlockImage block={block} />}
       {block.type === "video" && id && <>
