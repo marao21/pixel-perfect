@@ -439,7 +439,7 @@ function PaginasTab() {
         <Label htmlFor="page-title">Nome da página</Label>
         <Input id="page-title" placeholder="Nome da página (ex.: Discipulado de 30 dias)" value={title} onChange={(e) => setTitle(e.target.value)} />
         <div className="flex items-center justify-between gap-3"><Label htmlFor="page-menu">Mostrar no menu</Label><Switch id="page-menu" checked={showInMenu} onCheckedChange={setShowInMenu} /></div>
-        <div className="sticky top-16 z-40 flex justify-end"><Button type="button" variant="outline" size="sm" onClick={() => setPreview((v) => !v)}>{preview ? "Voltar à edição" : "Pré-visualizar"}</Button></div>
+        <div className="flex justify-end"><Button type="button" variant="outline" size="sm" onClick={() => setPreview((v) => !v)}>{preview ? "Voltar à edição" : "Pré-visualizar"}</Button></div>
         {preview ? <article className="space-y-5"><h1 className="font-display text-3xl text-foreground break-words">{title}</h1><PageBlocks blocks={blocks} pageTitle={title} /></article> : <PageBlockEditor blocks={blocks} onChange={setBlocks} pages={rows} />}
         {validation && <p role="alert" className="text-sm text-destructive">{validation}</p>}
         <div className="flex gap-2"><Button disabled={!title.trim() || !!validation || saving} className="flex-1" onClick={() => void save()}>{saving ? "Salvando…" : editing ? "Salvar página" : "Criar página"}</Button>{editing && <Button variant="outline" onClick={reset}>Cancelar</Button>}</div>
