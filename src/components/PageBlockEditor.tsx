@@ -118,7 +118,7 @@ function Block({ block, update, pages, autoFocus }: { block: PageBlock; update: 
 }
 
 function Options({ block, update, pages }: { block: PageBlock; update: (p: Partial<PageBlock>) => void; pages: CustomPage[] }) {
-  return <div className="space-y-3 rounded-lg bg-muted/40 p3 p-3 text-sm">
+  return <div className="space-y-3 rounded-lg bg-muted/40 p-3 text-sm">
     <div className="grid grid-cols-2 gap-3">
       <Label className="space-y-1">Alinhamento<select className={selectClass} value={block.align} onChange={(e) => update({ align: e.target.value as PageBlock["align"] })}><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select></Label>
       <Label className="space-y-1">Largura<select className={selectClass} value={block.width} onChange={(e) => update({ width: e.target.value as PageBlock["width"] })}><option value="full">Completa</option><option value="medium">Média</option><option value="small">Pequena</option></select></Label>
