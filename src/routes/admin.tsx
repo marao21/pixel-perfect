@@ -406,7 +406,7 @@ function PaginasTab() {
   const [editing, setEditing] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<PageBlock[]>([]);
-  const [showInMenu, setShowInMenu] = useState(true);
+  const [showInMenu, setShowInMenu] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(false);
   const load = useCallback(async () => {
@@ -414,7 +414,7 @@ function PaginasTab() {
     if (!fail(error)) setRows(data ?? []);
   }, []);
   useEffect(() => { void load(); }, [load]);
-  const reset = () => { setEditing(null); setTitle(""); setBlocks([]); setShowInMenu(true); setPreview(false); };
+  const reset = () => { setEditing(null); setTitle(""); setBlocks([]); setShowInMenu(false); setPreview(false); };
   const validation = blocks.map(blockError).find(Boolean);
   async function save() {
     if (!title.trim() || validation || saving) return;
