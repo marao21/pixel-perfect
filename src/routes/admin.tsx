@@ -847,7 +847,16 @@ function AdminsTab() {
   const [pw, setPw] = useState("");
   const [full, setFull] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dbEmails, setDbEmails] = useState<string[]>([]);
   const create = useServerFn(createAdmin);
+  const list = useServerFn(listMembros);
+
+  // Emails disponíveis no banco, para escolher direto no campo de novo admin.
+  useEffect(() => {
+    list()
+      .then((data) => setDbEmails(data.map((r) => r.email)))
+      .catch(() => setDbEmails([]));
+  }, [list]);
 
   const load = useCallback(async () => {
     const { data: u } = await supabase.auth.getUser();
@@ -888,6 +897,24 @@ function AdminsTab() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {dbEmails.filter((em) => !rows.some((r) => r.email === em)).length > 0 && (
+              <select
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) setEmail(e.target.value);
+                }}
+              >
+                <option value="">Escolher email do cadastro…</option>
+                {dbEmails
+                  .filter((em) => !rows.some((r) => r.email === em))
+                  .map((em) => (
+                    <option key={em} value={em}>
+                      {em}
+                    </option>
+                  ))}
+              </select>
+            )}
             <Input
               type="text"
               placeholder="Senha (só para email novo, mín. 6)"
