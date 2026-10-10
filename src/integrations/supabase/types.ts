@@ -71,6 +71,24 @@ export type Database = {
         }
         Relationships: []
       }
+      content_overrides: {
+        Row: {
+          data: Json
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       custom_pages: {
         Row: {
           body: string | null
