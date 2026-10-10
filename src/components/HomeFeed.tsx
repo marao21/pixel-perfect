@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Megaphone, PlayCircle, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ChevronRight, Megaphone, PlayCircle, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { usePublished, youtubeId, type Announcement, type Video } from "@/lib/content";
+import { SYSTEM_TABS } from "@/lib/system-pages";
+import { BOOKS } from "@/lib/bible";
 
 const DISMISS_KEY = "mamutes-avisos-fechados";
 // Assinatura muda se o líder editar o aviso, então ele volta a aparecer.
 function sig(a: Announcement) {
-  const s = `${a.id}|${a.title}|${a.body ?? ""}|${(a as { updated_at?: string }).updated_at ?? ""}`;
+  const s = `${a.id}|${a.title}|${a.body ?? ""}|${a.link_url ?? ""}|${(a as { updated_at?: string }).updated_at ?? ""}`;
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
   return `${a.id}:${h}`;
@@ -45,6 +48,7 @@ export function Avisos() {
             {a.body && (
               <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body}</p>
             )}
+            {a.link_url && <AvisoLink url={a.link_url} />}
           </div>
           <button
             onClick={() => dismiss(a)}
