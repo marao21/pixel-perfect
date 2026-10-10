@@ -140,3 +140,14 @@ self.addEventListener("fetch", (event) => {
     })(),
   );
 });
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(
+    (async () => {
+      const all = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      if (all[0]) return all[0].focus();
+      return self.clients.openWindow("/tempo-com-deus");
+    })(),
+  );
+});
