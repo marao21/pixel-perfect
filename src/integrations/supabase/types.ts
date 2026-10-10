@@ -19,6 +19,7 @@ export type Database = {
           body: string | null
           created_at: string
           id: string
+          link_url: string | null
           published: boolean
           title: string
           updated_at: string
@@ -27,6 +28,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          link_url?: string | null
           published?: boolean
           title: string
           updated_at?: string
@@ -35,6 +37,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          link_url?: string | null
           published?: boolean
           title?: string
           updated_at?: string
