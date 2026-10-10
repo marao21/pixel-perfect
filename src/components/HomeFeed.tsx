@@ -114,7 +114,7 @@ export function HomeFeed() {
 function AvisoLink({ url }: { url: string }) {
   const clean = url.trim();
   if (!clean) return null;
-  const [target, query = ""] = clean.split("?");
+  const [target = "", query = ""] = clean.split("?");
   const params = new URLSearchParams(query);
   const cls = "mt-1.5 inline-flex items-center gap-1 text-sm font-semibold text-primary";
   const tab = SYSTEM_TABS.find((t) => t.path === target);
