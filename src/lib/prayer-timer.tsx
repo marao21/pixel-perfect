@@ -121,6 +121,36 @@ export function PrayerTimerProvider({ children }: { children: ReactNode }) {
   const [now, setNow] = useState(() => Date.now());
   const [ringing, setRinging] = useState(false);
   const vibTimer = useRef<number | null>(null);
+  const wakeLock = useRef<{ release: () => Promise<void> } | null>(null);
+
+  // Keep the screen on while the timer runs so the countdown and alarm never sleep.
+  const acquireWakeLock = useCallback(async () => {
+    try {
+      const nav = navigator as Navigator & { wakeLock?: { request: (t: "screen") => Promise<{ release: () => Promise<void> }> } };
+      if (nav.wakeLock && !wakeLock.current) {
+        wakeLock.current = await nav.wakeLock.request("screen");
+      }
+    } catch { /* unsupported or denied */ }
+  }, []);
+
+  const releaseWakeLock = useCallback(() => {
+    const wl = wakeLock.current;
+    wakeLock.current = null;
+    if (wl) void wl.release().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (state?.status === "running") {
+      void acquireWakeLock();
+      const reacquire = () => {
+        if (document.visibilityState === "visible") void acquireWakeLock();
+      };
+      document.addEventListener("visibilitychange", reacquire);
+      return () => document.removeEventListener("visibilitychange", reacquire);
+    }
+    releaseWakeLock();
+    return undefined;
+  }, [state?.status, acquireWakeLock, releaseWakeLock]);
 
   const save = (s: TimerState | null) => {
     if (s) localStorage.setItem(KEY, JSON.stringify(s));
