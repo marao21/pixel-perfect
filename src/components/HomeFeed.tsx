@@ -111,6 +111,60 @@ export function HomeFeed() {
   );
 }
 
+function AvisoLink({ url }: { url: string }) {
+  const clean = url.trim();
+  if (!clean) return null;
+  const [target, query = ""] = clean.split("?");
+  const params = new URLSearchParams(query);
+  const cls = "mt-1.5 inline-flex items-center gap-1 text-sm font-semibold text-primary";
+  const tab = SYSTEM_TABS.find((t) => t.path === target);
+  if (tab) {
+    return (
+      <Link to={tab.path} className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+  const page = target.match(/^\/p\/([^/?#]+)$/);
+  if (page?.[1]) {
+    let slug = page[1];
+    try {
+      slug = decodeURIComponent(slug);
+    } catch {
+      /* keep raw slug */
+    }
+    return (
+      <Link to="/p/$slug" params={{ slug }} className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+  if (target === "/biblia") {
+    const b = Number(params.get("b"));
+    const c = Number(params.get("c") ?? 1);
+    if (Number.isInteger(b) && b >= 0 && b < BOOKS.length && c >= 1 && c <= BOOKS[b]!.ch) {
+      return (
+        <Link to="/biblia" search={{ b, c }} className={cls}>
+          Abrir {BOOKS[b]!.pt} {c} <ChevronRight className="h-4 w-4" />
+        </Link>
+      );
+    }
+    return (
+      <Link to="/biblia" className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+  if (/^https?:\/\//i.test(clean)) {
+    return (
+      <a href={clean} target="_blank" rel="noopener noreferrer" className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </a>
+    );
+  }
+  return null;
+}
+
 function VideoWithToggle({
   video,
   videoId,
