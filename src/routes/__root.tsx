@@ -16,6 +16,7 @@ import { ThemeProvider } from "../lib/theme";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { InstallGate } from "../components/InstallGate";
+import { PrayerTimerProvider } from "../lib/prayer-timer";
 
 function NotFoundComponent() {
   return (
@@ -170,9 +171,11 @@ function RootComponent() {
       <ThemeProvider>
         <StoreProvider>
           <DailyDevotionalGreeting />
-          <InstallGate>
-            <Outlet />
-          </InstallGate>
+          <PrayerTimerProvider>
+            <InstallGate>
+              <Outlet />
+            </InstallGate>
+          </PrayerTimerProvider>
           <Toaster />
         </StoreProvider>
       </ThemeProvider>
