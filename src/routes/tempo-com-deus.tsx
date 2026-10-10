@@ -53,6 +53,13 @@ const VERSES = [
 export type AmbientSound = { id: string; label: string; src?: string };
 export const AMBIENT_SOUNDS: AmbientSound[] = [{ id: "none", label: "Silêncio" }];
 
+function fmt(ms: number, long: boolean) {
+  const t = Math.ceil(ms / 1000);
+  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+  const p = (n: number) => String(n).padStart(2, "0");
+  return long ? `${p(h)}:${p(m)}:${p(s)}` : `${p(m)}:${p(s)}`;
+}
+
 function TempoComDeus() {
   const { state, now, start, pause, resume, restart, end: endTimer } = usePrayerTimer();
   const [confirm, setConfirm] = useState(false);
