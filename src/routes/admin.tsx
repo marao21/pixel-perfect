@@ -257,11 +257,9 @@ function AvisosTab() {
       ? ""
       : linkType === "biblia"
         ? `Bíblia: ${BOOKS[bookIdx]!.pt} ${chapter}`
-        : linkType === "biblia"
-          ? ""
-          : linkType.startsWith("/p/")
-            ? (pages.find((p) => `/p/${p.slug}` === linkType)?.title ?? linkType)
-            : (SYSTEM_TABS.find((t) => t.path === linkType)?.label ?? linkType);
+        : linkType.startsWith("/p/")
+          ? (pages.find((p) => `/p/${p.slug}` === linkType)?.title ?? linkType)
+          : (SYSTEM_TABS.find((t) => t.path === linkType)?.label ?? linkType);
 
   const selectCls =
     "h-11 w-full rounded-xl border border-border bg-card px-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
