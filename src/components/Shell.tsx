@@ -226,6 +226,7 @@ const TABS = [
   { to: "/plano", label: "Plano", icon: CalendarDays },
   { to: "/biblia", label: "Bíblia", icon: BookMarked },
   { to: "/oferta", label: "Oferta", icon: HandCoins },
+  { to: "/pecado", label: "Pecado", icon: ShieldCheck },
   { to: "/devocional", label: "Devocional", icon: BookOpen },
 ] as const;
 
