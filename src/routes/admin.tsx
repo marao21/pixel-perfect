@@ -34,6 +34,7 @@ import {
 } from "@/lib/content";
 import { PageBlockEditor } from "@/components/PageBlockEditor";
 import { SystemPagesEditor } from "@/components/SystemPagesEditor";
+import { OriginalContentEditor } from "@/components/OriginalContentEditor";
 import { PageBlocks } from "@/components/PageBlocks";
 import { blocksForPage, blockError, type PageBlock } from "@/lib/page-blocks";
 import { getDevotionalForDay } from "@/lib/devotionals";
@@ -175,6 +176,10 @@ function AdminRoute() {
         </TabsList>
         <TabsContent value="sistema">
           <SystemPagesEditor />
+          <div className="mt-8 border-t border-border pt-6">
+            <h2 className="mb-3 font-display text-xl uppercase text-foreground">Conteúdo original das abas</h2>
+            <OriginalContentEditor />
+          </div>
         </TabsContent>
         <TabsContent value="avisos">
           <AvisosTab />
