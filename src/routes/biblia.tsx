@@ -1,3 +1,4 @@
+import { usePlanRaw, useTexts } from "@/lib/overrides";
 import { createFileRoute } from "@tanstack/react-router";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -83,7 +84,9 @@ function readSavedBibleReading(): { version: string; bookIdx: number; chapter: n
 
 function Biblia() {
   const { day, plan, b, c, v: startVerse } = Route.useSearch();
-  const today = day ? getPlan(plan ?? 180)[day - 1] : undefined;
+  const planRaw = usePlanRaw();
+  const tx = useTexts();
+  const today = day ? getPlan(plan ?? 180, planRaw)[day - 1] : undefined;
   const start = today?.refs[0];
   const startBookIdx = start ? BOOKS.indexOf(start.book) : undefined;
   const startChapter = start?.chapter;
@@ -264,7 +267,7 @@ function Biblia() {
   }, [status, selectedVerse, bookIdx, chapter, shouldScrollToVerse]);
 
   const navigate = Route.useNavigate();
-  const fullPlan = getPlan(plan ?? 180);
+  const fullPlan = getPlan(plan ?? 180, planRaw);
   const pos = today
     ? today.refs.findIndex((r) => BOOKS.indexOf(r.book) === bookIdx && r.chapter === chapter)
     : -1;
@@ -320,9 +323,9 @@ function Biblia() {
       kicker={
         today
           ? `Leitura do dia ${day} · Plano ${plan === 365 ? "1 ano" : `${plan ?? 180} dias`}`
-          : "Palavra de Deus"
+          : tx("biblia_kicker")
       }
-      title="Bíblia"
+      title={tx("biblia_title")}
     >
       {today && (
         <div className="mb-4 rounded-xl border border-gold bg-card p-3">

@@ -1,3 +1,4 @@
+import { usePlanRaw, useTexts } from "@/lib/overrides";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Circle } from "lucide-react";
 import { useState } from "react";
@@ -32,13 +33,14 @@ function Plano() {
   const { done, toggle } = useStore();
   const [f, setF] = useState<(typeof FILTERS)[number]>("Todos");
   const [len, pick] = usePlanLength();
-  const PLAN = getPlan(len);
+  const tx = useTexts();
+  const PLAN = getPlan(len, usePlanRaw());
   const list = PLAN.filter(
     (d) => f === "Todos" || (f === "Concluídos" ? done.has(d.day) : !done.has(d.day)),
   );
 
   return (
-    <Page kicker={`${done.size}/${len} concluídos`} title="Plano">
+    <Page kicker={`${done.size}/${len} concluídos`} title={tx("plano_title")}>
       <div className="mb-3 grid grid-cols-3 gap-1.5 rounded-xl border border-border bg-secondary p-1.5">
         {PLAN_LENGTHS.map((p) => (
           <button
