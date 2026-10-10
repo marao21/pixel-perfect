@@ -149,6 +149,7 @@ export function PrayerTimerProvider({ children }: { children: ReactNode }) {
       return () => document.removeEventListener("visibilitychange", reacquire);
     }
     releaseWakeLock();
+    return undefined;
   }, [state?.status, acquireWakeLock, releaseWakeLock]);
 
   const save = (s: TimerState | null) => {
