@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Megaphone, PlayCircle, X } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ChevronRight, Megaphone, PlayCircle, X } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { usePublished, youtubeId, type Announcement, type Video } from "@/lib/content";
+import { SYSTEM_TABS } from "@/lib/system-pages";
+import { BOOKS } from "@/lib/bible";
 
 const DISMISS_KEY = "mamutes-avisos-fechados";
 // Assinatura muda se o líder editar o aviso, então ele volta a aparecer.
 function sig(a: Announcement) {
-  const s = `${a.id}|${a.title}|${a.body ?? ""}|${(a as { updated_at?: string }).updated_at ?? ""}`;
+  const s = `${a.id}|${a.title}|${a.body ?? ""}|${a.link_url ?? ""}|${(a as { updated_at?: string }).updated_at ?? ""}`;
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
   return `${a.id}:${h}`;
@@ -45,6 +48,7 @@ export function Avisos() {
             {a.body && (
               <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{a.body}</p>
             )}
+            {a.link_url && <AvisoLink url={a.link_url} />}
           </div>
           <button
             onClick={() => dismiss(a)}
@@ -105,6 +109,60 @@ export function HomeFeed() {
       </Dialog>
     </>
   );
+}
+
+function AvisoLink({ url }: { url: string }) {
+  const clean = url.trim();
+  if (!clean) return null;
+  const [target = "", query = ""] = clean.split("?");
+  const params = new URLSearchParams(query);
+  const cls = "mt-1.5 inline-flex items-center gap-1 text-sm font-semibold text-primary";
+  const tab = SYSTEM_TABS.find((t) => t.path === target);
+  if (tab) {
+    return (
+      <Link to={tab.path} className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+  const page = target.match(/^\/p\/([^/?#]+)$/);
+  if (page?.[1]) {
+    let slug = page[1];
+    try {
+      slug = decodeURIComponent(slug);
+    } catch {
+      /* keep raw slug */
+    }
+    return (
+      <Link to="/p/$slug" params={{ slug }} className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+  if (target === "/biblia") {
+    const b = Number(params.get("b"));
+    const c = Number(params.get("c") ?? 1);
+    if (Number.isInteger(b) && b >= 0 && b < BOOKS.length && c >= 1 && c <= BOOKS[b]!.ch) {
+      return (
+        <Link to="/biblia" search={{ b, c }} className={cls}>
+          Abrir {BOOKS[b]!.pt} {c} <ChevronRight className="h-4 w-4" />
+        </Link>
+      );
+    }
+    return (
+      <Link to="/biblia" className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </Link>
+    );
+  }
+  if (/^https?:\/\//i.test(clean)) {
+    return (
+      <a href={clean} target="_blank" rel="noopener noreferrer" className={cls}>
+        Abrir <ChevronRight className="h-4 w-4" />
+      </a>
+    );
+  }
+  return null;
 }
 
 function VideoWithToggle({

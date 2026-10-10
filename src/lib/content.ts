@@ -33,6 +33,7 @@ export type Announcement = {
   id: string;
   title: string;
   body: string | null;
+  link_url?: string | null;
   published: boolean;
   created_at: string;
 };
