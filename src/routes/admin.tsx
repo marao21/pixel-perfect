@@ -223,6 +223,10 @@ function AvisosTab() {
   const [rows, setRows] = useState<Announcement[]>([]);
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const [linkType, setLinkType] = useState("");
+  const [bookIdx, setBookIdx] = useState(0);
+  const [chapter, setChapter] = useState(1);
+  const [pages, setPages] = useState<CustomPage[]>([]);
   const load = useCallback(
     () =>
       db
@@ -234,7 +238,33 @@ function AvisosTab() {
   );
   useEffect(() => {
     void load();
+    db.from("custom_pages")
+      .select("id,slug,title")
+      .eq("published", true)
+      .order("position")
+      .order("created_at")
+      .then(({ data }: { data: CustomPage[] | null }) => setPages(data ?? []));
   }, [load]);
+
+  const linkUrl =
+    !linkType || linkType === "none"
+      ? ""
+      : linkType === "biblia"
+        ? `/biblia?b=${bookIdx}&c=${chapter}`
+        : linkType;
+  const linkLabel =
+    !linkType || linkType === "none"
+      ? ""
+      : linkType === "biblia"
+        ? `Bíblia: ${BOOKS[bookIdx]!.pt} ${chapter}`
+        : linkType === "biblia"
+          ? ""
+          : linkType.startsWith("/p/")
+            ? (pages.find((p) => `/p/${p.slug}` === linkType)?.title ?? linkType)
+            : (SYSTEM_TABS.find((t) => t.path === linkType)?.label ?? linkType);
+
+  const selectCls =
+    "h-11 w-full rounded-xl border border-border bg-card px-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 
   return (
     <>
@@ -242,16 +272,63 @@ function AvisosTab() {
         <div className="space-y-2">
           <Input placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} />
           <Textarea placeholder="Mensagem" value={body} onChange={(e) => setBody(e.target.value)} />
+          <Label className="text-sm">Link do aviso (opcional)</Label>
+          <select value={linkType} onChange={(e) => setLinkType(e.target.value)} className={selectCls}>
+            <option value="">Sem link</option>
+            {SYSTEM_TABS.map((t) => (
+              <option key={t.slug} value={t.path}>
+                Aba: {t.label}
+              </option>
+            ))}
+            {pages.map((p) => (
+              <option key={p.id} value={`/p/${p.slug}`}>
+                Página: {p.title}
+              </option>
+            ))}
+            <option value="biblia">Bíblia: livro e capítulo</option>
+          </select>
+          {linkType === "biblia" && (
+            <div className="grid grid-cols-2 gap-2">
+              <select
+                value={bookIdx}
+                onChange={(e) => {
+                  const idx = Number(e.target.value);
+                  setBookIdx(idx);
+                  setChapter(1);
+                }}
+                className={selectCls}
+              >
+                {BOOKS.map((b, i) => (
+                  <option key={b.en} value={i}>
+                    {b.pt}
+                  </option>
+                ))}
+              </select>
+              <select value={chapter} onChange={(e) => setChapter(Number(e.target.value))} className={selectCls}>
+                {Array.from({ length: BOOKS[bookIdx]!.ch }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    Capítulo {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          {linkLabel && (
+            <p className="text-xs text-muted-foreground">O aviso vai abrir: {linkLabel}</p>
+          )}
           <Button
             className="w-full"
             disabled={!title.trim()}
             onClick={async () => {
               const { error } = await db
                 .from("announcements")
-                .insert({ title: title.trim(), body: body.trim() || null });
+                .insert({ title: title.trim(), body: body.trim() || null, link_url: linkUrl || null });
               if (fail(error)) return;
               setTitle("");
               setBody("");
+              setLinkType("");
+              setBookIdx(0);
+              setChapter(1);
               toast.success("Aviso publicado");
               void load();
             }}
@@ -266,7 +343,7 @@ function AvisosTab() {
           <Row
             key={a.id}
             title={a.title}
-            sub={a.body}
+            sub={[a.body, a.link_url ? `Link: ${a.link_url}` : ""].filter(Boolean).join(" · ")}
             published={a.published}
             onToggle={async (p) => {
               fail((await db.from("announcements").update({ published: p }).eq("id", a.id)).error);
