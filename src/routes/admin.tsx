@@ -37,6 +37,8 @@ import { SystemPagesEditor } from "@/components/SystemPagesEditor";
 import { PageBlocks } from "@/components/PageBlocks";
 import { blocksForPage, blockError, type PageBlock } from "@/lib/page-blocks";
 import { getDevotionalForDay } from "@/lib/devotionals";
+import { SYSTEM_TABS } from "@/lib/system-pages";
+import { BOOKS } from "@/lib/bible";
 import { useServerFn } from "@tanstack/react-start";
 import { createAdmin } from "@/lib/admin.functions";
 import { listMembros, type MembroRow } from "@/lib/membros.functions";
