@@ -1,3 +1,4 @@
+import { usePlanRaw, useTexts } from "@/lib/overrides";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Flame, BookOpen, ChevronRight } from "lucide-react";
 import { Page } from "@/components/Shell";
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/")({
 function Home() {
   const { done, profiles } = useStore();
   const [len] = usePlanLength();
-  const PLAN = getPlan(len);
+  const tx = useTexts();
+  const PLAN = getPlan(len, usePlanRaw());
   const today = PLAN[Math.min(CURRENT_DAY, len) - 1];
   const pct = Math.round((done.size / len) * 100);
   const me = profiles.find((p) => p.id === "me");
@@ -51,13 +53,13 @@ function Home() {
           search={{ day: CURRENT_DAY, plan: len }}
           className="mt-1 inline-flex items-center gap-1 text-sm text-muted-foreground underline-offset-4 hover:underline"
         >
-          Abrir texto da leitura <ChevronRight className="h-4 w-4" />
+          {tx("home_reading_link")} <ChevronRight className="h-4 w-4" />
         </Link>
       </section>}
 
       {section.id === "progress" && <section className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Progresso</p>
+          <p className="text-xs text-muted-foreground">{tx("home_progress")}</p>
           <p className="font-display text-3xl text-foreground">{pct}%</p>
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
             <div
@@ -70,22 +72,22 @@ function Home() {
           </p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Ofensiva</p>
+          <p className="text-xs text-muted-foreground">{tx("home_streak")}</p>
           <p className="flex items-center gap-1 font-display text-3xl text-foreground">
             <Flame className="h-6 w-6 text-gold" />
             {me?.streak ?? 0}
           </p>
-          <p className="mt-2 text-xs text-muted-foreground">dias seguidos</p>
+          <p className="mt-2 text-xs text-muted-foreground">{tx("home_streak_sub")}</p>
         </div>
       </section>}
 
       {section.id === "devotional" && dev && <section className="mt-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary">
         <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          <BookOpen className="h-4 w-4" /> Devocional do dia
+          <BookOpen className="h-4 w-4" /> {tx("home_dev_title")}
         </p>
         <h3 className="mt-2 text-lg font-semibold text-foreground">{dev.title}</h3>
         <Link to="/devocional" className="mt-3 inline-flex items-center text-sm text-primary">
-          Ler completo <ChevronRight className="h-4 w-4" />
+          {tx("home_dev_link")} <ChevronRight className="h-4 w-4" />
         </Link>
       </section>}
       {section.id === "feed" && <HomeFeed />}

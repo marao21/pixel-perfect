@@ -1,3 +1,4 @@
+import { usePecadoDays, useTexts } from "@/lib/overrides";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2, Circle, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -24,29 +25,6 @@ export const Route = createFileRoute("/pecado")({
 });
 
 const ROMANOS = 44;
-const DAYS: [string, number, string, number][] = [
-  ["Romanos 1:14-17", 1, "Não me envergonho do Evangelho", 14],
-  ["Romanos 1:28-32", 1, "Desprezaram o conhecimento de Deus", 28],
-  ["Romanos 2:1-11", 2, "Em Deus não há parcialidade", 1],
-  ["Romanos 2:17-24", 2, "O nome de Deus é blasfemado...", 17],
-  ["Romanos 3:9-20", 3, "Ninguém é justo", 9],
-  ["Romanos 3:21-26", 3, "Todos pecaram", 21],
-  ["Romanos 4:1-8", 4, "Feliz quem tem pecados perdoados", 1],
-  ["Romanos 4:18-25", 4, "A promessa recebida pela fé", 18],
-  ["Romanos 5:1-11", 5, "Os frutos da paz de Deus", 1],
-  ["Romanos 5:12-21", 5, "Morte em Adão, vida em Cristo", 12],
-  ["Romanos 6:1-14", 6, "Mortos para o pecado, vivos para Deus", 1],
-  ["Romanos 6:15-23", 6, "O salário do pecado é a morte", 15],
-  ["Romanos 7:1-6", 7, "O casamento e a lei", 1],
-  ["Romanos 7:12-20", 7, "A luta contra o pecado", 12],
-  ["Romanos 8:1-17", 8, "Vida controlada pelo Espírito", 1],
-  ["Romanos 8:18-27", 8, "A glória futura", 18],
-  ["Romanos 8:28-39", 8, "Mais que vencedores", 28],
-  ["Romanos 9:14-21", 9, "A escolha soberana de Deus", 14],
-  ["Romanos 10:1-11", 10, "Quem nele confia não se envergonha", 1],
-  ["Romanos 11:33-36", 11, "A Ele seja a glória para sempre", 33],
-  ["Romanos 12:1-2 / 9-21", 12, "Vença o mal com o bem", 1],
-];
 const KEY = "mamutes-pecado";
 
 function Pecado() {
@@ -63,25 +41,27 @@ function Pecado() {
     setDone(n);
     localStorage.setItem(KEY, JSON.stringify(n));
   };
+  const DAYS = usePecadoDays();
+  const tx = useTexts();
   const pct = Math.round((done.length / DAYS.length) * 100);
 
   return (
-    <Page kicker="2ª temporada · Romanos" title="Pecado, aqui não!">
+    <Page kicker={tx("pecado_kicker")} title={tx("pecado_title")}>
       <section className="mb-4 rounded-2xl border border-gold bg-hero p-4 text-center">
         <p className="font-semibold uppercase tracking-wide text-foreground">
-          21 dias de oração, leitura da Palavra e testemunho
+          {tx("pecado_headline")}
         </p>
-        <p className="mt-1 text-sm font-bold uppercase text-gold">Debulhando o livro de Romanos</p>
+        <p className="mt-1 text-sm font-bold uppercase text-gold">{tx("pecado_sub")}</p>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-secondary">
           <div
             className="h-full rounded-full bg-primary transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
-        <p className="mt-1 text-xs text-muted-foreground">{done.length} de 21 dias concluídos</p>
+        <p className="mt-1 text-xs text-muted-foreground">{done.length} de {DAYS.length} dias concluídos</p>
       </section>
       <ul className="space-y-2">
-        {DAYS.map(([ref, ch, tema, v], i) => {
+        {DAYS.map(({ ref, chapter: ch, tema, verse: v }, i) => {
           const d = i + 1,
             ok = done.includes(d);
           return (
@@ -120,7 +100,7 @@ function Pecado() {
         })}
       </ul>
       <p className="mt-6 text-center text-xs font-bold uppercase tracking-[0.25em] text-gold">
-        Ore • Leia • Reflita • Pratique • Testemunhe
+        {tx("pecado_footer")}
       </p>
     </Page>
   );

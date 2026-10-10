@@ -1,3 +1,4 @@
+import { useTexts } from "@/lib/overrides";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { usePrayerTimer, remainingOf } from "@/lib/prayer-timer";
@@ -63,6 +64,7 @@ function fmt(ms: number, long: boolean) {
 function TempoComDeus() {
   const { state, now, start, pause, resume, restart, end: endTimer } = usePrayerTimer();
   const [confirm, setConfirm] = useState(false);
+  const tx = useTexts();
   const [verse] = useState(() => VERSES[new Date().getDate() % VERSES.length]!);
   const end = () => {
     setConfirm(false);
@@ -71,17 +73,17 @@ function TempoComDeus() {
 
   if (!state) {
     return (
-      <Page title="Tempo com Deus">
+      <Page title={tx("tempo_title")}>
         <section className="py-4 text-center">
           <h1 className="font-display text-4xl uppercase tracking-wide text-foreground">
-            Tempo com Deus
+            {tx("tempo_title")}
           </h1>
           <p className="mx-auto mt-3 max-w-md font-serif-read text-muted-foreground">
-            “Separe alguns minutos do seu dia para estar na presença de Deus.”
+            {tx("tempo_quote")}
           </p>
         </section>
         <p className="mb-3 mt-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          Escolha o tempo
+          {tx("tempo_choose")}
         </p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {OPTIONS.map((o) => (
@@ -100,10 +102,10 @@ function TempoComDeus() {
 
   if (state.status === "done") {
     return (
-      <Page title="Tempo com Deus">
+      <Page title={tx("tempo_title")}>
         <section className="flex min-h-[60vh] flex-col items-center justify-center text-center">
           <Heart className="h-12 w-12 text-gold" />
-          <h1 className="mt-4 font-display text-3xl uppercase text-foreground">Tempo com Deus concluído ❤️</h1>
+          <h1 className="mt-4 font-display text-3xl uppercase text-foreground">{tx("tempo_done")}</h1>
         </section>
       </Page>
     );
@@ -116,9 +118,9 @@ function TempoComDeus() {
     "flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card px-2 text-xs font-semibold uppercase text-foreground hover:bg-muted";
 
   return (
-    <Page title="Tempo com Deus">
+    <Page title={tx("tempo_title")}>
       <section className="flex min-h-[65vh] flex-col items-center justify-center text-center">
-        <h1 className="font-display text-2xl uppercase tracking-wide text-gold">Tempo com Deus</h1>
+        <h1 className="font-display text-2xl uppercase tracking-wide text-gold">{tx("tempo_title")}</h1>
         <p
           className="mt-6 font-display text-7xl tabular-nums text-foreground sm:text-8xl"
           aria-live="off"

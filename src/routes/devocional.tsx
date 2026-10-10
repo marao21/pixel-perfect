@@ -1,3 +1,4 @@
+import { useTexts } from "@/lib/overrides";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -52,9 +53,10 @@ function Devocional() {
   const [day, setDay] = useState(() => Math.min(TOTAL_DAYS, Math.max(1, diaDoAno(new Date()))));
   const d = useDevotionalOverride(day, getDevotionalForDay(day));
   const data = dataDoDia(day);
+  const tx = useTexts();
 
   return (
-    <Page kicker="Todos os dias do ano" title="Devocional Diário">
+    <Page kicker={tx("dev_kicker")} title={tx("dev_title")}>
       {/* Data + navegação entre dias */}
       <div className="mb-5 flex items-center justify-between">
         <button

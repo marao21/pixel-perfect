@@ -277,13 +277,16 @@ function labelOf(refs: Ref[]): string {
   return parts.join(" / ");
 }
 
-const BASE: PlanDay[] = PLAN_180_RAW.map((d, i) => ({
+const BASE_DEFAULT: PlanDay[] = PLAN_180_RAW.map((d, i) => ({
   day: i + 1,
   label: d.label,
   refs: toRefs(d.s),
 }));
 
-export function getPlan(len: PlanLength): PlanDay[] {
+export function getPlan(len: PlanLength, raw?: { label: string; s: [number, number, number][] }[]): PlanDay[] {
+  const BASE: PlanDay[] = raw && raw !== PLAN_180_RAW
+    ? raw.map((d, i) => ({ day: i + 1, label: d.label || labelOf(toRefs(d.s)), refs: toRefs(d.s) }))
+    : BASE_DEFAULT;
   if (len === 180) return BASE;
   if (len === 90) {
     return Array.from({ length: 90 }, (_, i) => {
@@ -319,4 +322,4 @@ export function getPlan(len: PlanLength): PlanDay[] {
   return out.map((refs, i) => ({ day: i + 1, label: labelOf(refs), refs }));
 }
 
-export const PLAN: PlanDay[] = BASE;
+export const PLAN: PlanDay[] = BASE_DEFAULT;

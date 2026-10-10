@@ -1,3 +1,4 @@
+import { useTexts } from "@/lib/overrides";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Check, Copy, Heart } from "lucide-react";
@@ -38,16 +39,17 @@ function Oferta() {
         ]
       : [];
 
+  const tx = useTexts();
   return (
-    <Page kicker="Igreja Batista Belém" title="Oferta">
+    <Page kicker={tx("oferta_kicker")} title={tx("oferta_title")}>
       <section className="mb-4 overflow-hidden rounded-2xl border border-border bg-card">
         <div className="bg-hero px-4 py-3 text-center">
           <Heart className="mx-auto h-6 w-6 text-gold" aria-hidden="true" />
           <h2 className="mt-1 font-display text-xl uppercase text-foreground">
-            Ofertar é um ato de gratidão
+            {tx("oferta_headline")}
           </h2>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Aponte a câmera do seu banco para o QR Code ou copie a chave Pix.
+            {tx("oferta_help")}
           </p>
         </div>
         {opts.length === 0 && (
